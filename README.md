@@ -1,3 +1,4 @@
+
 # CyberPunk WildNet Metaverse
 
 A dystopian cyberpunk metaverse built on Filecoin Synapse - a decentralized virtual world where technology and humanity collide, powered by blockchain storage and USDFC payments.
@@ -54,20 +55,26 @@ CyberPunk WildNet is a next-generation metaverse that showcases:
 ## 🚀 Getting Started
 
 1. Clone this repository:
+---
 ```bash
 git clone https://github.com/yourusername/cyberpunk-metaverse
 cd cyberpunk-metaverse
 ```
+---
 
 2. Install dependencies:
+---
 ```bash
 npm install
 ```
+---
 
 3. Run the development server:
+---
 ```bash
 npm run dev
 ```
+---
 
 Open [http://localhost:3000](http://localhost:3000) to enter the CyberPunk Metaverse.
 
@@ -121,7 +128,8 @@ Open [http://localhost:3000](http://localhost:3000) to enter the CyberPunk Metav
 ### Theme Configuration
 The cyberpunk theme can be customized in `config.ts`:
 
-```typescript
+---
+```ts
 theme: {
   primaryColor: "#00ff41", // Matrix green
   secondaryColor: "#ff006e", // Neon pink
@@ -133,11 +141,13 @@ theme: {
   holographicUI: true
 }
 ```
+---
 
 ### Metaverse Settings
 Adjust world parameters and game mechanics:
 
-```typescript
+---
+```ts
 metaverse: {
   maxPlayers: 1000,
   worldSize: { width: 10000, height: 1000, depth: 10000 },
@@ -149,6 +159,7 @@ metaverse: {
   }
 }
 ```
+---
 
 ## 🔗 Learn More
 

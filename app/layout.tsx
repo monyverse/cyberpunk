@@ -8,7 +8,7 @@ import { http, createConfig } from "@wagmi/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
-import { Navbar } from "@/components/ui/Navbar";
+import Navbar from "@/components/ui/Navbar";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { ConfettiProvider } from "@/providers/ConfettiProvider";
 import Footer from "@/components/ui/Footer";
@@ -45,7 +45,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=0.6" />
         <link rel="icon" href="/filecoin.svg" />
       </head>
-      <body>
+      <body className="bg-[#181e2a] min-h-screen w-full">
         <ThemeProvider>
           <ConfettiProvider>
             <QueryClientProvider client={queryClient}>
@@ -54,8 +54,8 @@ export default function RootLayout({
                   modalSize="compact"
                   initialChain={filecoinCalibration.id}
                 >
-                  <main className="flex flex-col min-h-screen">
-                    <Navbar />
+                  <Navbar />
+                  <main className="max-w-7xl mx-auto px-4 py-8">
                     {children}
                   </main>
                   <Footer />

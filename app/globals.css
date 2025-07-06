@@ -1,54 +1,102 @@
 @import "tailwindcss/preflight";
 @tailwind utilities;
 @import "tailwindcss";
-
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --primary: #007bff;
-  --primary-foreground: #ffffff;
-  --secondary: #6c757d;
-  --secondary-foreground: #ffffff;
-  --border: #e5e7eb;
+    --background: #ffffff;
+    --foreground: #171717;
+    --primary: #007bff;
+    --primary-foreground: #ffffff;
+    --secondary: #6c757d;
+    --secondary-foreground: #ffffff;
+    --border: #e5e7eb;
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --primary: #007bff;
-  --primary-foreground: #ffffff;
-  --secondary: #6c757d;
-  --secondary-foreground: #ffffff;
-  --border: #2a2a2a;
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --primary: #007bff;
+    --primary-foreground: #ffffff;
+    --secondary: #6c757d;
+    --secondary-foreground: #ffffff;
+    --border: #2a2a2a;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    background: #181e2a;
+    color: #e0e6f0;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, 'sans-serif';
 }
 
 @layer base {
-  :root {
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-    --color-border: var(--border);
-    --color-primary: var(--primary);
-    --color-secondary: var(--secondary);
-  }
-
-  .dark {
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-    --color-border: var(--border);
-    --color-primary: var(--primary);
-    --color-secondary: var(--secondary);
-  }
+     :root {
+        --color-background: var(--background);
+        --color-foreground: var(--foreground);
+        --color-border: var(--border);
+        --color-primary: var(--primary);
+        --color-secondary: var(--secondary);
+    }
+    .dark {
+        --color-background: var(--background);
+        --color-foreground: var(--foreground);
+        --color-border: var(--border);
+        --color-primary: var(--primary);
+        --color-secondary: var(--secondary);
+    }
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
+}
+
+.card {
+    background: #232c43;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+}
+
+.btn {
+    background: #6ec1c8;
+    color: #181e2a;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn:hover {
+    background: #bdb89c;
+    color: #232c43;
+}
+
+input,
+select,
+textarea {
+    background: #232c43;
+    color: #e0e6f0;
+    border: 1px solid #2e3750;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #6ec1c8;
+    box-shadow: 0 0 0 2px #6ec1c880;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    background: #232c43;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #2e3750;
+    border-radius: 8px;
 }

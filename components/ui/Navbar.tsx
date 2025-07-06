@@ -4,42 +4,41 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ThemeToggle } from "./ThemeToggle";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from 'next/link';
+import { useAccount } from 'wagmi';
 
-export function Navbar() {
+const navLinks = [
+  { name: 'Dashboard', href: '/' },
+  { name: 'Assets', href: '/?tab=metaverse' },
+  { name: 'Avatar', href: '/?tab=avatar' },
+  { name: 'Storage', href: '/?tab=storage' },
+  { name: 'Proof Sets', href: '/?tab=proof-set' },
+  { name: 'Data Bridge', href: '/databridge' },
+  { name: 'MCP Agents', href: '/mcp-agents' },
+  { name: 'Onchain Agent', href: '/onchain-agent' },
+];
+
+export default function Navbar() {
+  const { address, isConnected } = useAccount();
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ type: "spring", stiffness: 100, damping: 20 }}
-      className="flex items-center justify-between p-4 border-b dark:border-gray-800"
-    >
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.2 }}
-        className="flex items-center gap-4"
-      >
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          className="flex items-center gap-2"
-        >
-          <Image src="/filecoin.svg" alt="Filecoin" width={30} height={30} />
-          <h1 className="text-xl font-bold">Filecoin Services Uploader</h1>
-        </motion.div>
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.3 }}
-        className="flex items-center gap-4"
-      >
-        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-          <ThemeToggle />
-        </motion.div>
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <ConnectButton />
-        </motion.div>
-      </motion.div>
-    </motion.nav>
+    <nav className="w-full h-16 flex items-center px-6 bg-[#1a2236] border-b border-[#232c43] shadow-lg z-50">
+      <div className="flex items-center gap-3">
+        <Image src="/cyberpunk-logo.png" alt="CyberPunk Logo" width={48} height={48} className="rounded-full" />
+        <span className="text-2xl font-extrabold tracking-widest text-[#6ec1c8] uppercase" style={{ letterSpacing: '0.15em' }}>
+          CYBER<span className="text-[#bdb89c]">PUNK</span>
+        </span>
+      </div>
+      <div className="flex-1" />
+      <div className="hidden md:flex gap-6 items-center">
+        {navLinks.map(link => (
+          <Link key={link.name} href={link.href} className="text-[#bdb89c] hover:text-[#6ec1c8] font-semibold text-lg transition-colors">
+            {link.name}
+          </Link>
+        ))}
+      </div>
+      <div className="ml-6">
+        <ConnectButton />
+      </div>
+    </nav>
   );
 }
