@@ -3,6 +3,7 @@
 # dependencies
 /node_modules
 /onchain-agent/node_modules
+/databridge/node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -16,6 +17,8 @@
 
 # next.js
 /.next/
+/onchain-agent/.next/
+/databridge/.next/
 /out/
 
 # production

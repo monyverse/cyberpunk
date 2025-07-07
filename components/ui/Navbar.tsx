@@ -37,7 +37,7 @@ export default function Navbar() {
         ))}
       </div>
       <div className="ml-6">
-        <ConnectButton />
+          <ConnectButton />
       </div>
     </nav>
   );

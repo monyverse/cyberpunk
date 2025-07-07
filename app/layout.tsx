@@ -1,5 +1,4 @@
-// app/layout.jsx
-"use client";
+// app/layout.tsx
 
 import "./globals.css";
 import { WagmiProvider } from "wagmi";
@@ -32,14 +31,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>Fil services demo</title>
+        <title>CyberPunk Metaverse</title>
         <meta
           name="description"
-          content="Demo dApp Powered by synapse-sdk. Upload files to Filecoin with USDFC."
+          content="Explore. Hunt. Earn. Evolve — All through your drone"
         />
         <meta
           name="keywords"
-          content="Filecoin, Demo, synapse-sdk, pdp, upload, filecoin, usdfc"
+          content="AR/metaverse game,real wildlife, Filecoin, nouns, pdp, upload, flow, bio-agents"
         />
         <meta name="author" content="FIL-Builders" />
         <meta name="viewport" content="width=device-width, initial-scale=0.6" />

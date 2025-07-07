@@ -26,7 +26,7 @@ export interface UseMetaverseAssetsReturn {
 
 export function useMetaverseAssets(): UseMetaverseAssetsReturn {
   const { address, isConnected } = useAccount();
-  const { uploadFileMutation } = useFileUpload();
+  const { uploadFileMutation, uploadedInfo } = useFileUpload();
   
   const [assets, setAssets] = useState<FilecoinAsset[]>([]);
   const [storage, setStorage] = useState<MetaverseStorage | null>(null);
@@ -92,13 +92,13 @@ export function useMetaverseAssets(): UseMetaverseAssetsReturn {
     
     try {
       // Upload file to Filecoin using existing hook
-      const uploadResult = await uploadFileMutation.mutateAsync(file);
-      
+      await uploadFileMutation.mutateAsync(file);
+      // Get the CID from uploadedInfo (from useFileUpload)
       const newAsset: FilecoinAsset = {
         id: `asset_${Date.now()}`,
         name: file.name,
         type: type as keyof typeof config.metaverse.assetTypes,
-        filecoinCID: uploadResult.rootCid,
+        filecoinCID: uploadedInfo?.commp || '',
         size: file.size,
         uploadedAt: new Date().toISOString(),
         owner: address,

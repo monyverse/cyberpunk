@@ -46,20 +46,20 @@ export default function Home() {
       </aside>
       {/* Main Content */}
       <main className="flex-1 p-6 md:p-12 bg-[#181e2a]">
-        {showConfetti && (
-          <Confetti
-            recycle={false}
-            numberOfPieces={200}
-            gravity={0.2}
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              zIndex: 9999,
-              pointerEvents: "none",
-            }}
-          />
-        )}
+      {showConfetti && (
+        <Confetti
+          recycle={false}
+          numberOfPieces={200}
+          gravity={0.2}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            zIndex: 9999,
+            pointerEvents: "none",
+          }}
+        />
+      )}
         <div className="flex flex-col items-center gap-6">
           {/* Dashboard Card */}
           {activeTab === 'dashboard' && (
@@ -95,14 +95,14 @@ export default function Home() {
                     <span className="text-lg font-semibold text-[#bdb89c]">Your USDFC Balance: </span>
                     <span className="text-2xl font-bold text-[#6ec1c8]">
                       {isLoadingBalances || !isConnected ? '...' : balances?.usdfcBalanceFormatted.toFixed(1) + ' $'}
-                    </span>
+            </span>
                   </div>
                 </div>
               </div>
             </div>
-          )}
+        )}
           {/* Other Tabs */}
-          <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait">
             {activeTab === "avatar" && (
               <motion.div key="avatar" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ type: "spring", stiffness: 200, damping: 20 }}>
                 <div className="card w-full max-w-2xl mx-auto"><AvatarCreator /></div>
@@ -111,7 +111,7 @@ export default function Home() {
             {activeTab === "metaverse" && (
               <motion.div key="metaverse" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} transition={{ type: "smooth" }}>
                 <div className="card w-full max-w-6xl mx-auto"><MetaverseAssetManager /></div>
-              </motion.div>
+            </motion.div>
             )}
             {activeTab === "storage" && (
               <motion.div key="storage" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ type: "spring", stiffness: 200, damping: 20 }}>
@@ -121,14 +121,14 @@ export default function Home() {
             {activeTab === "upload" && (
               <motion.div key="upload" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} transition={{ type: "smooth" }}>
                 <div className="card w-full max-w-3xl mx-auto"><FileUploader /></div>
-              </motion.div>
-            )}
+                    </motion.div>
+                )}
             {activeTab === "proof-set" && (
               <motion.div key="proof-set" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ type: "spring", stiffness: 200, damping: 20 }}>
                 <div className="card w-full max-w-4xl mx-auto"><ViewProofSets /></div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
         </div>
       </main>
     </div>

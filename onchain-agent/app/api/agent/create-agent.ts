@@ -2,6 +2,7 @@ import { getLangChainTools } from "@coinbase/agentkit-langchain";
 import { MemorySaver } from "@langchain/langgraph";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
+import { ChatAnthropic } from '@langchain/anthropic';
 import { prepareAgentkitAndWalletProvider } from "./prepare-agentkit";
 
 /**
@@ -48,7 +49,7 @@ export async function createAgent(): Promise<ReturnType<typeof createReactAgent>
 
   try {
     // Initialize LLM: https://platform.openai.com/docs/models#gpt-4o
-    const llm = new ChatOpenAI({ model: "gpt-4o-mini" });
+    const llm = new ChatAnthropic({ model: 'claude-3-5-haiku-20241022' });
 
     const tools = await getLangChainTools(agentkit);
     const memory = new MemorySaver();

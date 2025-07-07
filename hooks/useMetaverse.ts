@@ -65,7 +65,11 @@ export function useMetaverse(): UseMetaverseReturn {
         id: 'cyberpunk-wildnet',
         name: config.metaverse.name,
         description: 'A dystopian cyberpunk metaverse where technology and humanity collide.',
-        size: config.metaverse.worldSize,
+        size: {
+          x: config.metaverse.worldSize.width,
+          y: config.metaverse.worldSize.height,
+          z: config.metaverse.worldSize.depth,
+        },
         players: [],
         buildings: [],
         spawnPoints: [
@@ -74,10 +78,10 @@ export function useMetaverse(): UseMetaverseReturn {
           { x: -100, y: 0, z: -100 }
         ],
         safeZones: [
-          { x: 0, y: 0, z: 0, radius: 50 }
+          { x: 0, y: 0, z: 0 }
         ],
         dangerZones: [
-          { x: 500, y: 0, z: 500, radius: 100 }
+          { x: 500, y: 0, z: 500 }
         ]
       };
       setWorld(defaultWorld);
