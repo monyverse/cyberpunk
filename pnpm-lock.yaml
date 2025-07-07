@@ -10,7 +10,7 @@ dependencies:
     version: 0.15.0
   '@rainbow-me/rainbowkit':
     specifier: 2.2.8
-    version: 2.2.8(@tanstack/react-query@5.28.4)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@2.30.3)(wagmi@2.15.6)
+    version: 2.2.8(@tanstack/react-query@5.81.5)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@2.30.3)(wagmi@2.15.6)
   '@react-three/drei':
     specifier: ^9.102.6
     version: 9.102.6(@react-three/fiber@8.15.19)(@types/react@18.2.55)(@types/three@0.162.0)(react-dom@18.2.0)(react@18.2.0)(three@0.162.0)
@@ -18,8 +18,8 @@ dependencies:
     specifier: ^8.15.19
     version: 8.15.19(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)(three@0.162.0)
   '@tanstack/react-query':
-    specifier: ^5.28.4
-    version: 5.28.4(react@18.2.0)
+    specifier: ^5.81.5
+    version: 5.81.5(react@18.2.0)
   '@wagmi/core':
     specifier: 2.17.3
     version: 2.17.3(@types/react@18.2.55)(react@18.2.0)(typescript@5.3.3)(use-sync-external-store@1.4.0)(viem@2.30.3)
@@ -73,7 +73,7 @@ dependencies:
     version: 2.30.3(typescript@5.3.3)(zod@3.22.4)
   wagmi:
     specifier: 2.15.6
-    version: 2.15.6(@tanstack/react-query@5.28.4)(@types/react@18.2.55)(react@18.2.0)(typescript@5.3.3)(viem@2.30.3)
+    version: 2.15.6(@tanstack/react-query@5.81.5)(@types/react@18.2.55)(react@18.2.0)(typescript@5.3.3)(viem@2.30.3)
 
 devDependencies:
   '@types/node':
@@ -1042,7 +1042,7 @@ packages:
     dev: true
     optional: true
 
-  /@rainbow-me/rainbowkit@2.2.8(@tanstack/react-query@5.28.4)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@2.30.3)(wagmi@2.15.6):
+  /@rainbow-me/rainbowkit@2.2.8(@tanstack/react-query@5.81.5)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@2.30.3)(wagmi@2.15.6):
     resolution: {integrity: sha512-EdNIK2cdAT6GJ9G11wx7nCVfjqBfxh7dx/1DhPYrB+yg+VFrII6cM1PiMFVC9evD4mqVHe9mmLAt3nvlwDdiPQ==}
     engines: {node: '>=12.4'}
     peerDependencies:
@@ -1052,7 +1052,7 @@ packages:
       viem: 2.x
       wagmi: ^2.9.0
     dependencies:
-      '@tanstack/react-query': 5.28.4(react@18.2.0)
+      '@tanstack/react-query': 5.81.5(react@18.2.0)
       '@vanilla-extract/css': 1.17.3
       '@vanilla-extract/dynamic': 2.1.4
       '@vanilla-extract/sprinkles': 1.6.4(@vanilla-extract/css@1.17.3)
@@ -1063,7 +1063,7 @@ packages:
       react-remove-scroll: 2.6.2(@types/react@18.2.55)(react@18.2.0)
       ua-parser-js: 1.0.40
       viem: 2.30.3(typescript@5.3.3)(zod@3.22.4)
-      wagmi: 2.15.6(@tanstack/react-query@5.28.4)(@types/react@18.2.55)(react@18.2.0)(typescript@5.3.3)(viem@2.30.3)
+      wagmi: 2.15.6(@tanstack/react-query@5.81.5)(@types/react@18.2.55)(react@18.2.0)(typescript@5.3.3)(viem@2.30.3)
     transitivePeerDependencies:
       - '@types/react'
       - babel-plugin-macros
@@ -1579,16 +1579,16 @@ packages:
       tslib: 2.8.1
     dev: false
 
-  /@tanstack/query-core@5.28.4:
-    resolution: {integrity: sha512-uQZqOFqLWUvXNIQZ63XdKzg22NtHzgCBUfDmjDHi3BoF+nUYeBNvMi/xFPtFrMhqRzG2Ir4mYaGsWZzmiEjXpA==}
+  /@tanstack/query-core@5.81.5:
+    resolution: {integrity: sha512-ZJOgCy/z2qpZXWaj/oxvodDx07XcQa9BF92c0oINjHkoqUPsmm3uG08HpTaviviZ/N9eP1f9CM7mKSEkIo7O1Q==}
     dev: false
 
-  /@tanstack/react-query@5.28.4(react@18.2.0):
-    resolution: {integrity: sha512-BErcoB/QQG6YwLSUKnaGxF+lSc270RH2w3kMBpG0i4YzDCsFs2pdxPX1WVknQvFk9bNgukMb158hc2Zb4SdwSA==}
+  /@tanstack/react-query@5.81.5(react@18.2.0):
+    resolution: {integrity: sha512-lOf2KqRRiYWpQT86eeeftAGnjuTR35myTP8MXyvHa81VlomoAWNEd8x5vkcAfQefu0qtYCvyqLropFZqgI2EQw==}
     peerDependencies:
-      react: ^18.0.0
+      react: ^18 || ^19
     dependencies:
-      '@tanstack/query-core': 5.28.4
+      '@tanstack/query-core': 5.81.5
       react: 18.2.0
     dev: false
 
@@ -5263,10 +5263,10 @@ packages:
         optional: true
     dependencies:
       '@adraffy/ens-normalize': 1.11.0
-      '@noble/curves': 1.9.2
-      '@noble/hashes': 1.8.0
-      '@scure/bip32': 1.7.0
-      '@scure/bip39': 1.6.0
+      '@noble/curves': 1.8.1
+      '@noble/hashes': 1.7.1
+      '@scure/bip32': 1.6.2
+      '@scure/bip39': 1.5.4
       abitype: 1.0.8(typescript@5.3.3)(zod@3.22.4)
       eventemitter3: 5.0.1
       typescript: 5.3.3
@@ -6918,7 +6918,7 @@ packages:
       - zod
     dev: false
 
-  /wagmi@2.15.6(@tanstack/react-query@5.28.4)(@types/react@18.2.55)(react@18.2.0)(typescript@5.3.3)(viem@2.30.3):
+  /wagmi@2.15.6(@tanstack/react-query@5.81.5)(@types/react@18.2.55)(react@18.2.0)(typescript@5.3.3)(viem@2.30.3):
     resolution: {integrity: sha512-tR4tm+7eE0UloQe1oi4hUIjIDyjv5ImQlzq/QcvvfJYWF/EquTfGrmht6+nTYGCIeSzeEvbK90KgWyNqa+HD7Q==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
@@ -6929,7 +6929,7 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@tanstack/react-query': 5.28.4(react@18.2.0)
+      '@tanstack/react-query': 5.81.5(react@18.2.0)
       '@wagmi/connectors': 5.8.5(@types/react@18.2.55)(@wagmi/core@2.17.3)(react@18.2.0)(typescript@5.3.3)(viem@2.30.3)
       '@wagmi/core': 2.17.3(@types/react@18.2.55)(react@18.2.0)(typescript@5.3.3)(use-sync-external-store@1.4.0)(viem@2.30.3)
       react: 18.2.0

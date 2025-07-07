@@ -8,8 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import Navbar from "@/components/ui/Navbar";
-import { ThemeProvider } from "@/providers/ThemeProvider";
-import { ConfettiProvider } from "@/providers/ConfettiProvider";
+import AppProviders from "@/components/AppProviders";
 import Footer from "@/components/ui/Footer";
 
 const queryClient = new QueryClient();
@@ -45,24 +44,22 @@ export default function RootLayout({
         <link rel="icon" href="/filecoin.svg" />
       </head>
       <body className="bg-[#181e2a] min-h-screen w-full">
-        <ThemeProvider>
-          <ConfettiProvider>
-            <QueryClientProvider client={queryClient}>
-              <WagmiProvider config={config}>
-                <RainbowKitProvider
-                  modalSize="compact"
-                  initialChain={filecoinCalibration.id}
-                >
-                  <Navbar />
-                  <main className="max-w-7xl mx-auto px-4 py-8">
-                    {children}
-                  </main>
-                  <Footer />
-                </RainbowKitProvider>
-              </WagmiProvider>
-            </QueryClientProvider>
-          </ConfettiProvider>
-        </ThemeProvider>
+        <AppProviders>
+          <QueryClientProvider client={queryClient}>
+            <WagmiProvider config={config}>
+              <RainbowKitProvider
+                modalSize="compact"
+                initialChain={filecoinCalibration.id}
+              >
+                <Navbar />
+                <main className="max-w-7xl mx-auto px-4 py-8">
+                  {children}
+                </main>
+                <Footer />
+              </RainbowKitProvider>
+            </WagmiProvider>
+          </QueryClientProvider>
+        </AppProviders>
       </body>
     </html>
   );
