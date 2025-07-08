@@ -1,41 +1,59 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { ThemeProvider } from "@/providers/ThemeProvider";
-import { ConfettiProvider } from "@/providers/ConfettiProvider";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiProvider } from "wagmi";
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { filecoin, filecoinCalibration } from "wagmi/chains";
-import { http, createConfig } from "@wagmi/core";
-import Navbar from "@/components/ui/Navbar";
-import Footer from "@/components/ui/Footer";
+import { createContext, useContext, useEffect, useState } from "react";
 
-const queryClient = new QueryClient();
+type Theme = "light" | "dark";
 
-const config = createConfig({
-  chains: [filecoinCalibration, filecoin],
-  connectors: [],
-  transports: {
-    [filecoin.id]: http(),
-    [filecoinCalibration.id]: http(),
-  },
-});
+type ThemeContextType = {
+  theme: Theme;
+  toggleTheme: () => void;
+};
 
-export function Providers({ children }: { children: ReactNode }): React.ReactNode {
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export const ThemeProvider = ({ children }: { children: ReactNode }): React.ReactNode => {
+  const [theme, setTheme] = useState<Theme>("light");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const savedTheme = localStorage.getItem("theme") as Theme;
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle("dark", savedTheme === "dark");
+    } else if (prefersDark) {
+      setTheme("dark");
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.classList.toggle("dark", newTheme === "dark");
+  };
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
-    <ThemeProvider>
-      <ConfettiProvider>
-        <QueryClientProvider client={queryClient}>
-          <WagmiProvider config={config}>
-            <RainbowKitProvider modalSize="compact" initialChain={filecoinCalibration.id}>
-              <Navbar />
-              <main className="max-w-7xl mx-auto px-4 py-8">{children}</main>
-              <Footer />
-            </RainbowKitProvider>
-          </WagmiProvider>
-        </QueryClientProvider>
-      </ConfettiProvider>
-    </ThemeProvider>
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
   );
+};
+
+export function useTheme() {
+  const context = useContext(ThemeContext);
+  if (context === undefined) {
+    throw new Error("useTheme must be used within a ThemeProvider");
+  }
+  return context;
 }
