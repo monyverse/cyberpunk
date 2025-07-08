@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from 'next/link';
 import { useAccount } from 'wagmi';
+import React from "react";
 
 const navLinks = [
   { name: 'Dashboard', href: '/' },
@@ -18,7 +19,7 @@ const navLinks = [
   { name: 'Onchain Agent', href: '/onchain-agent' },
 ];
 
-export default function Navbar() {
+export default function Navbar(): React.ReactNode {
   const { address, isConnected } = useAccount();
   return (
     <nav className="w-full h-16 flex items-center px-6 bg-[#1a2236] border-b border-[#232c43] shadow-lg z-50">

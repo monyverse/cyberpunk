@@ -2,8 +2,9 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import Github from "./icons/Github";
 import Filecoin from "./icons/Filecoin";
+import React from "react";
 
-export default function Footer() {
+export default function Footer(): React.ReactNode {
   const footerVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: {
@@ -98,7 +99,7 @@ export default function Footer() {
               animate={heartAnimation}
               className="inline-block text-red-500"
             >
-              ❤️
+              49
             </motion.span>{" "}
             for everyone
           </motion.p>

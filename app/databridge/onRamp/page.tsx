@@ -1,10 +1,10 @@
 'use client';
 
-import StatsSection from '../../components/onRamp/statsSection';
-import FileList from '../../components/onRamp/fileList';
-import Header from '../../components/header';
-import { generateCID, generateCommp } from '../../utils/dataPrep';
-import { ONRAMP_CONTRACT_ABI, ONRAMP_CONTRACT_ADDRESS } from '../../components/contracts/onrampContract';
+import StatsSection from '@/components/databridge/onRamp/statsSection';
+import FileList from '@/components/databridge/onRamp/fileList';
+import Header from '@/components/databridge/header';
+import { generateCID, generateCommp } from '../../../utils/dataPrep';
+import { ONRAMP_CONTRACT_ABI, ONRAMP_CONTRACT_ADDRESS } from '@/components/databridge/contracts/onrampContract';
 
 import React, { useState, useRef, ChangeEvent, DragEvent } from 'react';
 

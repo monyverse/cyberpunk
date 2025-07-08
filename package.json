@@ -11,34 +11,52 @@
     "dependencies": {
         "@filoz/synapse-sdk": "^0.15.0",
         "@rainbow-me/rainbowkit": "^2.2.5",
+        "@react-three/drei": "^9.102.6",
+        "@react-three/fiber": "^8.15.19",
         "@tanstack/react-query": "^5.28.4",
+        "@web3-storage/data-segment": "^5.3.0",
+        "ipfs-unixfs-importer": "^15.3.2",
+        "lucide-react": "^0.479.0",
+        "pino-pretty": "^11.2.2",
+        "react-icons": "^5.5.0",
+        "ethers": "^6.13.2",
         "@wagmi/core": "^2.6.7",
+        "class-variance-authority": "^0.7.0",
+        "clsx": "^2.1.1",
         "ethers": "^6.14.3",
         "framer-motion": "^11.0.8",
+        "lucide-react": "^0.344.0",
         "next": "15.3.2",
         "react": "^18.3.1",
         "react-confetti": "^6.1.0",
         "react-dom": "^18.3.1",
-        "viem": "^2.30.3",
-        "wagmi": "^2.15.4",
+        "tailwind-merge": "^2.2.1",
         "three": "^0.162.0",
-        "@react-three/fiber": "^8.15.19",
-        "@react-three/drei": "^9.102.6",
-        "lucide-react": "^0.344.0",
-        "class-variance-authority": "^0.7.0",
-        "clsx": "^2.1.1",
-        "tailwind-merge": "^2.2.1"
+        "viem": "^2.30.3",
+        "wagmi": "^2.15.4"
     },
     "devDependencies": {
-        "@tailwindcss/postcss": "^4",
+        "@trivago/prettier-plugin-sort-imports": "^5.2.2",
         "@types/node": "^20",
         "@types/react": "^18",
         "@types/react-dom": "^18",
         "@types/three": "^0.162.0",
+        "autoprefixer": "^10.4.21",
         "eslint": "9.28.0",
         "eslint-config-next": "15.3.3",
         "pino-pretty": "^13.0.0",
-        "tailwindcss": "^4",
+        "postcss": "^8.5.6",
+        "prettier": "^3.5.3",
+        "prettier-plugin-tailwindcss": "^0.6.11",
+        "tailwindcss": "^3.4.0",
         "typescript": "^5"
+    },
+    "pnpm": {
+        "overrides": {
+            "react": "^18.3.1",
+            "react-dom": "^18.3.1",
+            "@types/react": "^18.0.0",
+            "@types/react-dom": "^18.0.0"
+        }
     }
 }

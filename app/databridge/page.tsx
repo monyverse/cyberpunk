@@ -1,7 +1,7 @@
-import { WalletConnect } from '../components/walletConnect';
+import { WalletConnect } from '../../components/databridge/walletConnect';
 
-import Footer from '../components/footer';
-import Header from '../components/header';
+import Footer from '../../components/databridge/footer';
+import Header from '../../components/databridge/header';
 
 export default function Home() {
   return (

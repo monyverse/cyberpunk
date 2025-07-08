@@ -1,5 +1,4 @@
 // app/layout.jsx
-"use client";
 
 import "./globals.css";
 import { WagmiProvider } from "wagmi";
@@ -12,6 +11,7 @@ import Navbar from "@/components/ui/Navbar";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { ConfettiProvider } from "@/providers/ConfettiProvider";
 import Footer from "@/components/ui/Footer";
+import { Providers } from "../providers/providers";
 
 const queryClient = new QueryClient();
 
@@ -46,25 +46,14 @@ export default function RootLayout({
         <link rel="icon" href="/filecoin.svg" />
       </head>
       <body className="bg-[#181e2a] min-h-screen w-full">
-        <ThemeProvider>
-          <ConfettiProvider>
-            <QueryClientProvider client={queryClient}>
-              <WagmiProvider config={config}>
-                <RainbowKitProvider
-                  modalSize="compact"
-                  initialChain={filecoinCalibration.id}
-                >
-                  <Navbar />
-                  <main className="max-w-7xl mx-auto px-4 py-8">
+        <Providers>
+          <Navbar />
+          <main className="max-w-7xl mx-auto px-4 py-8">
                     {children}
                   </main>
                   <Footer />
-                </RainbowKitProvider>
-              </WagmiProvider>
-            </QueryClientProvider>
-          </ConfettiProvider>
-        </ThemeProvider>
-      </body>
-    </html>
-  );
-}
+                </Providers>
+              </body>
+            </html>
+          );
+        }
