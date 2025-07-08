@@ -1,4 +1,4 @@
-import VideoPlayer from "@/components/VideoPlayer";
+import VideoPlayer from "../components/VideoPlayer";
 
 export default function VideoPage() {
   return (
@@ -12,7 +12,7 @@ export default function VideoPage() {
       <VideoPlayer
         src="/modular-worlds-video.mp4"
         poster="/cyberpunk-logo.png"
-        title="Modular Worlds Hackathon Demo Video"
+        title="Modular Worlds Hackathon Video"
       />
     </div>
   );
