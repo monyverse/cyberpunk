@@ -15,8 +15,6 @@ const navLinks = [
   { name: 'Storage', href: '/?tab=storage' },
   { name: 'Proof Sets', href: '/?tab=proof-set' },
   { name: 'Data Bridge', href: '/databridge' },
-  { name: 'MCP Agents', href: '/mcp-agents' },
-  { name: 'Onchain Agent', href: '/onchain-agent' },
 ];
 
 export default function Navbar(): React.ReactNode {

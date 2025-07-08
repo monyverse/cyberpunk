@@ -1,0 +1,19 @@
+{
+	"contracts": {
+	  "AgentNPC": "./cadence/contracts/AgentNPCContract.cdc"
+	},
+	"networks": {
+	  "testnet": "access.devnet.nodes.onflow.org:9000"
+	},
+	"deployments": {
+	  "testnet": {
+		"testnet-account": ["AgentNPC"]
+	  }
+	},
+	"accounts": {
+	  "testnet-account": {
+		"address": "0x90ba9bdcb25f0aeb",
+		"key": "fcca30d4bf60bd2cdd4690218163a84785a303bddd0cf9e061b76c1d6484f777"
+	  }
+	}
+  }

@@ -355,3 +355,70 @@ export interface MetaverseStorage {
   assets: FilecoinAsset[];
   categories: Record<string, number>;
 }
+
+// --- Drone Simulation Types ---
+
+export interface Drone {
+  id: string;
+  owner: string; // user wallet or system
+  model: string;
+  status: 'idle' | 'in-mission' | 'charging' | 'offline' | 'maintenance';
+  location: Vector3;
+  battery: number; // percent
+  lastMissionId?: string;
+  telemetry?: DroneTelemetry;
+  isSimulated: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DroneMission {
+  id: string;
+  droneId: string;
+  pilot: string; // user wallet
+  description: string;
+  type: 'mapping' | 'delivery' | 'surveillance' | 'custom';
+  status: 'pending' | 'active' | 'completed' | 'failed' | 'cancelled';
+  reward: number; // tokens
+  startTime?: string;
+  endTime?: string;
+  proofCID?: string; // Filecoin/IPFS CID for proof of mission
+  metadata?: Record<string, any>;
+  // Enhancement: user-defined target
+  target?: Vector3;
+}
+
+// Charging station location (for simulation)
+export const CHARGING_STATION: Vector3 = { x: 0, y: 0, z: 0 };
+
+export interface DroneTelemetry {
+  timestamp: string;
+  location: Vector3;
+  altitude: number;
+  speed: number;
+  heading: number;
+  battery: number;
+  signalStrength?: number;
+  [key: string]: any;
+}
+
+// --- Agent NPC Types ---
+export type AgentType = 'onchain' | 'offchain' | 'hybrid';
+
+export interface Agent {
+  id: string;
+  name: string;
+  type: AgentType;
+  status: 'idle' | 'active' | 'offline';
+  location: Vector3;
+  lastAction?: AgentAction;
+  metadata?: Record<string, any>;
+  strategy?: 'default' | 'assigner' | 'trader' | 'social';
+}
+
+export interface AgentAction {
+  type: 'assign-mission' | 'trade' | 'move' | 'interact' | 'custom';
+  targetId?: string;
+  timestamp: string;
+  details?: Record<string, any>;
+}

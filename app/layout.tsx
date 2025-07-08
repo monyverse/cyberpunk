@@ -12,6 +12,13 @@ import { ThemeProvider } from "@/providers/ThemeProvider";
 import { ConfettiProvider } from "@/providers/ConfettiProvider";
 import Footer from "@/components/ui/Footer";
 import { Providers } from "../providers/providers";
+import * as fcl from "@onflow/fcl";
+
+// FCL config for Flow testnet (global)
+fcl.config()
+  .put("accessNode.api", "https://rest-testnet.onflow.org")
+  .put("discovery.wallet", "https://fcl-discovery.onflow.org/testnet/authn")
+  .put("0xAgentNPC", "0x90ba9bdcb25f0aeb");
 
 const queryClient = new QueryClient();
 
@@ -32,16 +39,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>Fil services demo</title>
+        <title>CYBERPUNK METAVERSE</title>
         <meta
           name="description"
-          content="Demo dApp Powered by synapse-sdk. Upload files to Filecoin with USDFC."
+          content="Explore. Hunt. Earn. Evolve — All through your drone"
         />
         <meta
           name="keywords"
-          content="Filecoin, Demo, synapse-sdk, pdp, upload, filecoin, usdfc"
+          content="Drones, AR, METAVERSE, pdp, upload, filecoin, usdfc"
         />
-        <meta name="author" content="FIL-Builders" />
+        <meta name="author" content=",Monyverse" />
         <meta name="viewport" content="width=device-width, initial-scale=0.6" />
         <link rel="icon" href="/filecoin.svg" />
       </head>

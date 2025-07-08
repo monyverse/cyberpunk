@@ -130,6 +130,9 @@ export default function Home() {
             )}
           </AnimatePresence>
         </div>
+        <div className="mt-8 flex flex-wrap gap-4">
+          <a href="/drone-sim" className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded shadow">Drone Simulation Dashboard</a>
+        </div>
       </main>
     </div>
   );
