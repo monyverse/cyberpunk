@@ -22,7 +22,7 @@ export default function Navbar(): React.ReactNode {
   return (
     <nav className="w-full h-16 flex items-center px-6 bg-[#1a2236] border-b border-[#232c43] shadow-lg z-50">
       <div className="flex items-center gap-3">
-        <Image src="/cyberpunk-logo.png" alt="CyberPunk Logo" width={48} height={48} className="rounded-full" />
+        <Image src="/cyberpunk-logo.svg" alt="CyberPunk Logo" width={48} height={48} className="rounded-full" />
         <span className="text-2xl font-extrabold tracking-widest text-[#6ec1c8] uppercase" style={{ letterSpacing: '0.15em' }}>
           CYBER<span className="text-[#bdb89c]">PUNK</span>
         </span>
