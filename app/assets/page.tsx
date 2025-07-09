@@ -89,12 +89,9 @@ const MetaverseAssetManager: React.FC = () => {
     setActiveTab(newValue);
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      // Mock file upload - replace with actual implementation
-      console.log('Files to upload:', files);
-    }
+  const handleFileUpload = (file: File) => {
+    console.log('Uploading file:', file.name);
+    // Implement file upload logic
   };
 
   const getStatusColor = (status: string) => {
@@ -165,7 +162,11 @@ const MetaverseAssetManager: React.FC = () => {
                   type="file"
                   hidden
                   multiple
-                  onChange={handleFileUpload}
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      Array.from(e.target.files).forEach(handleFileUpload);
+                    }
+                  }}
                 />
               </Button>
               <Button

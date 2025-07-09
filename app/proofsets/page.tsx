@@ -7,8 +7,6 @@ import {
   Box,
   Card,
   CardContent,
-  Grid,
-  Button,
   List,
   ListItem,
   ListItemText,
@@ -46,7 +44,7 @@ interface ProofSet {
 }
 
 const ViewProofSets: React.FC = () => {
-  const [proofSets, setProofSets] = useState<ProofSet[]>([
+  const [proofSets] = useState<ProofSet[]>([
     {
       id: '1',
       name: 'Drone Mission Proof',
@@ -136,59 +134,56 @@ const ViewProofSets: React.FC = () => {
       </Typography>
 
       {/* Statistics */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="h4" color="primary" gutterBottom>
-                {stats.total}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Total Proof Sets
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+      <Box sx={{ 
+        display: 'grid', 
+        gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
+        gap: 3,
+        mb: 4
+      }}>
+        <Card>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h4" color="primary" gutterBottom>
+              {stats.total}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Total Proof Sets
+            </Typography>
+          </CardContent>
+        </Card>
         
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="h4" color="success.main" gutterBottom>
-                {stats.verified}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Verified
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+        <Card>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h4" color="success.main" gutterBottom>
+              {stats.verified}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Verified
+            </Typography>
+          </CardContent>
+        </Card>
         
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="h4" color="warning.main" gutterBottom>
-                {stats.pending}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Pending
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+        <Card>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h4" color="warning.main" gutterBottom>
+              {stats.pending}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Pending
+            </Typography>
+          </CardContent>
+        </Card>
         
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="h4" color="error.main" gutterBottom>
-                {stats.failed}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Failed
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+        <Card>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h4" color="error.main" gutterBottom>
+              {stats.failed}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Failed
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
 
       {/* Proof Sets Table */}
       <Card>

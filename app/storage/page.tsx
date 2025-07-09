@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -8,298 +8,294 @@ import {
   Card,
   CardContent,
   Button,
-  LinearProgress,
+  TextField,
+  Alert,
+  CircularProgress,
+  Chip,
+  Divider,
   List,
   ListItem,
   ListItemText,
   ListItemIcon,
-  Chip,
-  Paper,
-  Menu,
-  MenuItem
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import {
   AccountBalanceWallet as WalletIcon,
   Storage as StorageIcon,
-  Token as TokenIcon,
+  CloudUpload as UploadIcon,
   Download as DownloadIcon,
-  CheckCircle as CheckCircleIcon,
+  Refresh as RefreshIcon,
+  CheckCircle as CheckIcon,
   Warning as WarningIcon,
-  Error as ErrorIcon
+  Error as ErrorIcon,
+  AttachMoney as MoneyIcon,
+  Security as SecurityIcon
 } from '@mui/icons-material';
+import { useEthers } from '../hooks/useEthers';
+
+interface StorageMetrics {
+  totalStorage: number;
+  usedStorage: number;
+  availableStorage: number;
+  allowance: number;
+  balance: number;
+}
 
 const StoragePage: React.FC = () => {
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [isFlowConnected, setIsFlowConnected] = useState(false);
+  const { account, provider } = useEthers();
+  const [metrics, setMetrics] = useState<StorageMetrics>({
+    totalStorage: 1000,
+    usedStorage: 250,
+    availableStorage: 750,
+    allowance: 100,
+    balance: 50
+  });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
 
-  // Mock data - replace with actual wallet/blockchain data
-  const walletData = {
-    balances: {
-      tUSDFC: 1250.50,
-      tFIL: 45.75,
-      ETH: 2.34,
-      MATIC: 150.00
-    },
-    storage: {
-      used: 45.2,
-      total: 100,
-      allowance: 75.5
-    },
-    status: {
-      wallet: 'connected',
-      storage: 'active',
-      allowance: 'sufficient'
+  const handleRefresh = async () => {
+    setLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setMetrics(prev => ({
+        ...prev,
+        usedStorage: Math.floor(Math.random() * 300) + 200
+      }));
+      setMessage({ type: 'success', text: 'Storage metrics updated successfully!' });
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Failed to refresh metrics' });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleConnectWallet = () => {
-    setIsWalletConnected(true);
-  };
-
-  const handleConnectFlow = () => {
-    setIsFlowConnected(true);
-  };
-
-  const handleGetTokens = (token: string) => {
-    console.log(`Getting ${token} tokens...`);
-    // Implement actual token faucet logic
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'connected':
-      case 'active':
-      case 'sufficient':
-        return 'success';
-      case 'warning':
-        return 'warning';
-      case 'error':
-      case 'insufficient':
-        return 'error';
-      default:
-        return 'default';
+  const handleRequestAllowance = async () => {
+    setLoading(true);
+    try {
+      // Simulate blockchain transaction
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setMetrics(prev => ({ ...prev, allowance: prev.allowance + 50 }));
+      setMessage({ type: 'success', text: 'Allowance increased successfully!' });
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Failed to increase allowance' });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'connected':
-      case 'active':
-      case 'sufficient':
-        return <CheckCircleIcon />;
-      case 'warning':
-        return <WarningIcon />;
-      case 'error':
-      case 'insufficient':
-        return <ErrorIcon />;
-      default:
-        return <WarningIcon />;
+  const handleRequestTokens = async () => {
+    setLoading(true);
+    try {
+      // Simulate faucet request
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setMetrics(prev => ({ ...prev, balance: prev.balance + 25 }));
+      setMessage({ type: 'success', text: 'Tokens received from faucet!' });
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Failed to request tokens' });
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const getStoragePercentage = () => {
+    return (metrics.usedStorage / metrics.totalStorage) * 100;
+  };
+
+  const getStorageColor = (percentage: number) => {
+    if (percentage < 50) return 'success';
+    if (percentage < 80) return 'warning';
+    return 'error';
   };
 
   return (
     <Container maxWidth="xl" sx={{ mt: 2 }}>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
-        Storage Management
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
+          Storage Management
+        </Typography>
+        <Button
+          variant="outlined"
+          startIcon={<RefreshIcon />}
+          onClick={handleRefresh}
+          disabled={loading}
+        >
+          Refresh
+        </Button>
+      </Box>
 
-      {/* Connection Status */}
+      {message && (
+        <Alert severity={message.type} sx={{ mb: 3 }} onClose={() => setMessage(null)}>
+          {message.text}
+        </Alert>
+      )}
+
+      {/* Wallet Connection Status */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <WalletIcon color="primary" />
+            <Box>
+              <Typography variant="h6">
+                {account ? 'Wallet Connected' : 'Wallet Not Connected'}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {account ? `Address: ${account.slice(0, 6)}...${account.slice(-4)}` : 'Please connect your wallet'}
+              </Typography>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Storage Overview */}
       <Box sx={{ 
         display: 'grid', 
-        gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+        gridTemplateColumns: { xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' },
         gap: 3,
         mb: 4
       }}>
+        {/* Storage Status */}
         <Card>
           <CardContent>
-            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <WalletIcon /> Wallet Connection
-            </Typography>
-            
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Chip
-                  icon={getStatusIcon(walletData.status.wallet)}
-                  label={`Wallet: ${walletData.status.wallet}`}
-                  color={getStatusColor(walletData.status.wallet) as any}
-                />
-                {!isWalletConnected && (
-                  <Button
-                    variant="contained"
-                    size="small"
-                    onClick={handleConnectWallet}
-                  >
-                    Connect Wallet
-                  </Button>
-                )}
-              </Box>
-
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Chip
-                  icon={getStatusIcon(isFlowConnected ? 'connected' : 'error')}
-                  label={`Flow: ${isFlowConnected ? 'connected' : 'disconnected'}`}
-                  color={getStatusColor(isFlowConnected ? 'connected' : 'error') as any}
-                />
-                {!isFlowConnected && (
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={handleConnectFlow}
-                  >
-                    Connect Flow
-                  </Button>
-                )}
-              </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <StorageIcon color="primary" />
+              <Typography variant="h6">Storage Status</Typography>
             </Box>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <StorageIcon /> Storage Status
-            </Typography>
             
             <Box sx={{ mb: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="body2">Used Storage</Typography>
-                <Typography variant="body2">{walletData.storage.used}GB / {walletData.storage.total}GB</Typography>
+                <Typography variant="body2">{metrics.usedStorage} GB / {metrics.totalStorage} GB</Typography>
               </Box>
-              <LinearProgress 
-                variant="determinate" 
-                value={(walletData.storage.used / walletData.storage.total) * 100}
-                sx={{ height: 8, borderRadius: 4 }}
-              />
+              <Box sx={{ 
+                width: '100%', 
+                height: 8, 
+                bgcolor: 'grey.200', 
+                borderRadius: 1,
+                overflow: 'hidden'
+              }}>
+                <Box
+                  sx={{
+                    width: `${getStoragePercentage()}%`,
+                    height: '100%',
+                    bgcolor: `${getStorageColor(getStoragePercentage())}.main`,
+                    transition: 'width 0.3s ease'
+                  }}
+                />
+              </Box>
             </Box>
+            
+            <Typography variant="body2" color="text.secondary">
+              Available: {metrics.availableStorage} GB
+            </Typography>
+          </CardContent>
+        </Card>
 
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Chip
-                icon={getStatusIcon(walletData.status.storage)}
-                label={`Storage: ${walletData.status.storage}`}
-                color={getStatusColor(walletData.status.storage) as any}
-              />
-              <Chip
-                icon={getStatusIcon(walletData.status.allowance)}
-                label={`Allowance: ${walletData.status.allowance}`}
-                color={getStatusColor(walletData.status.allowance) as any}
-              />
+        {/* Token Balance */}
+        <Card>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <MoneyIcon color="primary" />
+              <Typography variant="h6">Token Balance</Typography>
+            </Box>
+            
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="h4" color="primary" gutterBottom>
+                {metrics.balance} FIL
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Available for storage payments
+              </Typography>
+            </Box>
+            
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={handleRequestTokens}
+                disabled={loading}
+              >
+                Request Tokens
+              </Button>
             </Box>
           </CardContent>
         </Card>
       </Box>
 
-      {/* Wallet Balances */}
+      {/* Allowance Management */}
       <Card sx={{ mb: 4 }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <TokenIcon /> Wallet Balances
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <SecurityIcon color="primary" />
+            <Typography variant="h6">Storage Allowance</Typography>
+          </Box>
+          
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <Typography variant="body1">
+              Current Allowance: <strong>{metrics.allowance} FIL</strong>
+            </Typography>
+            <Chip 
+              label={metrics.allowance > 0 ? 'Active' : 'Inactive'} 
+              color={metrics.allowance > 0 ? 'success' : 'error'} 
+              size="small" 
+            />
+          </Box>
+          
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Allowance permits the storage contract to spend your tokens for storage operations.
           </Typography>
           
-          <Box sx={{ 
-            display: 'grid', 
-            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-            gap: 3
-          }}>
-            <List>
-              <ListItem>
-                <ListItemIcon>
-                  <TokenIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="tUSDFC"
-                  secondary={`${walletData.balances.tUSDFC} USDFC`}
-                />
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<DownloadIcon />}
-                  onClick={() => handleGetTokens('tUSDFC')}
-                >
-                  Get tUSDFC
-                </Button>
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <TokenIcon color="secondary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="tFIL"
-                  secondary={`${walletData.balances.tFIL} FIL`}
-                />
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<DownloadIcon />}
-                  onClick={() => handleGetTokens('tFIL')}
-                >
-                  Get tFIL
-                </Button>
-              </ListItem>
-            </List>
-            
-            <List>
-              <ListItem>
-                <ListItemIcon>
-                  <TokenIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary="ETH"
-                  secondary={`${walletData.balances.ETH} ETH`}
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <TokenIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary="MATIC"
-                  secondary={`${walletData.balances.MATIC} MATIC`}
-                />
-              </ListItem>
-            </List>
-          </Box>
+          <Button
+            variant="contained"
+            onClick={handleRequestAllowance}
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={20} /> : undefined}
+          >
+            Increase Allowance (+50 FIL)
+          </Button>
         </CardContent>
       </Card>
 
-      {/* Storage Details */}
+      {/* Recent Storage Operations */}
       <Card>
         <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Storage Details
-          </Typography>
+          <Typography variant="h6" gutterBottom>Recent Operations</Typography>
           
-          <Box sx={{ 
-            display: 'grid', 
-            gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
-            gap: 3
-          }}>
-            <Paper sx={{ p: 2, textAlign: 'center' }}>
-              <Typography variant="h4" color="primary" gutterBottom>
-                {walletData.storage.used}GB
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Used Storage
-              </Typography>
-            </Paper>
+          <List>
+            <ListItem>
+              <ListItemIcon>
+                <UploadIcon color="primary" />
+              </ListItemIcon>
+              <ListItemText
+                primary="File Upload"
+                secondary="cyberpunk_avatar_001.glb • 2.5 MB • 2 hours ago"
+              />
+              <Chip label="Success" color="success" size="small" />
+            </ListItem>
             
-            <Paper sx={{ p: 2, textAlign: 'center' }}>
-              <Typography variant="h4" color="secondary" gutterBottom>
-                {walletData.storage.total}GB
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Total Storage
-              </Typography>
-            </Paper>
+            <ListItem>
+              <ListItemIcon>
+                <DownloadIcon color="primary" />
+              </ListItemIcon>
+              <ListItemText
+                primary="File Download"
+                secondary="mission_data_2024.json • 1.8 MB • 5 hours ago"
+              />
+              <Chip label="Success" color="success" size="small" />
+            </ListItem>
             
-            <Paper sx={{ p: 2, textAlign: 'center' }}>
-              <Typography variant="h4" color="success.main" gutterBottom>
-                {walletData.storage.allowance}GB
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Available Allowance
-              </Typography>
-            </Paper>
-          </Box>
+            <ListItem>
+              <ListItemIcon>
+                <WarningIcon color="warning" />
+              </ListItemIcon>
+              <ListItemText
+                primary="Storage Warning"
+                secondary="Storage usage approaching limit • 1 day ago"
+              />
+              <Chip label="Warning" color="warning" size="small" />
+            </ListItem>
+          </List>
         </CardContent>
       </Card>
     </Container>
