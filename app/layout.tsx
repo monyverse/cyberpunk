@@ -1,33 +1,66 @@
-// app/layout.jsx
+"use client";
 
-import "./globals.css";
-import { WagmiProvider } from "wagmi";
-import { filecoin, filecoinCalibration } from "wagmi/chains";
-import { http, createConfig } from "@wagmi/core";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import "@rainbow-me/rainbowkit/styles.css";
-import Navbar from "@/components/ui/Navbar";
-import { ThemeProvider } from "@/providers/ThemeProvider";
-import { ConfettiProvider } from "@/providers/ConfettiProvider";
-import Footer from "@/components/ui/Footer";
-import { Providers } from "../providers/providers";
-import * as fcl from "@onflow/fcl";
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { useState } from "react";
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
+import { Box } from '@mui/material';
+import MuiNavbar from "../components/MuiNavbar";
+import MuiSidebar from "../components/MuiSidebar";
 
-// FCL config for Flow testnet (global)
-fcl.config()
-  .put("accessNode.api", "https://rest-testnet.onflow.org")
-  .put("discovery.wallet", "https://fcl-discovery.onflow.org/testnet/authn")
-  .put("0xAgentNPC", "0x90ba9bdcb25f0aeb");
-
-const queryClient = new QueryClient();
-
-const config = createConfig({
-  chains: [filecoinCalibration, filecoin],
-  connectors: [],
-  transports: {
-    [filecoin.id]: http(),
-    [filecoinCalibration.id]: http(),
+// Create cyberpunk theme
+const theme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#6ec1c8', // Cyberpunk cyan
+    },
+    secondary: {
+      main: '#bdb89c', // Cyberpunk gold
+    },
+    background: {
+      default: '#181e2a',
+      paper: '#1a2236',
+    },
+    text: {
+      primary: '#ffffff',
+      secondary: '#bdb89c',
+    },
+  },
+  typography: {
+    fontFamily: '"Orbitron", "Roboto", "Helvetica", "Arial", sans-serif',
+    h1: {
+      fontWeight: 800,
+      letterSpacing: '0.15em',
+    },
+    h2: {
+      fontWeight: 700,
+      letterSpacing: '0.1em',
+    },
+    h3: {
+      fontWeight: 600,
+      letterSpacing: '0.05em',
+    },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          textTransform: 'none',
+          fontWeight: 600,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          border: '1px solid rgba(110, 193, 200, 0.2)',
+        },
+      },
+    },
   },
 });
 
@@ -36,31 +69,48 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const themeMui = useTheme();
+  const isMobile = useMediaQuery(themeMui.breakpoints.down('md'));
+
+  const handleSidebarToggle = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const handleSidebarClose = () => {
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
+  };
+
   return (
     <html lang="en">
-      <head>
-        <title>CYBERPUNK METAVERSE</title>
-        <meta
-          name="description"
-          content="Explore. Hunt. Earn. Evolve — All through your drone"
-        />
-        <meta
-          name="keywords"
-          content="Drones, AR, METAVERSE, pdp, upload, filecoin, usdfc"
-        />
-        <meta name="author" content=",Monyverse" />
-        <meta name="viewport" content="width=device-width, initial-scale=0.6" />
-        <link rel="icon" href="/filecoin.svg" />
-      </head>
-      <body className="bg-[#181e2a] min-h-screen w-full">
-        <Providers>
-          <Navbar />
-          <main className="max-w-7xl mx-auto px-4 py-8">
-                    {children}
-                  </main>
-                  <Footer />
-                </Providers>
-              </body>
-            </html>
-          );
-        }
+      <body>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+            <MuiSidebar 
+              open={sidebarOpen} 
+              onClose={handleSidebarClose}
+              isMobile={isMobile}
+            />
+            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+              <MuiNavbar onMenuClick={handleSidebarToggle} />
+              <Box 
+                component="main" 
+                sx={{ 
+                  flexGrow: 1, 
+                  p: 3,
+                  ml: { xs: 0, md: '240px' },
+                  mt: { xs: '64px', md: '64px' }
+                }}
+              >
+                {children}
+              </Box>
+            </Box>
+          </Box>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
