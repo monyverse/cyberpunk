@@ -71,7 +71,7 @@ export default function Home() {
               <div className="relative z-10 p-8 flex flex-col md:flex-row items-center gap-8">
                 <div className="flex-1 flex flex-col items-center md:items-start">
                   <h1 className="text-5xl font-extrabold tracking-widest text-[#6ec1c8] uppercase mb-2 text-center md:text-left">CYBER<span className="text-[#bdb89c]">PUNK</span> METAVERSE</h1>
-                  <p className="text-lg text-[#bdb89c] mb-4 text-center md:text-left">A dystopian cyberpunk metaverse powered by Filecoin Synapse and USDFC.</p>
+                  <p className="text-lg text-[#bdb89c] mb-4 text-center md:text-left">A Play-to-Earn real-world metaverse that lets players remotely control drones to explore wildlife zones</p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-4 w-full">
                     <div className="text-center">
                       <Users className="w-8 h-8 mx-auto mb-2" style={{ color: '#6ec1c8' }} />

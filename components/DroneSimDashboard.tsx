@@ -104,34 +104,34 @@ const DroneSimDashboard: React.FC = () => {
   }, []);
 
   // FCL transaction helpers
-  const assignMissionOnChain = async (droneAddress: string, missionId: string) => {
-    setTxStatus("Assigning mission on-chain...");
-    try {
-      const txId = await fcl.mutate({
-        cadence: `
-          import AgentNPC from 0xAgentNPC
-          transaction(drone: Address, missionId: String) {
-            prepare(signer: AuthAccount) {
-              let agent <- AgentNPC.createAgent()
-              agent.assignMission(owner: signer.address, drone: drone, missionId: missionId)
-              destroy agent
-            }
-          }
-        `,
-        args: (arg, t) => [arg(droneAddress, t.Address), arg(missionId, t.String)],
-        proposer: fcl.currentUser().authorization,
-        payer: fcl.currentUser().authorization,
-        authorizations: [fcl.currentUser().authorization],
-        limit: 100,
-      });
-      setTxStatus("Transaction sent: " + txId);
-      fcl.tx(txId).subscribe(res => {
-        if (res.status === 4) setTxStatus("Transaction sealed!");
-      });
-    } catch (e) {
-      setTxStatus("Error: " + (e as Error).message);
-    }
-  };
+ // const assignMissionOnChain = async (droneAddress: string, missionId: string) => {
+ //   setTxStatus("Assigning mission on-chain...");
+  //  try {
+   //   const txId = await fcl.mutate({
+   //     cadence: `
+    //      import AgentNPC from 0xAgentNPC
+      //    transaction(drone: Address, missionId: String) {
+      //      prepare(signer: AuthAccount) {
+      //        let agent <- AgentNPC.createAgent()
+       //       agent.assignMission(owner: signer.address, drone: drone, missionId: missionId)
+        //      destroy agent
+     //       }
+    //      }
+    //    `,
+     //   args: (arg, t) => [arg(droneAddress, t.Address), arg(missionId, t.String)],
+     //   proposer: fcl.currentUser().authorization,
+     //   payer: fcl.currentUser().authorization,
+     //   authorizations: [fcl.currentUser().authorization],
+   //     limit: 100,
+   //   });
+   //   setTxStatus("Transaction sent: " + txId);
+   //   fcl.tx(txId).subscribe(res => {
+  //      if (res.status === 4) setTxStatus("Transaction sealed!");
+  //    });
+ //   } catch (e) {
+ //     setTxStatus("Error: " + (e as Error).message);
+   // }
+  //};
 
   // Listen for contract events (optional, for real-time UI updates)
   useEffect(() => {

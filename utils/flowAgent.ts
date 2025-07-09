@@ -1,7 +1,7 @@
 import * as fcl from "@onflow/fcl";
 
 export async function assignMissionOnChain(droneAddress: string, missionId: string) {
-  return fcl.mutate({
+  const txId = await fcl.mutate({
     cadence: `
       import AgentNPC from 0xAgentNPC
       transaction(drone: Address, missionId: String) {
@@ -19,12 +19,13 @@ export async function assignMissionOnChain(droneAddress: string, missionId: stri
     proposer: fcl.currentUser().authorization,
     payer: fcl.currentUser().authorization,
     authorizations: [fcl.currentUser().authorization],
-    limit: 100
+    limit: 100,
   });
+  return txId;
 }
 
 export async function interactWithAgentOnChain(targetAddress: string, message: string) {
-  return fcl.mutate({
+  const txId = await fcl.mutate({
     cadence: `
       import AgentNPC from 0xAgentNPC
       transaction(target: Address, message: String) {
@@ -44,4 +45,5 @@ export async function interactWithAgentOnChain(targetAddress: string, message: s
     authorizations: [fcl.currentUser().authorization],
     limit: 100
   });
+  return txId;
 } 
