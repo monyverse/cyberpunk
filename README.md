@@ -62,8 +62,8 @@ FLOW CONTRACTS [VIEW](/Docs/flow-contracts.md)
 1. Clone this repository:
 ---
 ```bash
-git clone https://github.com/yourusername/cyberpunk-metaverse
-cd cyberpunk-metaverse
+git clone https://github.com/monyverse/cyberpunk
+cd cyberpunk
 ```
 ---
 

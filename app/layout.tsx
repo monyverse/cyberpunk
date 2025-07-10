@@ -8,7 +8,7 @@ import { useTheme } from '@mui/material/styles';
 import { Box } from '@mui/material';
 import MuiNavbar from "../components/MuiNavbar";
 import MuiSidebar from "../components/MuiSidebar";
-import { Providers } from "@/providers/providers";
+import dynamic from "next/dynamic";
 
 // Create cyberpunk theme
 const theme = createTheme({
@@ -83,6 +83,8 @@ export default function RootLayout({
       setSidebarOpen(false);
     }
   };
+
+  const Providers = dynamic(() => import("@/providers/providers"), { ssr: false });
 
   return (
     <html lang="en">

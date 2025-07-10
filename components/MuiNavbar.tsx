@@ -19,6 +19,7 @@ import {
   ExpandMore as ExpandMoreIcon,
   CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
+import dynamic from "next/dynamic";
 
 interface MuiNavbarProps {
   onMenuClick: () => void;
@@ -39,6 +40,9 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
     { name: 'Flow Testnet', chainId: 'testnet' },
     { name: 'Flow Mainnet', chainId: 'mainnet' },
     { name: 'Ethereum', chainId: 'ethereum' },
+    { name: 'Filecoin Mainnet', chainId: 'filecoin' },
+    { name: 'Filecoin Calibration', chainId: 'filecoinCalibration' },
+    { name: 'Near', chainId: 'testnet' },
     { name: 'Polygon', chainId: 'polygon' }
   ];
 
