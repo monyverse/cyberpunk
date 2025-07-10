@@ -10,7 +10,9 @@ import {
   MenuItem,
   Chip,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -19,8 +21,7 @@ import {
   ExpandMore as ExpandMoreIcon,
   CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
-import dynamic from "next/dynamic";
-import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useFlow } from '@/providers/FlowProvider';
 
 interface MuiNavbarProps {
@@ -33,11 +34,10 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
   const [networkAnchorEl, setNetworkAnchorEl] = useState<null | HTMLElement>(null);
   const [walletAnchorEl, setWalletAnchorEl] = useState<null | HTMLElement>(null);
   const [currentNetwork, setCurrentNetwork] = useState('Filecoin Calibration');
+  const [showEvmToast, setShowEvmToast] = useState(false);
 
   // WAGMI hooks for EVM/Filecoin
   const { address, isConnected } = useAccount();
-  const { chain } = useNetwork();
-  const { switchNetwork } = useSwitchNetwork();
 
   // Flow hooks
   const flow = useFlow();
@@ -45,9 +45,7 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
   // Helper: determine which network is active
   const getActiveNetwork = () => {
     if (flow.isConnected) return 'Flow Testnet';
-    if (chain?.id === 314) return 'Filecoin Mainnet';
-    if (chain?.id === 314159) return 'Filecoin Calibration';
-    // Add more as needed
+    // For EVM, just show the selected network (local state)
     return currentNetwork;
   };
 
@@ -55,17 +53,15 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
     setNetworkAnchorEl(event.currentTarget);
   };
 
-  const handleNetworkSelect = (network: string) => {
+  const handleNetworkSelect = (network: string): void => {
     setCurrentNetwork(network);
     setNetworkAnchorEl(null);
-    if (network === 'Filecoin Mainnet') {
-      switchNetwork?.(314);
-    } else if (network === 'Filecoin Calibration') {
-      switchNetwork?.(314159);
-    } else if (network === 'Flow Testnet') {
+    if (network === 'Flow Testnet') {
       flow.connect();
     } else if (network === 'Near') {
       // No provider logic yet, just update UI
+    } else if (network === 'Filecoin Mainnet' || network === 'Filecoin Calibration') {
+      setShowEvmToast(true);
     }
   };
 
@@ -270,6 +266,16 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
           )}
         </Box>
       </Toolbar>
+      <Snackbar
+        open={showEvmToast}
+        autoHideDuration={4000}
+        onClose={() => setShowEvmToast(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setShowEvmToast(false)} severity="info" sx={{ width: '100%' }}>
+          Please use your wallet modal (e.g. MetaMask, RainbowKit) to switch EVM networks.
+        </Alert>
+      </Snackbar>
     </AppBar>
   );
 };
