@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Container,
   Typography,
@@ -8,17 +8,13 @@ import {
   Card,
   CardContent,
   Button,
-  TextField,
   Alert,
   CircularProgress,
   Chip,
-  Divider,
   List,
   ListItem,
   ListItemText,
-  ListItemIcon,
-  IconButton,
-  Tooltip
+  ListItemIcon
 } from '@mui/material';
 import {
   AccountBalanceWallet as WalletIcon,
@@ -26,13 +22,11 @@ import {
   CloudUpload as UploadIcon,
   Download as DownloadIcon,
   Refresh as RefreshIcon,
-  CheckCircle as CheckIcon,
   Warning as WarningIcon,
-  Error as ErrorIcon,
   AttachMoney as MoneyIcon,
   Security as SecurityIcon
 } from '@mui/icons-material';
-import { useEthers } from '../hooks/useEthers';
+import { useAccount } from 'wagmi';
 
 interface StorageMetrics {
   totalStorage: number;
@@ -43,7 +37,7 @@ interface StorageMetrics {
 }
 
 const StoragePage: React.FC = () => {
-  const { account, provider } = useEthers();
+  const { address, isConnected } = useAccount();
   const [metrics, setMetrics] = useState<StorageMetrics>({
     totalStorage: 1000,
     usedStorage: 250,
@@ -64,7 +58,7 @@ const StoragePage: React.FC = () => {
         usedStorage: Math.floor(Math.random() * 300) + 200
       }));
       setMessage({ type: 'success', text: 'Storage metrics updated successfully!' });
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Failed to refresh metrics' });
     } finally {
       setLoading(false);
@@ -78,7 +72,7 @@ const StoragePage: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       setMetrics(prev => ({ ...prev, allowance: prev.allowance + 50 }));
       setMessage({ type: 'success', text: 'Allowance increased successfully!' });
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Failed to increase allowance' });
     } finally {
       setLoading(false);
@@ -92,7 +86,7 @@ const StoragePage: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 1500));
       setMetrics(prev => ({ ...prev, balance: prev.balance + 25 }));
       setMessage({ type: 'success', text: 'Tokens received from faucet!' });
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Failed to request tokens' });
     } finally {
       setLoading(false);
@@ -138,10 +132,10 @@ const StoragePage: React.FC = () => {
             <WalletIcon color="primary" />
             <Box>
               <Typography variant="h6">
-                {account ? 'Wallet Connected' : 'Wallet Not Connected'}
+                {isConnected ? 'Wallet Connected' : 'Wallet Not Connected'}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {account ? `Address: ${account.slice(0, 6)}...${account.slice(-4)}` : 'Please connect your wallet'}
+                {isConnected && address ? `Address: ${address.slice(0, 6)}...${address.slice(-4)}` : 'Please connect your wallet'}
               </Typography>
             </Box>
           </Box>

@@ -8,6 +8,7 @@ import { useTheme } from '@mui/material/styles';
 import { Box } from '@mui/material';
 import MuiNavbar from "../components/MuiNavbar";
 import MuiSidebar from "../components/MuiSidebar";
+import { Providers } from "@/providers/providers";
 
 // Create cyberpunk theme
 const theme = createTheme({
@@ -86,30 +87,32 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
-            <MuiSidebar 
-              open={sidebarOpen} 
-              onClose={handleSidebarClose}
-              isMobile={isMobile}
-            />
-            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-              <MuiNavbar onMenuClick={handleSidebarToggle} />
-              <Box 
-                component="main" 
-                sx={{ 
-                  flexGrow: 1, 
-                  p: 3,
-                  ml: { xs: 0, md: '240px' },
-                  mt: { xs: '64px', md: '64px' }
-                }}
-              >
-                {children}
+        <Providers>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+              <MuiSidebar 
+                open={sidebarOpen} 
+                onClose={handleSidebarClose}
+                isMobile={isMobile}
+              />
+              <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                <MuiNavbar onMenuClick={handleSidebarToggle} />
+                <Box 
+                  component="main" 
+                  sx={{ 
+                    flexGrow: 1, 
+                    p: 3,
+                    ml: { xs: 0, md: '240px' },
+                    mt: { xs: '64px', md: '64px' }
+                  }}
+                >
+                  {children}
+                </Box>
               </Box>
             </Box>
-          </Box>
-        </ThemeProvider>
+          </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
