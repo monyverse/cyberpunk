@@ -54,3 +54,4 @@ export function Providers({ children }: { children: React.ReactNode }): React.Re
     </ThemeProvider>
   );
 }
+export default Providers;
