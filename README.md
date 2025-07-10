@@ -1,7 +1,8 @@
 
 # CyberPunk WildNet Metaverse
 
-A dystopian cyberpunk metaverse built on Filecoin Synapse - a decentralized virtual world where technology and humanity collide, powered by blockchain storage and USDFC payments.
+CyberPunk: WildNet is an AR-driven PLAY-to-EARN real-world metaverse game that lets players remotely control drones to explore wildlife zones, discover virtual collectibles, interact with AI NPCs, contribute real conservation data, and earn crypto rewards.
+
 
 ## 🌆 Overview
 
