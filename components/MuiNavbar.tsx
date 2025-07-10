@@ -20,6 +20,8 @@ import {
   CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
 import dynamic from "next/dynamic";
+import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi';
+import { useFlow } from '@/providers/FlowProvider';
 
 interface MuiNavbarProps {
   onMenuClick: () => void;
@@ -30,33 +32,45 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [networkAnchorEl, setNetworkAnchorEl] = useState<null | HTMLElement>(null);
   const [walletAnchorEl, setWalletAnchorEl] = useState<null | HTMLElement>(null);
-  
-  // Mock wallet state - replace with actual wallet connection logic
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [currentNetwork, setCurrentNetwork] = useState('Flow Testnet');
-  const [walletAddress, setWalletAddress] = useState('');
+  const [currentNetwork, setCurrentNetwork] = useState('Filecoin Calibration');
 
-  const networks = [
-    { name: 'Flow Testnet', chainId: 'testnet' },
-    { name: 'Flow Mainnet', chainId: 'mainnet' },
-    { name: 'Ethereum', chainId: 'ethereum' },
-    { name: 'Filecoin Mainnet', chainId: 'filecoin' },
-    { name: 'Filecoin Calibration', chainId: 'filecoinCalibration' },
-    { name: 'Near', chainId: 'testnet' },
-    { name: 'Polygon', chainId: 'polygon' }
-  ];
+  // WAGMI hooks for EVM/Filecoin
+  const { address, isConnected } = useAccount();
+  const { chain } = useNetwork();
+  const { switchNetwork } = useSwitchNetwork();
+
+  // Flow hooks
+  const flow = useFlow();
+
+  // Helper: determine which network is active
+  const getActiveNetwork = () => {
+    if (flow.isConnected) return 'Flow Testnet';
+    if (chain?.id === 314) return 'Filecoin Mainnet';
+    if (chain?.id === 314159) return 'Filecoin Calibration';
+    // Add more as needed
+    return currentNetwork;
+  };
 
   const handleNetworkClick = (event: React.MouseEvent<HTMLElement>) => {
     setNetworkAnchorEl(event.currentTarget);
   };
 
-  const handleWalletClick = (event: React.MouseEvent<HTMLElement>) => {
-    setWalletAnchorEl(event.currentTarget);
-  };
-
   const handleNetworkSelect = (network: string) => {
     setCurrentNetwork(network);
     setNetworkAnchorEl(null);
+    if (network === 'Filecoin Mainnet') {
+      switchNetwork?.(314);
+    } else if (network === 'Filecoin Calibration') {
+      switchNetwork?.(314159);
+    } else if (network === 'Flow Testnet') {
+      flow.connect();
+    } else if (network === 'Near') {
+      // No provider logic yet, just update UI
+    }
+  };
+
+  const handleWalletClick = (event: React.MouseEvent<HTMLElement>) => {
+    setWalletAnchorEl(event.currentTarget);
   };
 
   const handleWalletClose = () => {
@@ -68,22 +82,32 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
   };
 
   const connectWallet = () => {
-    // Mock wallet connection - replace with actual implementation
-    setIsWalletConnected(true);
-    setWalletAddress('0x1234...5678');
+    // Use RainbowKit modal or similar in real app
+    // For now, just close menu
     handleWalletClose();
   };
 
   const disconnectWallet = () => {
-    setIsWalletConnected(false);
-    setWalletAddress('');
+    // No direct disconnect in wagmi, but you can reset connectors if needed
     handleWalletClose();
   };
 
   const loginWithFlow = () => {
-    // Mock Flow login - replace with actual FCL implementation
-    console.log('Login with Flow clicked');
+    flow.connect();
+    handleWalletClose();
   };
+
+  const logoutFlow = () => {
+    flow.disconnect();
+    handleWalletClose();
+  };
+
+  const networks = [
+    { name: 'Filecoin Mainnet', chainId: 'filecoin' },
+    { name: 'Filecoin Calibration', chainId: 'filecoinCalibration' },
+    { name: 'Flow Testnet', chainId: 'testnet' },
+    { name: 'Near', chainId: 'testnet' },
+  ];
 
   return (
     <AppBar 
@@ -133,7 +157,7 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
             }}
           >
             <Chip
-              label={currentNetwork}
+              label={getActiveNetwork()}
               size="small"
               sx={{ 
                 bgcolor: 'primary.main',
@@ -145,7 +169,7 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
           <Menu
             anchorEl={networkAnchorEl}
             open={Boolean(networkAnchorEl)}
-            onClose={handleNetworkClose}
+            onClose={() => setNetworkAnchorEl(null)}
             PaperProps={{
               sx: { bgcolor: 'background.paper', border: 1, borderColor: 'divider' }
             }}
@@ -154,7 +178,7 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
               <MenuItem 
                 key={network.chainId}
                 onClick={() => handleNetworkSelect(network.name)}
-                selected={currentNetwork === network.name}
+                selected={getActiveNetwork() === network.name}
               >
                 {network.name}
               </MenuItem>
@@ -164,11 +188,11 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
 
         {/* Wallet Connection */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {isWalletConnected ? (
+          {isConnected ? (
             <>
               <Chip
                 icon={<CheckCircleIcon />}
-                label={`${walletAddress}`}
+                label={`${address?.slice(0, 6)}...${address?.slice(-4)}`}
                 color="success"
                 variant="outlined"
                 onClick={handleWalletClick}
@@ -187,12 +211,35 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
                 </MenuItem>
               </Menu>
             </>
+          ) : flow.isConnected ? (
+            <>
+              <Chip
+                icon={<CheckCircleIcon />}
+                label={`Flow: ${flow.account?.address?.slice(0, 6)}...${flow.account?.address?.slice(-4)}`}
+                color="success"
+                variant="outlined"
+                onClick={handleWalletClick}
+                sx={{ fontWeight: 600 }}
+              />
+              <Menu
+                anchorEl={walletAnchorEl}
+                open={Boolean(walletAnchorEl)}
+                onClose={handleWalletClose}
+                PaperProps={{
+                  sx: { bgcolor: 'background.paper', border: 1, borderColor: 'divider' }
+                }}
+              >
+                <MenuItem onClick={logoutFlow}>
+                  Logout Flow
+                </MenuItem>
+              </Menu>
+            </>
           ) : (
             <>
               <Button
                 variant="outlined"
                 startIcon={<WalletIcon />}
-                onClick={handleWalletClick}
+                onClick={connectWallet}
                 sx={{ 
                   color: 'primary.main',
                   borderColor: 'primary.main',
@@ -219,24 +266,6 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
               >
                 Login with Flow
               </Button>
-              <Menu
-                anchorEl={walletAnchorEl}
-                open={Boolean(walletAnchorEl)}
-                onClose={handleWalletClose}
-                PaperProps={{
-                  sx: { bgcolor: 'background.paper', border: 1, borderColor: 'divider' }
-                }}
-              >
-                <MenuItem onClick={connectWallet}>
-                  Connect MetaMask
-                </MenuItem>
-                <MenuItem onClick={connectWallet}>
-                  Connect WalletConnect
-                </MenuItem>
-                <MenuItem onClick={connectWallet}>
-                  Connect Coinbase Wallet
-                </MenuItem>
-              </Menu>
             </>
           )}
         </Box>
