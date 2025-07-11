@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import {
   AppBar,
@@ -170,13 +172,15 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
               sx: { bgcolor: 'background.paper', border: 1, borderColor: 'divider' }
             }}
           >
-            {networks.map((network) => (
+            {networks.map((network, index) => (
               <MenuItem 
-                key={network.chainId}
+                key={`${network.chainId}-${network.name}-${index}`}
                 onClick={() => handleNetworkSelect(network.name)}
                 selected={getActiveNetwork() === network.name}
               >
                 {network.name}
+
+                
               </MenuItem>
             ))}
           </Menu>

@@ -40,6 +40,7 @@ import {
 } from '@mui/icons-material';
 import * as THREE from 'three';
 import * as fcl from "@onflow/fcl";
+import DroneSim3DView from './DroneSim3DView';
 
 // FCL config for Flow testnet
 fcl.config()
@@ -100,6 +101,9 @@ const DroneSimDashboard: React.FC = () => {
   const sceneRef = useRef<THREE.Scene>();
   const rendererRef = useRef<THREE.WebGLRenderer>();
   const cameraRef = useRef<THREE.PerspectiveCamera>();
+
+  const [selectedDroneId, setSelectedDroneId] = useState<string | null>(null);
+  const [droneInfoSnackbar, setDroneInfoSnackbar] = useState<{ open: boolean, message: string }>({ open: false, message: '' });
 
   // Mission form state
   const [missionForm, setMissionForm] = useState({
@@ -379,22 +383,16 @@ const DroneSimDashboard: React.FC = () => {
   return (
     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '3fr 1fr' }, gap: 2, minHeight: 600 }}>
       {/* 3D Scene */}
-      <Box>
-        <Paper sx={{ p: 2, height: '100%', bgcolor: 'background.paper' }}>
-          <Typography variant="h6" component="h2" gutterBottom>
-            Drone Simulation & Agent Interaction
-          </Typography>
-          <Box
-            ref={mountRef}
-            sx={{
-              width: '100%',
-              height: 400,
-              bgcolor: 'grey.900',
-              borderRadius: 1,
-              position: 'relative',
-            }}
-          />
-        </Paper>
+      <Box sx={{ width: '100%', height: 400, mb: 2, borderRadius: 1, overflow: 'hidden' }}>
+        <DroneSim3DView
+          drones={drones}
+          agents={agents}
+          selectedDroneId={selectedDroneId}
+          onDroneClick={(drone) => {
+            setSelectedDroneId(drone.id);
+            setDroneInfoSnackbar({ open: true, message: `${drone.model} | Battery: ${drone.battery.toFixed(1)}% | Status: ${drone.status}` });
+          }}
+        />
       </Box>
 
       {/* Control Panel */}
@@ -726,6 +724,18 @@ const DroneSimDashboard: React.FC = () => {
           </Alert>
         </Snackbar>
       )}
+
+      {/* Drone Info Snackbar */}
+      <Snackbar
+        open={droneInfoSnackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setDroneInfoSnackbar({ ...droneInfoSnackbar, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setDroneInfoSnackbar({ ...droneInfoSnackbar, open: false })} severity="info" sx={{ width: '100%' }}>
+          {droneInfoSnackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

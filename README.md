@@ -13,9 +13,13 @@ CyberPunk WildNet is a next-generation metaverse that showcases:
 - **Blockchain Integration**: Seamless wallet connection and blockchain-based asset ownership
 - **Cyberpunk Aesthetic**: Immersive neon-lit interface with futuristic UI elements
 
+## CONTRACTS
+
 FILECOIN CONTRACTS [VIEW](/Docs/filecoin-contracts.md)
 
-FLOW CONTRACTS [VIEW](/Docs/flow-contracts.md) 
+FLOW CONTRACTS [VIEW](/Docs/flow-contracts.md)
+
+NEAR CONTRACTS [VIEW](/Docs/near-contracts.md)
 
 ## 🚀 Features
 
