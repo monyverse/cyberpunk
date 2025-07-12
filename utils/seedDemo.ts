@@ -62,4 +62,12 @@ export function getDemoAgents(): Agent[] {
 }
 export function getDemoMissions(): DroneMission[] {
   return demoMissions;
+}
+
+export function getDemoStatus() {
+  return {
+    isDemoMode: demoAgents.length > 0 || demoMissions.length > 0,
+    agentCount: demoAgents.length,
+    missionCount: demoMissions.length
+  };
 } 

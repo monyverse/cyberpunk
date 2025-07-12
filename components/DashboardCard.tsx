@@ -1,9 +1,27 @@
-import React from 'react';
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
 import { Users, Globe, Database, Gamepad2 } from 'lucide-react';
 import { config } from '../config';
 
 const DashboardCard: React.FC = () => {
+  const [isDemoMode, setIsDemoMode] = useState(false);
+
+  // Check demo mode status on component mount
+  useEffect(() => {
+    const checkDemoStatus = async () => {
+      try {
+        const response = await fetch('/api/demo/status');
+        if (response.ok) {
+          const data = await response.json();
+          setIsDemoMode(data.isDemoMode);
+        }
+      } catch (error) {
+        console.log('Demo status check failed:', error);
+      }
+    };
+    
+    checkDemoStatus();
+  }, []);
   return (
     <Card 
       sx={{ 
@@ -31,19 +49,31 @@ const DashboardCard: React.FC = () => {
         }}
       />
       <CardContent sx={{ position: 'relative', zIndex: 1, p: 4 }}>
-        <Typography 
-          variant="h3" 
-          component="h1" 
-          sx={{ 
-            fontWeight: 800,
-            letterSpacing: '0.15em',
-            color: '#6ec1c8',
-            textAlign: { xs: 'center', md: 'left' },
-            mb: 1
-          }}
-        >
-          CYBER<span style={{ color: '#bdb89c' }}>PUNK</span> METAVERSE
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', md: 'flex-start' }, mb: 1, gap: 2 }}>
+          <Typography 
+            variant="h3" 
+            component="h1" 
+            sx={{ 
+              fontWeight: 800,
+              letterSpacing: '0.15em',
+              color: '#6ec1c8'
+            }}
+          >
+            CYBER<span style={{ color: '#bdb89c' }}>PUNK</span> METAVERSE
+          </Typography>
+          {isDemoMode && (
+            <Chip
+              label="DEMO MODE"
+              color="secondary"
+              size="small"
+              sx={{ 
+                fontWeight: 600,
+                fontSize: '0.75rem',
+                height: 24
+              }}
+            />
+          )}
+        </Box>
         <Typography 
           variant="h6" 
           color="secondary" 

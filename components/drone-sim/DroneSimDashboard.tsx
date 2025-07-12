@@ -98,6 +98,7 @@ const DroneSimDashboard: React.FC = () => {
   const [user, setUser] = useState<{addr?: string} | null>(null);
   const [txStatus, setTxStatus] = useState<string | null>(null);
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error' | 'info'} | null>(null);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   
   const mountRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -134,6 +135,23 @@ const DroneSimDashboard: React.FC = () => {
   // FCL user subscription
   useEffect(() => {
     fcl.currentUser().subscribe(setUser);
+  }, []);
+
+  // Check demo mode status
+  useEffect(() => {
+    const checkDemoStatus = async () => {
+      try {
+        const response = await fetch('/api/demo/status');
+        if (response.ok) {
+          const data = await response.json();
+          setIsDemoMode(data.isDemoMode);
+        }
+      } catch (error) {
+        console.log('Demo status check failed:', error);
+      }
+    };
+    
+    checkDemoStatus();
   }, []);
 
   // Setup Three.js scene
@@ -445,6 +463,14 @@ const DroneSimDashboard: React.FC = () => {
           <Box sx={{ mb: 3 }}>
             <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <LoginIcon /> Flow Authentication
+              {isDemoMode && (
+                <Chip
+                  label="DEMO"
+                  color="secondary"
+                  size="small"
+                  sx={{ ml: 'auto', fontSize: '0.7rem', height: 20 }}
+                />
+              )}
             </Typography>
             {user?.addr ? (
               <Chip

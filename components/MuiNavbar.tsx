@@ -15,14 +15,17 @@ import {
   useMediaQuery,
   Snackbar,
   Alert,
-  Tooltip
+  Tooltip,
+  Switch,
+  FormControlLabel
 } from '@mui/material';
 import {
   Menu as MenuIcon,
   AccountBalanceWallet as WalletIcon,
   Login as LoginIcon,
   ExpandMore as ExpandMoreIcon,
-  CheckCircle as CheckCircleIcon
+  CheckCircle as CheckCircleIcon,
+  PlayArrow as DemoIcon
 } from '@mui/icons-material';
 import { useAccount } from 'wagmi';
 import { useFlowUser } from '@/hooks/useFlowUser';
@@ -39,6 +42,8 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
   const [walletAnchorEl, setWalletAnchorEl] = useState<null | HTMLElement>(null);
   const [currentNetwork, setCurrentNetwork] = useState('Filecoin Calibration');
   const [showEvmToast, setShowEvmToast] = useState(false);
+  const [isDemoMode, setIsDemoMode] = useState(false);
+  const [demoNotification, setDemoNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
 
   // WAGMI hooks for EVM/Filecoin
   const { address, isConnected } = useAccount();
@@ -100,6 +105,32 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
   const logoutFlow = () => {
     flow.disconnect();
     handleWalletClose();
+  };
+
+  const handleDemoModeToggle = async () => {
+    try {
+      if (!isDemoMode) {
+        // Seed demo data
+        const response = await fetch('/api/demo/seed', { method: 'POST' });
+        if (response.ok) {
+          setIsDemoMode(true);
+          setDemoNotification({ message: 'Demo data seeded successfully!', type: 'success' });
+        } else {
+          setDemoNotification({ message: 'Failed to seed demo data', type: 'error' });
+        }
+      } else {
+        // Reset demo data
+        const response = await fetch('/api/demo/reset', { method: 'POST' });
+        if (response.ok) {
+          setIsDemoMode(false);
+          setDemoNotification({ message: 'Demo data reset successfully!', type: 'success' });
+        } else {
+          setDemoNotification({ message: 'Failed to reset demo data', type: 'error' });
+        }
+      }
+    } catch (error) {
+      setDemoNotification({ message: 'Demo mode operation failed', type: 'error' });
+    }
   };
 
   const networks = [
@@ -186,6 +217,34 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
               </MenuItem>
             ))}
           </Menu>
+        </Box>
+
+        {/* Demo Mode Toggle */}
+        <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+          <Tooltip title={isDemoMode ? "Reset Demo Data" : "Seed Demo Data"} arrow>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isDemoMode}
+                  onChange={handleDemoModeToggle}
+                  color="secondary"
+                  size="small"
+                />
+              }
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <DemoIcon sx={{ fontSize: 16, color: isDemoMode ? 'secondary.main' : 'text.secondary' }} />
+                  <Typography variant="caption" sx={{ color: isDemoMode ? 'secondary.main' : 'text.secondary' }}>
+                    Demo
+                  </Typography>
+                </Box>
+              }
+              sx={{ 
+                mr: 0,
+                '& .MuiFormControlLabel-label': { fontSize: '0.75rem' }
+              }}
+            />
+          </Tooltip>
         </Box>
 
         {/* Wallet Connection */}
@@ -283,6 +342,22 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
       >
         <Alert onClose={() => setShowEvmToast(false)} severity="info" sx={{ width: '100%' }}>
           Please use your wallet modal (e.g. MetaMask, RainbowKit) to switch EVM networks.
+        </Alert>
+      </Snackbar>
+      
+      {/* Demo Mode Notification */}
+      <Snackbar
+        open={!!demoNotification}
+        autoHideDuration={4000}
+        onClose={() => setDemoNotification(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={() => setDemoNotification(null)} 
+          severity={demoNotification?.type || 'info'} 
+          sx={{ width: '100%' }}
+        >
+          {demoNotification?.message}
         </Alert>
       </Snackbar>
     </AppBar>

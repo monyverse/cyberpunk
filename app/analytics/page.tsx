@@ -32,11 +32,11 @@ const AnalyticsPage: React.FC = () => {
   const missionCompletionsByDay = groupMissionsByDay(missions);
 
   const handleSeedDemo = async () => {
-    await fetch(`/api/demo-seed?scenario=${scenario}`, { method: 'POST' });
+    await fetch('/api/demo/seed', { method: 'POST' });
     router.refresh();
   };
   const handleResetDemo = async () => {
-    await fetch('/api/demo-seed?reset=1', { method: 'POST' });
+    await fetch('/api/demo/reset', { method: 'POST' });
     router.refresh();
   };
 
