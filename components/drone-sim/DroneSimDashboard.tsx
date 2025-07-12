@@ -80,7 +80,7 @@ interface Mission {
   endTime?: string;
 }
 
-interface Agent {
+export interface LocalAgent {
   id: string;
   name: string;
   type: 'onchain' | 'offchain' | 'hybrid';
@@ -100,9 +100,9 @@ const DroneSimDashboard: React.FC = () => {
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error' | 'info'} | null>(null);
   
   const mountRef = useRef<HTMLDivElement>(null);
-  const sceneRef = useRef<THREE.Scene>();
-  const rendererRef = useRef<THREE.WebGLRenderer>();
-  const cameraRef = useRef<THREE.PerspectiveCamera>();
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
 
   const [selectedDroneId, setSelectedDroneId] = useState<string | null>(null);
   const [droneInfoSnackbar, setDroneInfoSnackbar] = useState<{ open: boolean, message: string }>({ open: false, message: '' });
@@ -349,8 +349,8 @@ const DroneSimDashboard: React.FC = () => {
     setNotification({ message: 'Mission created successfully', type: 'success' });
   };
 
-  const handleAddAgent = async (type: Agent['type']) => {
-    const strategies: Agent['strategy'][] = ['assigner', 'trader', 'social'];
+  const handleAddAgent = async (type: LocalAgent['type']) => {
+    const strategies: LocalAgent['strategy'][] = ['assigner', 'trader', 'social'];
     const strategy = strategies[Math.floor(Math.random() * strategies.length)];
     const newAgent = {
       name: `${type.charAt(0).toUpperCase() + type.slice(1)} Agent ${agents.length + 1}`,
@@ -387,7 +387,7 @@ const DroneSimDashboard: React.FC = () => {
     }
   };
 
-  const handleAgentInteract = async (agent1: Agent, agent2: Agent) => {
+  const handleAgentInteract = async (agent1: LocalAgent, agent2: LocalAgent) => {
     setNotification({ message: `${agent1.name} interacting with ${agent2.name}...`, type: 'info' });
     if (agent1.type === 'onchain' && user?.addr) {
       try {
@@ -429,7 +429,7 @@ const DroneSimDashboard: React.FC = () => {
       <Box sx={{ width: '100%', height: 400, mb: 2, borderRadius: 1, overflow: 'hidden' }}>
         <DroneSim3DView
           drones={drones}
-          agents={agents}
+          agents={agents as LocalAgent[]}
           selectedDroneId={selectedDroneId}
           onDroneClick={(drone) => {
             setSelectedDroneId(drone.id);

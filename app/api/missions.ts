@@ -3,7 +3,7 @@ import { DroneMission, MissionLog, Agent } from '../../types';
 import { agents } from '../../utils/agentStore';
 
 // In-memory mission store (mock)
-let missions: DroneMission[] = [
+const missions: DroneMission[] = [
   {
     id: 'mission-1',
     droneId: 'drone-1',

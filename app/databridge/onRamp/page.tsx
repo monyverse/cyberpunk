@@ -180,7 +180,7 @@ export default function OnRamp() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const getFileIcon = (): JSX.Element => {
+  const getFileIcon = (): React.ReactElement => {
     if (!file) return <UploadFileIcon className="w-8 h-8 text-blue-500" />;
 
     if (file.type.startsWith('image/')) {

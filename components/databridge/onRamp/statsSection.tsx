@@ -10,7 +10,7 @@ import DnsIcon from '@mui/icons-material/Dns';
 
 type BgColor = 'indigo' | 'green' | 'red' | 'yellow';
 
-const stats: { icon: JSX.Element; bg: BgColor; label: string; value: string }[] = [
+const stats: { icon: React.ReactElement; bg: BgColor; label: string; value: string }[] = [
   {
     icon: <InsertDriveFileIcon sx={{ color: 'white' }} />, bg: 'indigo', label: 'Total Files', value: '20',
   },

@@ -66,40 +66,37 @@ const AnalyticsPage: React.FC = () => {
         Analytics Dashboard
       </Typography>
       <Divider sx={{ mb: 3 }} />
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={3}>
-          <Paper sx={{ p: 3, textAlign: 'center' }}>
-            <Typography variant="h6">Total Agents</Typography>
-            <Typography variant="h3" color="primary.main">
-              {agentsLoading ? '...' : agents.length}
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Paper sx={{ p: 3, textAlign: 'center' }}>
-            <Typography variant="h6">Active Agents</Typography>
-            <Typography variant="h3" color="success.main">
-              {agentsLoading ? '...' : activeAgents.length}
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Paper sx={{ p: 3, textAlign: 'center' }}>
-            <Typography variant="h6">Total Missions</Typography>
-            <Typography variant="h3" color="primary.main">
-              {missionsLoading ? '...' : missions.length}
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Paper sx={{ p: 3, textAlign: 'center' }}>
-            <Typography variant="h6">Completed Missions</Typography>
-            <Typography variant="h3" color="info.main">
-              {missionsLoading ? '...' : completedMissions.length}
-            </Typography>
-          </Paper>
-        </Grid>
-      </Grid>
+      <Box sx={{
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr', md: 'repeat(4, 1fr)' },
+        gap: 3,
+        mb: 4
+      }}>
+        <Paper sx={{ p: 3, textAlign: 'center' }}>
+          <Typography variant="h6">Total Agents</Typography>
+          <Typography variant="h3" color="primary.main">
+            {agentsLoading ? '...' : agents.length}
+          </Typography>
+        </Paper>
+        <Paper sx={{ p: 3, textAlign: 'center' }}>
+          <Typography variant="h6">Active Agents</Typography>
+          <Typography variant="h3" color="success.main">
+            {agentsLoading ? '...' : activeAgents.length}
+          </Typography>
+        </Paper>
+        <Paper sx={{ p: 3, textAlign: 'center' }}>
+          <Typography variant="h6">Total Missions</Typography>
+          <Typography variant="h3" color="primary.main">
+            {missionsLoading ? '...' : missions.length}
+          </Typography>
+        </Paper>
+        <Paper sx={{ p: 3, textAlign: 'center' }}>
+          <Typography variant="h6">Completed Missions</Typography>
+          <Typography variant="h3" color="info.main">
+            {missionsLoading ? '...' : completedMissions.length}
+          </Typography>
+        </Paper>
+      </Box>
       <Divider sx={{ my: 4 }} />
       <Typography variant="h5" gutterBottom>
         Mission Completions Over Time

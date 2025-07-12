@@ -194,17 +194,17 @@ const ViewProofSets: React.FC = () => {
                     </TableCell>
                     <TableCell>
                         <Tooltip title="View Proof">
-                          <IconButton onClick={() => handleViewProof(proof.pdpVerifierProofSetId)}>
+                          <IconButton onClick={() => handleViewProof(String(proof.pdpVerifierProofSetId))}>
                             <ViewIcon />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Download Proof">
-                          <IconButton onClick={() => handleDownloadProof(proof.pdpVerifierProofSetId)}>
+                          <IconButton onClick={() => handleDownloadProof(String(proof.pdpVerifierProofSetId))}>
                             <DownloadIcon />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Share Proof">
-                          <IconButton onClick={() => handleShareProof(proof.pdpVerifierProofSetId)}>
+                          <IconButton onClick={() => handleShareProof(String(proof.pdpVerifierProofSetId))}>
                             <ShareIcon />
                           </IconButton>
                         </Tooltip>

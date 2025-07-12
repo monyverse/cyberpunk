@@ -5,6 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Sky, Environment } from "@react-three/drei";
 import { Physics, useBox } from "@react-three/cannon";
 import { Mesh } from "three";
+import type { LocalAgent } from './DroneSimDashboard';
 
 interface Vector3 {
   x: number;
@@ -22,18 +23,9 @@ interface Drone {
   lastMissionId?: string;
 }
 
-interface Agent {
-  id: string;
-  name: string;
-  type: 'onchain' | 'offchain' | 'hybrid';
-  status: 'idle' | 'active' | 'busy';
-  location: Vector3;
-  metadata?: any;
-}
-
 interface DroneSim3DViewProps {
   drones: Drone[];
-  agents: Agent[];
+  agents: LocalAgent[];
   selectedDroneId: string | null;
   onDroneClick: (drone: Drone) => void;
 }
@@ -52,7 +44,7 @@ function Drone3D({ drone, selected, onClick }: { drone: Drone; selected: boolean
   );
 }
 
-function Agent3D({ agent }: { agent: Agent }) {
+function Agent3D({ agent }: { agent: LocalAgent }) {
   const [ref] = useBox<Mesh>(() => ({ mass: 1, position: [agent.location.x, agent.location.y + 2, agent.location.z], type: 'Static' }));
   return (
     <mesh ref={ref} castShadow receiveShadow>

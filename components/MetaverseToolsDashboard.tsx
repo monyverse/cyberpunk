@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Grid, Card, CardContent, Typography, Button, Modal } from "@mui/material";
+import { Grid, Card, CardContent, Typography, Button, Modal, Box } from "@mui/material";
 import { toolsConfig, ToolConfig } from "../utils/toolsConfig";
 
 export default function MetaverseToolsDashboard() {
@@ -16,18 +16,21 @@ export default function MetaverseToolsDashboard() {
   return (
     <Box sx={{ p: 4 }}>
       <Typography variant="h4" gutterBottom>Metaverse Building Tools</Typography>
-      <Grid container spacing={3}>
+      <Box sx={{
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+        gap: 3,
+        mb: 4
+      }}>
         {toolsConfig.map((tool: ToolConfig) => (
-          <Grid item xs={12} sm={6} md={4} key={tool.id}>
-            <Card sx={{ cursor: "pointer", minHeight: 180 }} onClick={() => handleOpen(tool.id)} aria-label={`Open ${tool.name}`}>
-              <CardContent>
-                <Typography variant="h6">{tool.name}</Typography>
-                <Typography variant="body2" color="text.secondary">{tool.description}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
+          <Card sx={{ cursor: "pointer", minHeight: 180 }} onClick={() => handleOpen(tool.id)} aria-label={`Open ${tool.name}`} key={tool.id}>
+            <CardContent>
+              <Typography variant="h6">{tool.name}</Typography>
+              <Typography variant="body2" color="text.secondary">{tool.description}</Typography>
+            </CardContent>
+          </Card>
         ))}
-      </Grid>
+      </Box>
       {/* Tool Modal/Launcher */}
       {openTool && (
         <Modal open={!!openTool} onClose={handleClose} aria-labelledby="tool-modal-title">

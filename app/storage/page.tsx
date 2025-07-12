@@ -175,11 +175,11 @@ const StoragePage: React.FC = () => {
           
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
             <Typography variant="body1">
-              Current Allowance: <strong>{balances?.currentRateAllowanceFormatted ?? 0} FIL</strong>
+              Current Allowance: <strong>{balances?.currentRateAllowanceGB?.toFixed(2) ?? 0} GB</strong>
             </Typography>
             <Chip 
-              label={balances?.currentRateAllowanceFormatted && parseFloat(balances.currentRateAllowanceFormatted) > 0 ? 'Active' : 'Inactive'} 
-              color={balances?.currentRateAllowanceFormatted && parseFloat(balances.currentRateAllowanceFormatted) > 0 ? 'success' : 'error'} 
+              label={balances?.currentRateAllowanceGB && balances.currentRateAllowanceGB > 0 ? 'Active' : 'Inactive'} 
+              color={balances?.currentRateAllowanceGB && balances.currentRateAllowanceGB > 0 ? 'success' : 'error'} 
               size="small" 
             />
           </Box>
