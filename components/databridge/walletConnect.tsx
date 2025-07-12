@@ -16,7 +16,7 @@ export const WalletConnect = () => {
           account &&
           chain &&
           (!authenticationStatus || authenticationStatus === 'authenticated');
-
+        
         if (!mounted) {
           // Prevent rendering until RainbowKit finishes mounting (avoids SSR issues)
           return null;
@@ -36,7 +36,7 @@ export const WalletConnect = () => {
               if (!connected) {
                 return (
                   <Button onClick={openConnectModal} variant="contained" color="primary" sx={{ borderRadius: 5, fontWeight: 600, px: 3, py: 1 }}>
-                    Connect Wallet
+                      Connect Wallet
                   </Button>
                 );
               }

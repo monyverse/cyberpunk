@@ -56,7 +56,7 @@ export const NavbarWalletComponent = () => {
                 return (
                   <Box sx={{ display: 'flex', gap: 2 }}>
                     <Button
-                      onClick={openChainModal}
+                          onClick={openChainModal}
                       variant="outlined"
                       color="primary"
                       sx={{ borderRadius: 5, fontWeight: 600, px: 2, py: 1, display: 'flex', alignItems: 'center' }}
@@ -66,11 +66,11 @@ export const NavbarWalletComponent = () => {
                         </Box>
                       ) : null}
                     >
-                      {chain.name}
+                          {chain.name}
                     </Button>
                     <Button onClick={openAccountModal} variant="contained" color="primary" sx={{ borderRadius: 5, fontWeight: 600, px: 2, py: 1 }}>
-                      {account.displayName}
-                      {account.displayBalance ? ` (${account.displayBalance})` : ''}
+                          {account.displayName}
+                          {account.displayBalance ? ` (${account.displayBalance})` : ''}
                     </Button>
                   </Box>
                 );

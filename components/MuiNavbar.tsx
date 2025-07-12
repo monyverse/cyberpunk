@@ -191,12 +191,58 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
         {/* Wallet Connection */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {/* EVM Wallet (RainbowKit) */}
-          <ConnectButton
-            showBalance={false}
-            accountStatus={{ smallScreen: 'avatar', largeScreen: 'full' }}
-            chainStatus={{ smallScreen: 'icon', largeScreen: 'full' }}
-            label="EVM Wallet"
-          />
+          <ConnectButton.Custom>
+            {({
+              account,
+              chain,
+              openAccountModal,
+              openChainModal,
+              openConnectModal,
+              authenticationStatus,
+              mounted,
+            }) => {
+              const ready = mounted && authenticationStatus !== 'loading';
+              if (!ready || !account || !chain) {
+                return (
+                  <Button
+                    variant="outlined"
+                    startIcon={<WalletIcon />}
+                    onClick={openConnectModal}
+                    sx={{
+                      color: 'primary.main',
+                      borderColor: 'primary.main',
+                      '&:hover': {
+                        borderColor: 'primary.dark',
+                        bgcolor: 'primary.main',
+                        color: 'primary.contrastText'
+                      }
+                    }}
+                  >
+                    Connect Wallet
+                  </Button>
+                );
+              }
+              return (
+                <Button
+                  variant="outlined"
+                  startIcon={<WalletIcon />}
+                  onClick={openAccountModal}
+                  sx={{
+                    color: 'primary.main',
+                    borderColor: 'primary.main',
+                    '&:hover': {
+                      borderColor: 'primary.dark',
+                      bgcolor: 'primary.main',
+                      color: 'primary.contrastText'
+                    }
+                  }}
+                >
+                  {account.displayName}
+                </Button>
+              );
+            }}
+          </ConnectButton.Custom>
+
           {/* Flow Wallet */}
           {flow && flow.addr ? (
             <Tooltip title={flow.addr} arrow>

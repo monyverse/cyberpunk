@@ -18,7 +18,7 @@ const FileList = () => {
         Recent Uploads
       </Typography>
       <List>
-        {Array.from({ length: 5 }).map((_, index) => (
+                    {Array.from({ length: 5 }).map((_, index) => (
           <ListItem key={index} sx={{ display: 'flex', alignItems: 'center' }}>
             <ListItemIcon>
               <InsertDriveFileIcon color="action" />
@@ -26,18 +26,18 @@ const FileList = () => {
             <ListItemText
               primary={
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                  {['project_report.pdf', 'image_assets.zip', 'presentation.pptx', 'contract.docx', 'financial_data.xlsx'][index]}
+                            {['project_report.pdf', 'image_assets.zip', 'presentation.pptx', 'contract.docx', 'financial_data.xlsx'][index]}
                 </Typography>
               }
               secondary={
                 <Typography variant="body2" color="text.secondary">
-                  {['2.5 MB', '8.2 MB', '4.7 MB', '1.2 MB', '3.8 MB'][index]} • Uploaded {['10 minutes', '30 minutes', '2 hours', '5 hours', '1 day'][index]} ago
+                            {['2.5 MB', '8.2 MB', '4.7 MB', '1.2 MB', '3.8 MB'][index]} • Uploaded {['10 minutes', '30 minutes', '2 hours', '5 hours', '1 day'][index]} ago
                 </Typography>
               }
             />
-            {index < 3 ? (
+                        {index < 3 ? (
               <Chip label="Pending" color="warning" size="small" sx={{ ml: 2 }} />
-            ) : (
+                        ) : (
               <Chip
                 icon={<CheckCircleIcon sx={{ color: 'success.main' }} />}
                 label="Verified"
@@ -45,9 +45,9 @@ const FileList = () => {
                 size="small"
                 sx={{ ml: 2 }}
               />
-            )}
+                        )}
           </ListItem>
-        ))}
+                    ))}
       </List>
       <Box sx={{ mt: 2, textAlign: 'center' }}>
         <Typography
@@ -57,7 +57,7 @@ const FileList = () => {
           href="#"
           sx={{ cursor: 'pointer', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
         >
-          View all files →
+                      View all files →
         </Typography>
       </Box>
     </Paper>

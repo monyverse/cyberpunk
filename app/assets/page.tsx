@@ -125,26 +125,26 @@ const MetaverseAssetManager: React.FC = () => {
               <Typography color="error">{error}</Typography>
             ) : storage ? (
               <>
-                <Box sx={{ mb: 2 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography variant="body2">Used Storage</Typography>
+            <Box sx={{ mb: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body2">Used Storage</Typography>
                     <Typography variant="body2">{(storage.totalUsed / (1024 * 1024 * 1024)).toFixed(2)}GB / {(storage.totalCapacity / (1024 * 1024 * 1024)).toFixed(2)}GB</Typography>
-                  </Box>
-                  <LinearProgress 
-                    variant="determinate" 
+              </Box>
+              <LinearProgress 
+                variant="determinate" 
                     value={(storage.totalUsed / storage.totalCapacity) * 100}
-                    sx={{ height: 8, borderRadius: 4 }}
-                  />
-                </Box>
-                <Box sx={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: 2
-                }}>
+                sx={{ height: 8, borderRadius: 4 }}
+              />
+            </Box>
+            <Box sx={{ 
+              display: 'grid', 
+              gridTemplateColumns: '1fr 1fr',
+              gap: 2
+            }}>
                   {Object.entries(storage.categories).map(([cat, val]) => (
                     <Typography key={cat} variant="body2" color="text.secondary">{cat}: {(val / (1024 * 1024 * 1024)).toFixed(2)}GB</Typography>
                   ))}
-                </Box>
+            </Box>
               </>
             ) : null}
           </CardContent>
@@ -219,29 +219,29 @@ const MetaverseAssetManager: React.FC = () => {
           ) : error ? (
             <Typography color="error">{error}</Typography>
           ) : (
-            <List>
+          <List>
               {filteredAssets.map((asset) => (
-                <ListItem key={asset.id} divider>
-                  <ListItemAvatar>
-                    <Avatar>
+              <ListItem key={asset.id} divider>
+                <ListItemAvatar>
+                  <Avatar>
                       {asset.type === 'avatars' && <PersonIcon />}
                       {asset.type === 'buildings' && <StorageIcon />}
                       {asset.type === 'vehicles' && <StorageIcon />}
                       {asset.type === 'weapons' && <StorageIcon />}
                       {asset.type === 'clothing' && <StorageIcon />}
                       {asset.type === 'textures' && <ImageIcon />}
-                      {asset.type === 'audio' && <AudioIcon />}
+                    {asset.type === 'audio' && <AudioIcon />}
                       {asset.type === 'scripts' && <DocumentIcon />}
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={asset.name}
-                    secondary={`${asset.size} • Uploaded ${asset.uploadedAt}`}
-                  />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={asset.name}
+                  secondary={`${asset.size} • Uploaded ${asset.uploadedAt}`}
+                />
                   {/* No status field on FilecoinAsset, so skip status chip */}
-                </ListItem>
-              ))}
-            </List>
+              </ListItem>
+            ))}
+          </List>
           )}
         </CardContent>
       </Card>

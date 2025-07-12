@@ -16,7 +16,7 @@ export default function Home() {
         <Typography variant="h5" sx={{ mb: 3 }}>
           Effortlessly bridge your data to Filecoin from Avalanche
         </Typography>
-        <WalletConnect />
+          <WalletConnect />
       </Container>
       <Footer />
     </Box>

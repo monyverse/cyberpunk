@@ -160,39 +160,39 @@ const ViewProofSets: React.FC = () => {
           ) : error ? (
             <Typography color="error">{(error as Error).message}</Typography>
           ) : (
-            <TableContainer component={Paper} sx={{ bgcolor: 'background.paper' }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
+          <TableContainer component={Paper} sx={{ bgcolor: 'background.paper' }}>
+            <Table>
+              <TableHead>
+                <TableRow>
                     <TableCell>ProofSet ID</TableCell>
                     <TableCell>Metadata</TableCell>
                     <TableCell>Live</TableCell>
                     <TableCell>Managed</TableCell>
                     <TableCell>Provider</TableCell>
                     <TableCell>Details</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {proofSets.map((proof) => (
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {proofSets.map((proof) => (
                     <TableRow key={proof.pdpVerifierProofSetId} hover>
                       <TableCell>{proof.pdpVerifierProofSetId}</TableCell>
                       <TableCell>{proof.metadata}</TableCell>
                       <TableCell>{proof.isLive ? 'Yes' : 'No'}</TableCell>
                       <TableCell>{proof.isManaged ? 'Yes' : 'No'}</TableCell>
                       <TableCell>{proof.provider?.pdpUrl || '-'}</TableCell>
-                      <TableCell>
+                    <TableCell>
                         {proof.details ? (
-                          <Box>
+                      <Box>
                             <Typography variant="caption">Roots: {proof.details.roots.length}</Typography>
                             <br />
                             <Typography variant="caption">Next Epoch: {proof.details.nextChallengeEpoch}</Typography>
-                          </Box>
+                      </Box>
                         ) : (
                           <Typography variant="caption" color="text.secondary">No details</Typography>
                         )}
-                      </TableCell>
-                      <TableCell>
+                    </TableCell>
+                    <TableCell>
                         <Tooltip title="View Proof">
                           <IconButton onClick={() => handleViewProof(proof.pdpVerifierProofSetId)}>
                             <ViewIcon />
@@ -208,12 +208,12 @@ const ViewProofSets: React.FC = () => {
                             <ShareIcon />
                           </IconButton>
                         </Tooltip>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
           )}
         </CardContent>
       </Card>

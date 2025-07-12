@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import Box from "@mui/material/Box";
 import { Grid, Card, CardContent, Typography, Button, Modal } from "@mui/material";
 import { toolsConfig, ToolConfig } from "../utils/toolsConfig";
 
