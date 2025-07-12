@@ -13,9 +13,13 @@ CyberPunk WildNet is a next-generation metaverse that showcases:
 - **Blockchain Integration**: Seamless wallet connection and blockchain-based asset ownership
 - **Cyberpunk Aesthetic**: Immersive neon-lit interface with futuristic UI elements
 
+## CONTRACTS
+
 FILECOIN CONTRACTS [VIEW](/Docs/filecoin-contracts.md)
 
-FLOW CONTRACTS [VIEW](/Docs/flow-contracts.md) 
+FLOW CONTRACTS [VIEW](/Docs/flow-contracts.md)
+
+NEAR CONTRACTS [VIEW](/Docs/near-contracts.md)
 
 ## 🚀 Features
 
@@ -34,14 +38,6 @@ FLOW CONTRACTS [VIEW](/Docs/flow-contracts.md)
 - Deposit funds to Synapse contracts using USDFC token
 - Upload files to Filecoin through Synapse with proof of data possession
 - View and manage proof sets for uploaded content
-
-### Cyberpunk Theme
-- Neon green and pink color scheme
-- Holographic UI elements with glow effects
-- Futuristic typography and animations
-- Responsive design optimized for all devices
-
-## 🛠️ Technology Stack
 
 - **Frontend**: Next.js 15, React 19, TypeScript
 - **Styling**: Tailwind CSS 4, Framer Motion
@@ -107,6 +103,17 @@ Open [http://localhost:3000](http://localhost:3000) to enter the CyberPunk Metav
 - Monitor storage capacity and persistence periods
 - View proof sets and file verification status
 
+## Analytics Dashboard
+
+The app includes a modern Analytics Dashboard at `/analytics`:
+- **Live stats**: See total agents, active agents, total missions, and completed missions in real time.
+- **MUI-based UI**: Clean, responsive layout using Material UI components.
+- **Ready for expansion**: Placeholders for charts and advanced analytics (e.g., mission completion over time, agent activity, etc.).
+
+**How to use:**
+- Navigate to `/analytics` in your browser after starting the app.
+- The dashboard will automatically update as agents and missions are created or completed.
+
 ## 🏗️ Architecture
 
 ### Core Components
@@ -122,31 +129,6 @@ Open [http://localhost:3000](http://localhost:3000) to enter the CyberPunk Metav
 - **useBalances**: USDFC and FIL balance tracking
 - **usePayment**: Synapse payment processing
 - **useFileUpload**: File upload to Filecoin
-
-### Configuration
-- **Metaverse Settings**: World size, player limits, game mechanics
-- **Theme Configuration**: Cyberpunk color scheme and UI elements
-- **Storage Settings**: Capacity, persistence, CDN options
-
-## 🎨 Customization
-
-### Theme Configuration
-The cyberpunk theme can be customized in `config.ts`:
-
----
-```ts
-theme: {
-  primaryColor: "#00ff41", // Matrix green
-  secondaryColor: "#ff006e", // Neon pink
-  accentColor: "#ffd700", // Gold
-  backgroundColor: "#0a0a0a", // Dark background
-  textColor: "#ffffff", // White text
-  neonGlow: true,
-  particleEffects: true,
-  holographicUI: true
-}
-```
----
 
 ### Metaverse Settings
 Adjust world parameters and game mechanics:
@@ -166,32 +148,3 @@ metaverse: {
 ```
 ---
 
-## 🔗 Learn More
-
-- [Filecoin Synapse SDK](https://github.com/FilOzone/synapse-sdk)
-- [USDFC Token Documentation](https://docs.secured.finance/usdfc-stablecoin/getting-started)
-- [Wagmi Documentation](https://wagmi.sh)
-- [RainbowKit Documentation](https://www.rainbowkit.com)
-- [Framer Motion](https://www.framer.com/motion/)
-- [Three.js](https://threejs.org/)
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request. Areas for contribution:
-
-- Additional avatar customization options
-- New asset categories and management features
-- Enhanced 3D visualization components
-- Additional cyberpunk UI themes
-- Game mechanics and quest systems
-- Multiplayer functionality
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- Built on the foundation of the Filecoin Synapse dApp
-- Inspired by cyberpunk aesthetics and blockchain technology
-- Powered by the Filecoin ecosystem and USDFC stablecoin
