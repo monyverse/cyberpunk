@@ -7,7 +7,8 @@ CyberPunk: WildNet is an AR-driven PLAY-to-EARN real-world metaverse game that l
 ## 🌆 Overview
 
 CyberPunk WildNet is a next-generation metaverse that showcases:
-- **Avatar Creation & Customization**: Create unique cyberpunk avatars with customizable appearances
+
+- **Avatar Creation & Customization**: Create unique cyberpunk onchain avatars with customizable appearances
 - **Metaverse Asset Management**: Upload, store, and manage digital assets on Filecoin
 - **Decentralized Storage**: Secure file storage using Filecoin Synapse with USDFC payments
 - **Blockchain Integration**: Seamless wallet connection and blockchain-based asset ownership
@@ -138,30 +139,6 @@ The app includes a modern Analytics Dashboard at `/analytics`:
 - **usePayment**: Synapse payment processing
 - **useFileUpload**: File upload to Filecoin
 
-### Configuration
-- **Metaverse Settings**: World size, player limits, game mechanics
-- **Theme Configuration**: Cyberpunk color scheme and UI elements
-- **Storage Settings**: Capacity, persistence, CDN options
-
-## 🎨 Customization
-
-### Theme Configuration
-The cyberpunk theme can be customized in `config.ts`:
-
----
-```ts
-theme: {
-  primaryColor: "#00ff41", // Matrix green
-  secondaryColor: "#ff006e", // Neon pink
-  accentColor: "#ffd700", // Gold
-  backgroundColor: "#0a0a0a", // Dark background
-  textColor: "#ffffff", // White text
-  neonGlow: true,
-  particleEffects: true,
-  holographicUI: true
-}
-```
----
 
 ### Metaverse Settings
 Adjust world parameters and game mechanics:
@@ -181,32 +158,39 @@ metaverse: {
 ```
 ---
 
-## 🔗 Learn More
+## Demo Mode (Seeding Mock Data)
 
-- [Filecoin Synapse SDK](https://github.com/FilOzone/synapse-sdk)
-- [USDFC Token Documentation](https://docs.secured.finance/usdfc-stablecoin/getting-started)
-- [Wagmi Documentation](https://wagmi.sh)
-- [RainbowKit Documentation](https://www.rainbowkit.com)
-- [Framer Motion](https://www.framer.com/motion/)
-- [Three.js](https://threejs.org/)
+To quickly populate the app with mock agents and missions for demos or testing:
 
-## 🤝 Contributing
+- **Seed demo data:**
+  ```sh
+  curl -X POST http://localhost:3000/api/demo/seed
+  ```
+- **Reset demo data:**
+  ```sh
+  curl -X POST http://localhost:3000/api/demo/reset
+  ```
 
-Contributions are welcome! Please feel free to submit a Pull Request. Areas for contribution:
+This will seed/reset in-memory demo data for agents and missions. (You can extend this to persist to a DB or localStorage as needed.)
 
-- Additional avatar customization options
-- New asset categories and management features
-- Enhanced 3D visualization components
-- Additional cyberpunk UI themes
-- Game mechanics and quest systems
-- Multiplayer functionality
+---
 
-## 📄 License
+## Running Playwright Tests
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+1. **Install Playwright (if not already):**
+   ```sh
+   npx playwright install
+   ```
+2. **Run all tests:**
+   ```sh
+   npx playwright test
+   ```
+3. **Open Playwright Test UI:**
+   ```sh
+   npx playwright test --ui
+   ```
 
-## 🙏 Acknowledgments
+- Make sure your dev server is running (`npm run dev`) before running E2E tests.
+- You can use demo mode to seed data before running tests for consistent results.
 
-- Built on the foundation of the Filecoin Synapse dApp
-- Inspired by cyberpunk aesthetics and blockchain technology
-- Powered by the Filecoin ecosystem and USDFC stablecoin
+---

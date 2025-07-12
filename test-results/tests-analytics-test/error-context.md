@@ -21,23 +21,19 @@
 - banner:
   - text: CYBERPUNK
   - button "Filecoin Calibration"
-  - button "EVM Wallet"
+  - button "Connect Wallet"
   - button "Connect Flow Wallet": Login with Flow
 - main:
-  - text: Scenario
-  - combobox: Default
-  - button "Seed Demo Data"
-  - button "Reset Demo Data"
   - heading "Analytics Dashboard" [level=4]
   - separator
   - heading "Total Agents" [level=6]
-  - heading "0" [level=3]
+  - heading "..." [level=3]
   - heading "Active Agents" [level=6]
-  - heading "0" [level=3]
+  - heading "..." [level=3]
   - heading "Total Missions" [level=6]
-  - heading "0" [level=3]
+  - heading "..." [level=3]
   - heading "Completed Missions" [level=6]
-  - heading "0" [level=3]
+  - heading "..." [level=3]
   - separator
   - heading "Mission Completions Over Time" [level=5]
   - application
