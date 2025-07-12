@@ -43,19 +43,46 @@ NEAR CONTRACTS [VIEW](/Docs/near-contracts.md)
 - Persistent avatar data stored on Filecoin
 - Level progression and reputation system
 - Inventory management with weapons, clothing, and cybernetic items
+- **🔗 [Access Avatar Creator](https://cyberpunk-metaverse.vercel.app/avatars)**
 
 ### Asset Management
 - Upload and manage metaverse assets (avatars, buildings, vehicles, weapons, clothing, textures, audio, scripts)
 - Categorized asset storage with Filecoin CID tracking
 - Real-time storage statistics and capacity monitoring
 - Access control and ownership verification
-
+- **🔗 [Access Asset Manager](https://cyberpunk-metaverse.vercel.app/assets)**
 
 ### Analytics Dashboard
 - **Live stats**: See total agents, active agents, total missions, and completed missions in real time
 - **MUI-based UI**: Clean, responsive layout using Material UI components
 - **Mission tracking**: Monitor completion rates and agent activity
 - **Real-time updates**: Automatic refresh as data changes
+- **🔗 [Access Analytics Dashboard](https://cyberpunk-metaverse.vercel.app/analytics)**
+
+### Drone Simulation
+- Interactive 3D environment for drone control and agent interactions
+- Real-time drone status monitoring and mission management
+- Physics-based simulation with Three.js and React Three Fiber
+- Onchain agent interactions via Flow blockchain
+- **🔗 [Access Drone Simulation](https://cyberpunk-metaverse.vercel.app/drone-sim)**
+
+### Storage Management
+- Filecoin-based decentralized storage with USDFC payments
+- Proof set verification and file integrity checking
+- Storage capacity monitoring and payment management
+- **🔗 [Access Storage Manager](https://cyberpunk-metaverse.vercel.app/storage)**
+
+### Data Bridge & Tools
+- Cross-chain data bridging and asset management
+- Onramp functionality for seamless asset integration
+- Metaverse tools and utilities
+- **🔗 [Access Data Bridge](https://cyberpunk-metaverse.vercel.app/databridge)**
+- **🔗 [Access Tools](https://cyberpunk-metaverse.vercel.app/tools)**
+
+### Proof Sets
+- View and manage proof sets for file verification
+- Download and share proof sets for data integrity
+- **🔗 [Access Proof Sets](https://cyberpunk-metaverse.vercel.app/proofsets)**
 
 ## 🛠️ Technology Stack
 
