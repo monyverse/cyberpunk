@@ -1,8 +1,7 @@
 "use client";
-
 import React from 'react';
 import { Container, Typography, Box } from '@mui/material';
-import DroneSimDashboard from '../../components/DroneSimDashboard';
+import DroneSimDashboard from '@/components/drone-sim/DroneSimDashboard';
 
 const DroneSimPage: React.FC = () => {
   return (

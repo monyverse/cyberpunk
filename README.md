@@ -7,7 +7,8 @@ CyberPunk: WildNet is an AR-driven PLAY-to-EARN real-world metaverse game that l
 ## 🌆 Overview
 
 CyberPunk WildNet is a next-generation metaverse that showcases:
-- **Avatar Creation & Customization**: Create unique cyberpunk avatars with customizable appearances
+
+- **Avatar Creation & Customization**: Create unique cyberpunk onchain avatars with customizable appearances
 - **Metaverse Asset Management**: Upload, store, and manage digital assets on Filecoin
 - **Decentralized Storage**: Secure file storage using Filecoin Synapse with USDFC payments
 - **Blockchain Integration**: Seamless wallet connection and blockchain-based asset ownership
@@ -147,4 +148,39 @@ metaverse: {
 }
 ```
 ---
+
+## Demo Mode (Seeding Mock Data)
+
+To quickly populate the app with mock agents and missions for demos or testing:
+
+- **Seed demo data:**
+  ```sh
+  curl -X POST http://localhost:3000/api/demo/seed
+  ```
+- **Reset demo data:**
+  ```sh
+  curl -X POST http://localhost:3000/api/demo/reset
+  ```
+
+This will seed/reset in-memory demo data for agents and missions. (You can extend this to persist to a DB or localStorage as needed.)
+
+---
+
+## Running Playwright Tests
+
+1. **Install Playwright (if not already):**
+   ```sh
+   npx playwright install
+   ```
+2. **Run all tests:**
+   ```sh
+   npx playwright test
+   ```
+3. **Open Playwright Test UI:**
+   ```sh
+   npx playwright test --ui
+   ```
+
+- Make sure your dev server is running (`npm run dev`) before running E2E tests.
+- You can use demo mode to seed data before running tests for consistent results.
 

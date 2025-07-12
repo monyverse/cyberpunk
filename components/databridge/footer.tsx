@@ -1,28 +1,24 @@
 import Image from 'next/image';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import MuiLink from '@mui/material/Link';
 
 export default function Footer() {
   return (
-    <div className="fixed bottom-0 w-full bg-blue-600 flex items-center flex-col lg:flex-row lg:justify-between gap-4 px-4">
-      <div className="flex flex-row gap-8 items-center justify-center mb-4">
-        <a
-          className="text-black items-center inline-flex bg-white border-2 border-black duration-200 ease-in-out focus:outline-none hover:bg-black hover:shadow-none hover:text-white justify-center rounded-full shadow-[5px_5px_black] text-center transform transition w-full px-2 py-2"
-          href="https://x.com/FILBuilders"
-        >
+    <Box sx={{ position: 'fixed', bottom: 0, width: '100%', bgcolor: 'primary.main', display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, justifyContent: 'space-between', alignItems: 'center', gap: 2, px: 2, py: 1 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3, alignItems: 'center', mb: { xs: 2, lg: 0 } }}>
+        <MuiLink href="https://x.com/FILBuilders" sx={{ display: 'inline-flex', alignItems: 'center', bgcolor: 'background.paper', border: 2, borderColor: 'text.primary', borderRadius: '50%', boxShadow: 3, px: 1, py: 1, transition: 'all 0.2s', '&:hover': { bgcolor: 'text.primary', color: 'background.paper' } }}>
           <Image src="/assets/logos/x-logo.png" width={30} height={30} alt="X Logo" />
-        </a>
-
-        <a
-          className="text-black items-center inline-flex bg-white border-2 border-black duration-200 ease-in-out focus:outline-none hover:bg-black hover:shadow-none hover:text-white justify-center rounded-full shadow-[5px_5px_black] text-center transform transition w-full px-2 py-2"
-          href="https://discord.com/invite/filecoin"
-        >
+        </MuiLink>
+        <MuiLink href="https://discord.com/invite/filecoin" sx={{ display: 'inline-flex', alignItems: 'center', bgcolor: 'background.paper', border: 2, borderColor: 'text.primary', borderRadius: '50%', boxShadow: 3, px: 1, py: 1, transition: 'all 0.2s', '&:hover': { bgcolor: 'text.primary', color: 'background.paper' } }}>
           <Image src="/assets/logos/discord-logo.png" width={30} height={30} alt="Discord Logo" />
-        </a>
-      </div>
-      <div className="flex flex-row gap-2 justify-center items-center mb-2">
-        <p className="inline-block text-white">Made with</p>
+        </MuiLink>
+      </Box>
+      <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center', mb: 1 }}>
+        <Typography variant="body2" color="common.white">Made with</Typography>
         <Image src="/assets/icons/heart.png" width={30} height={30} alt="Heart Icon" />
-        <p className="inline-block text-white">by Team FIL-B</p>
-      </div>
-    </div>
+        <Typography variant="body2" color="common.white">by Team FIL-B</Typography>
+      </Box>
+    </Box>
   );
 }
