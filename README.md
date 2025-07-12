@@ -40,14 +40,6 @@ NEAR CONTRACTS [VIEW](/Docs/near-contracts.md)
 - Upload files to Filecoin through Synapse with proof of data possession
 - View and manage proof sets for uploaded content
 
-### Cyberpunk Theme
-- Neon green and pink color scheme
-- Holographic UI elements with glow effects
-- Futuristic typography and animations
-- Responsive design optimized for all devices
-
-## 🛠️ Technology Stack
-
 - **Frontend**: Next.js 15, React 19, TypeScript
 - **Styling**: Tailwind CSS 4, Framer Motion
 - **Blockchain**: Filecoin Synapse SDK, Wagmi, RainbowKit
@@ -139,7 +131,6 @@ The app includes a modern Analytics Dashboard at `/analytics`:
 - **usePayment**: Synapse payment processing
 - **useFileUpload**: File upload to Filecoin
 
-
 ### Metaverse Settings
 Adjust world parameters and game mechanics:
 
@@ -193,4 +184,3 @@ This will seed/reset in-memory demo data for agents and missions. (You can exten
 - Make sure your dev server is running (`npm run dev`) before running E2E tests.
 - You can use demo mode to seed data before running tests for consistent results.
 
----
