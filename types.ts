@@ -386,6 +386,12 @@ export interface DroneMission {
   metadata?: Record<string, any>;
   // Enhancement: user-defined target
   target?: Vector3;
+  // New fields for advanced logic
+  assignedAgentId?: string;
+  missionLog?: MissionLog[];
+  difficulty?: 'easy' | 'medium' | 'hard' | 'nightmare';
+  xpReward?: number;
+  reputationReward?: number;
 }
 
 // Charging station location (for simulation)
@@ -405,6 +411,25 @@ export interface DroneTelemetry {
 // --- Agent NPC Types ---
 export type AgentType = 'onchain' | 'offchain' | 'hybrid';
 
+export interface AgentSkill {
+  name: string;
+  level: number;
+  experience: number;
+  description?: string;
+}
+
+export interface AgentLog {
+  timestamp: string;
+  action: string;
+  details?: Record<string, any>;
+}
+
+export interface MissionLog {
+  timestamp: string;
+  event: string;
+  details?: Record<string, any>;
+}
+
 export interface Agent {
   id: string;
   name: string;
@@ -414,6 +439,13 @@ export interface Agent {
   lastAction?: AgentAction;
   metadata?: Record<string, any>;
   strategy?: 'default' | 'assigner' | 'trader' | 'social';
+  // New fields for advanced logic
+  skills?: AgentSkill[];
+  level?: number;
+  experience?: number;
+  logs?: AgentLog[];
+  missionHistory?: string[]; // List of mission IDs
+  reputation?: number;
 }
 
 export interface AgentAction {

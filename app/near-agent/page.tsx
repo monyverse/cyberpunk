@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { connect, keyStores, WalletConnection, Contract, utils } from "near-api-js";
 import { Box, Button, TextField, Typography, Paper, List, ListItem, ListItemText, Chip, Divider } from "@mui/material";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const CONTRACT_ID = "cyberpunktest.testnet"; // <-- replace with your deployed contract account
 
@@ -19,12 +20,11 @@ export default function NearAgentPage() {
   const [wallet, setWallet] = useState<WalletConnection | null>(null);
   const [accountId, setAccountId] = useState<string | null>(null);
   const [contract, setContract] = useState<any>(null);
-  const [intents, setIntents] = useState<Intent[]>([]);
   const [intentInput, setIntentInput] = useState("");
   const [sigInput, setSigInput] = useState("");
   const [resultInput, setResultInput] = useState("");
   const [selectedIntent, setSelectedIntent] = useState<Intent | null>(null);
-  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   // Initialize NEAR connection
   useEffect(() => {
@@ -48,23 +48,55 @@ export default function NearAgentPage() {
     })();
   }, []);
 
-  // Fetch intents
-  const fetchIntents = async () => {
-    if (!contract) return;
-    setLoading(true);
-    try {
-      const result = await contract.get_intents();
-      setIntents(result as Intent[]);
-    } catch (e) {
-      console.error(e);
-    }
-    setLoading(false);
-  };
+  // Fetch intents with React Query
+  const {
+    data: intents = [],
+    isLoading,
+    refetch,
+  } = useQuery<Intent[]>({
+    queryKey: ["intents", contract],
+    queryFn: async () => {
+      if (!contract) return [];
+      return (await contract.get_intents()) as Intent[];
+    },
+    enabled: !!contract,
+  });
 
-  useEffect(() => {
-    if (contract) fetchIntents();
-    // eslint-disable-next-line
-  }, [contract]);
+  // Submit intent mutation
+  const submitIntentMutation = useMutation({
+    mutationFn: async ({ intent, cross_chain_sig }: { intent: string; cross_chain_sig: string }) => {
+      if (!contract || !accountId) throw new Error("Not connected");
+      await contract.submit_intent(
+        { intent, cross_chain_sig },
+        "300000000000000",
+        utils.format.parseNearAmount("0")
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["intents", contract] });
+      setIntentInput("");
+      setSigInput("");
+    },
+    onError: (e: any) => alert("Error submitting intent: " + e?.message || e),
+  });
+
+  // Fulfill intent mutation
+  const fulfillIntentMutation = useMutation({
+    mutationFn: async ({ intent_id, result }: { intent_id: number; result: string }) => {
+      if (!contract || !accountId) throw new Error("Not connected");
+      await contract.fulfill_intent(
+        { intent_id, result },
+        "300000000000000",
+        utils.format.parseNearAmount("0")
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["intents", contract] });
+      setResultInput("");
+      setSelectedIntent(null);
+    },
+    onError: (e: any) => alert("Error fulfilling intent: " + e?.message || e),
+  });
 
   // Wallet connect/disconnect
   const handleLogin = () => wallet?.requestSignIn({ contractId: CONTRACT_ID });
@@ -74,43 +106,14 @@ export default function NearAgentPage() {
   };
 
   // Submit intent
-  const handleSubmitIntent = async () => {
-    if (!contract || !accountId) return;
-    setLoading(true);
-    try {
-      // @ts-ignore
-      await contract.submit_intent(
-        { intent: intentInput, cross_chain_sig: sigInput },
-        "300000000000000", // attached GAS (max allowed)
-        utils.format.parseNearAmount("0") // attached deposit
-      );
-      setIntentInput("");
-      setSigInput("");
-      fetchIntents();
-    } catch (e) {
-      alert("Error submitting intent: " + e);
-    }
-    setLoading(false);
+  const handleSubmitIntent = () => {
+    submitIntentMutation.mutate({ intent: intentInput, cross_chain_sig: sigInput });
   };
 
   // Fulfill intent
-  const handleFulfillIntent = async () => {
-    if (!contract || !accountId || !selectedIntent) return;
-    setLoading(true);
-    try {
-      // @ts-ignore
-      await contract.fulfill_intent(
-        { intent_id: selectedIntent.id, result: resultInput },
-        "300000000000000",
-        utils.format.parseNearAmount("0")
-      );
-      setResultInput("");
-      setSelectedIntent(null);
-      fetchIntents();
-    } catch (e) {
-      alert("Error fulfilling intent: " + e);
-    }
-    setLoading(false);
+  const handleFulfillIntent = () => {
+    if (!selectedIntent) return;
+    fulfillIntentMutation.mutate({ intent_id: selectedIntent.id, result: resultInput });
   };
 
   return (
@@ -154,9 +157,9 @@ export default function NearAgentPage() {
           <Button
             variant="contained"
             onClick={handleSubmitIntent}
-            disabled={loading || !intentInput}
+            disabled={submitIntentMutation.isPending || !intentInput}
           >
-            Submit Intent
+            {submitIntentMutation.isPending ? "Submitting..." : "Submit Intent"}
           </Button>
         </Paper>
       )}
@@ -164,7 +167,7 @@ export default function NearAgentPage() {
       <Paper sx={{ p: 3 }}>
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>All Intents</Typography>
-          <Button onClick={fetchIntents} disabled={loading}>Refresh</Button>
+          <Button onClick={() => refetch()} disabled={isLoading}>Refresh</Button>
         </Box>
         <List>
           {intents.map((intent) => (
@@ -223,10 +226,10 @@ export default function NearAgentPage() {
           <Button
             variant="contained"
             onClick={handleFulfillIntent}
-            disabled={loading || !resultInput}
+            disabled={fulfillIntentMutation.isPending || !resultInput}
             sx={{ mr: 2 }}
           >
-            Fulfill
+            {fulfillIntentMutation.isPending ? "Fulfilling..." : "Fulfill"}
           </Button>
           <Button variant="outlined" onClick={() => setSelectedIntent(null)}>
             Cancel

@@ -1,74 +1,58 @@
 // components/StatsSection.tsx
 import React from 'react';
-import { FiFile, FiUsers, FiHardDrive, FiDatabase } from 'react-icons/fi';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import GroupIcon from '@mui/icons-material/Group';
+import StorageIcon from '@mui/icons-material/Storage';
+import DnsIcon from '@mui/icons-material/Dns';
+
+type BgColor = 'indigo' | 'green' | 'red' | 'yellow';
+
+const stats: { icon: JSX.Element; bg: BgColor; label: string; value: string }[] = [
+  {
+    icon: <InsertDriveFileIcon sx={{ color: 'white' }} />, bg: 'indigo', label: 'Total Files', value: '20',
+  },
+  {
+    icon: <GroupIcon sx={{ color: 'white' }} />, bg: 'green', label: 'Verified Files', value: '12',
+  },
+  {
+    icon: <StorageIcon sx={{ color: 'white' }} />, bg: 'red', label: 'Total Storage', value: '10 GB',
+  },
+  {
+    icon: <DnsIcon sx={{ color: 'white' }} />, bg: 'yellow', label: 'Storage Used', value: '2.1 GB',
+  },
+];
+
+const bgColors: Record<BgColor, string> = {
+  indigo: '#6366f1',
+  green: '#22c55e',
+  red: '#ef4444',
+  yellow: '#eab308',
+};
 
 const StatsSection = () => {
   return (
-    <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 bg-indigo-500 rounded-md p-3">
-                    <FiFile className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Total Files</dt>
-                      <dd className="text-3xl font-semibold text-gray-900">20</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 bg-green-500 rounded-md p-3">
-                    <FiUsers className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Verified Files</dt>
-                      <dd className="text-3xl font-semibold text-gray-900">12</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 bg-red-500 rounded-md p-3">
-                    <FiHardDrive className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate"> Total Storage</dt>
-                      <dd className="text-3xl font-semibold text-gray-900">10 GB</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 bg-yellow-500 rounded-md p-3">
-                    <FiDatabase className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Storage Used</dt>
-                      <dd className="text-3xl font-semibold text-gray-900">2.1 GB</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+    <Box sx={{ mt: 3, display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', lg: 'repeat(4, 1fr)' } }}>
+      {stats.map((stat) => (
+        <Paper key={stat.label} elevation={3} sx={{ borderRadius: 2, overflow: 'hidden', p: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box sx={{ bgcolor: bgColors[stat.bg], borderRadius: 2, p: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {stat.icon}
+            </Box>
+            <Box sx={{ ml: 2, flex: 1 }}>
+              <Typography variant="body2" color="text.secondary" noWrap>
+                {stat.label}
+              </Typography>
+              <Typography variant="h5" fontWeight={600} color="text.primary">
+                {stat.value}
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+      ))}
+    </Box>
   );
 };
 

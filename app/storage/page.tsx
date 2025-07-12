@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Container,
   Typography,
@@ -27,6 +27,7 @@ import {
   Security as SecurityIcon
 } from '@mui/icons-material';
 import { useAccount } from 'wagmi';
+import { useBalances } from '@/hooks/useBalances';
 
 interface StorageMetrics {
   totalStorage: number;
@@ -38,63 +39,12 @@ interface StorageMetrics {
 
 const StoragePage: React.FC = () => {
   const { address, isConnected } = useAccount();
-  const [metrics, setMetrics] = useState<StorageMetrics>({
-    totalStorage: 1000,
-    usedStorage: 250,
-    availableStorage: 750,
-    allowance: 100,
-    balance: 50
-  });
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
-
-  const handleRefresh = async () => {
-    setLoading(true);
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setMetrics(prev => ({
-        ...prev,
-        usedStorage: Math.floor(Math.random() * 300) + 200
-      }));
-      setMessage({ type: 'success', text: 'Storage metrics updated successfully!' });
-    } catch {
-      setMessage({ type: 'error', text: 'Failed to refresh metrics' });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRequestAllowance = async () => {
-    setLoading(true);
-    try {
-      // Simulate blockchain transaction
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setMetrics(prev => ({ ...prev, allowance: prev.allowance + 50 }));
-      setMessage({ type: 'success', text: 'Allowance increased successfully!' });
-    } catch {
-      setMessage({ type: 'error', text: 'Failed to increase allowance' });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRequestTokens = async () => {
-    setLoading(true);
-    try {
-      // Simulate faucet request
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setMetrics(prev => ({ ...prev, balance: prev.balance + 25 }));
-      setMessage({ type: 'success', text: 'Tokens received from faucet!' });
-    } catch {
-      setMessage({ type: 'error', text: 'Failed to request tokens' });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [message, setMessage] = React.useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
+  const { data: balances, isLoading, error, refetch } = useBalances();
 
   const getStoragePercentage = () => {
-    return (metrics.usedStorage / metrics.totalStorage) * 100;
+    if (!balances) return 0;
+    return (balances.currentStorageGB / balances.currentRateAllowanceGB) * 100;
   };
 
   const getStorageColor = (percentage: number) => {
@@ -112,8 +62,8 @@ const StoragePage: React.FC = () => {
         <Button
           variant="outlined"
           startIcon={<RefreshIcon />}
-          onClick={handleRefresh}
-          disabled={loading}
+          onClick={() => refetch()}
+          disabled={isLoading}
         >
           Refresh
         </Button>
@@ -122,6 +72,11 @@ const StoragePage: React.FC = () => {
       {message && (
         <Alert severity={message.type} sx={{ mb: 3 }} onClose={() => setMessage(null)}>
           {message.text}
+        </Alert>
+      )}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {(error as Error).message}
         </Alert>
       )}
 
@@ -160,7 +115,7 @@ const StoragePage: React.FC = () => {
             <Box sx={{ mb: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="body2">Used Storage</Typography>
-                <Typography variant="body2">{metrics.usedStorage} GB / {metrics.totalStorage} GB</Typography>
+                <Typography variant="body2">{balances?.currentStorageGB ?? 0} GB / {balances?.currentRateAllowanceGB ?? 0} GB</Typography>
               </Box>
               <Box sx={{ 
                 width: '100%', 
@@ -181,7 +136,7 @@ const StoragePage: React.FC = () => {
             </Box>
             
             <Typography variant="body2" color="text.secondary">
-              Available: {metrics.availableStorage} GB
+              Available: {balances?.currentRateAllowanceGB ? (balances.currentRateAllowanceGB - balances.currentStorageGB) : 0} GB
             </Typography>
           </CardContent>
         </Card>
@@ -196,7 +151,7 @@ const StoragePage: React.FC = () => {
             
             <Box sx={{ mb: 2 }}>
               <Typography variant="h4" color="primary" gutterBottom>
-                {metrics.balance} FIL
+                {balances?.filBalanceFormatted ?? 0} FIL
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Available for storage payments
@@ -204,14 +159,7 @@ const StoragePage: React.FC = () => {
             </Box>
             
             <Box sx={{ display: 'flex', gap: 1 }}>
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={handleRequestTokens}
-                disabled={loading}
-              >
-                Request Tokens
-              </Button>
+              {/* Request Tokens button removed as per new_code */}
             </Box>
           </CardContent>
         </Card>
@@ -227,11 +175,11 @@ const StoragePage: React.FC = () => {
           
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
             <Typography variant="body1">
-              Current Allowance: <strong>{metrics.allowance} FIL</strong>
+              Current Allowance: <strong>{balances?.currentRateAllowanceFormatted ?? 0} FIL</strong>
             </Typography>
             <Chip 
-              label={metrics.allowance > 0 ? 'Active' : 'Inactive'} 
-              color={metrics.allowance > 0 ? 'success' : 'error'} 
+              label={balances?.currentRateAllowanceFormatted && parseFloat(balances.currentRateAllowanceFormatted) > 0 ? 'Active' : 'Inactive'} 
+              color={balances?.currentRateAllowanceFormatted && parseFloat(balances.currentRateAllowanceFormatted) > 0 ? 'success' : 'error'} 
               size="small" 
             />
           </Box>
@@ -240,14 +188,7 @@ const StoragePage: React.FC = () => {
             Allowance permits the storage contract to spend your tokens for storage operations.
           </Typography>
           
-          <Button
-            variant="contained"
-            onClick={handleRequestAllowance}
-            disabled={loading}
-            startIcon={loading ? <CircularProgress size={20} /> : undefined}
-          >
-            Increase Allowance (+50 FIL)
-          </Button>
+          {/* Increase Allowance button removed as per new_code */}
         </CardContent>
       </Card>
 

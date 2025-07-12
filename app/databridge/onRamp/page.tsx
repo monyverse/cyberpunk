@@ -9,7 +9,13 @@ import { ONRAMP_CONTRACT_ABI, ONRAMP_CONTRACT_ADDRESS } from '@/components/datab
 import React, { useState, useRef, ChangeEvent, DragEvent } from 'react';
 
 import { ethers } from 'ethers';
-import { Check, File, FileText, Image, Upload, UploadCloud, X } from 'lucide-react';
+import CheckIcon from '@mui/icons-material/Check';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import DescriptionIcon from '@mui/icons-material/Description';
+import ImageIcon from '@mui/icons-material/Image';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import CloseIcon from '@mui/icons-material/Close';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 
 import { uploadToIPFS } from './pinata';
@@ -175,10 +181,10 @@ export default function OnRamp() {
   };
 
   const getFileIcon = (): JSX.Element => {
-    if (!file) return <Upload className="w-8 h-8 text-blue-500" />;
+    if (!file) return <UploadFileIcon className="w-8 h-8 text-blue-500" />;
 
     if (file.type.startsWith('image/')) {
-      return <Image className="w-8 h-8 text-purple-500" />;
+      return <ImageIcon className="w-8 h-8 text-purple-500" />;
     } else if (
       file.type === 'text/plain' ||
       file.type === 'text/html' ||
@@ -186,11 +192,11 @@ export default function OnRamp() {
       file.type === 'text/javascript' ||
       file.type === 'application/json'
     ) {
-      return <FileText className="w-8 h-8 text-yellow-500" />;
+      return <DescriptionIcon className="w-8 h-8 text-yellow-500" />;
     } else if (file.type === 'application/pdf') {
-      return <FileText className="w-8 h-8 text-red-500" />;
+      return <DescriptionIcon className="w-8 h-8 text-red-500" />;
     } else {
-      return <File className="w-8 h-8 text-blue-500" />;
+      return <InsertDriveFileIcon className="w-8 h-8 text-blue-500" />;
     }
   };
 
@@ -225,7 +231,7 @@ export default function OnRamp() {
                       {isPending && <p className="items-left text-sm text-blue-800">Transaction pending...</p>}
                       {isConfirming && <p className="items-left text-sm text-blue-800">Confirming transaction...</p>}
                       {isConfirmed && hash && <div className="flex justify-center items-center flex-col">
-                        <img className="w-64 mb-16" src="https://cdn.vectorstock.com/i/500p/15/05/green-tick-checkmark-icon-vector-22691505.jpg" />
+                        <img className="w-64 mb-16" src="https://cdn.vectorstock.com/i/500p/15/05/green-tick-checkmark-icon-vector-22691505.jpg" alt="Success checkmark" />
                         <div className="flex flex-col gap-2 w-full text-[10px] sm:text-xs z-50">
                           <div
                             className="succsess-alert cursor-default flex items-center justify-between w-full h-12 sm:h-14 rounded-lg bg-[#232531] px-[10px]"
@@ -283,7 +289,7 @@ export default function OnRamp() {
                       >
                         <div className="flex flex-col items-center justify-center gap-3 cursor-pointer">
                           <div className="p-3 bg-blue-50 rounded-full">
-                            <UploadCloud className="w-8 h-8 text-blue-500" />
+                            <CloudUploadIcon className="w-8 h-8 text-blue-500" />
                           </div>
                           <div className="text-center">
                             <p className="text-sm font-medium text-gray-700">
@@ -318,7 +324,7 @@ export default function OnRamp() {
                               className="p-1 rounded-full hover:bg-gray-200 transition-colors"
                               aria-label="Remove file"
                             >
-                              <X className="w-5 h-5 text-gray-500" />
+                              <CloseIcon className="w-5 h-5 text-gray-500" />
                             </button>
                           </div>
                         </div>
@@ -363,7 +369,7 @@ export default function OnRamp() {
                             onClick={handleUpload}
                             className="flex-1 py-2 px-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center justify-center gap-2"
                           >
-                            <Check className="w-4 h-4" />
+                            <CheckIcon className="w-4 h-4" />
                             Upload File
                           </button>
                         </div>

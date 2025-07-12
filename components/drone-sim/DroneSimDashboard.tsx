@@ -41,6 +41,9 @@ import {
 import * as THREE from 'three';
 import * as fcl from "@onflow/fcl";
 import DroneSim3DView from './DroneSim3DView';
+import { assignMissionOnChain, interactWithAgentOnChain } from '@/utils/flowAgent';
+import { useAgents } from '@/hooks/useAgents';
+import { useMissions } from '@/hooks/useDrones';
 
 // FCL config for Flow testnet
 fcl.config()
@@ -81,8 +84,9 @@ interface Agent {
   id: string;
   name: string;
   type: 'onchain' | 'offchain' | 'hybrid';
-  status: 'idle' | 'active' | 'busy';
+  status: 'idle' | 'active' | 'offline';
   location: Vector3;
+  strategy?: 'default' | 'assigner' | 'trader' | 'social';
   metadata?: any;
 }
 
@@ -90,8 +94,6 @@ const CHARGING_STATION: Vector3 = { x: 0, y: 0, z: 0 };
 
 const DroneSimDashboard: React.FC = () => {
   const [drones, setDrones] = useState<Drone[]>([]);
-  const [missions, setMissions] = useState<Mission[]>([]);
-  const [agents, setAgents] = useState<Agent[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [user, setUser] = useState<{addr?: string} | null>(null);
   const [txStatus, setTxStatus] = useState<string | null>(null);
@@ -113,6 +115,21 @@ const DroneSimDashboard: React.FC = () => {
     targetX: 20,
     targetZ: 20,
   });
+
+  // Use React Query hooks for agents and missions
+  const {
+    agents,
+    isLoading: agentsLoading,
+    addAgent,
+    updateAgent,
+    performAction,
+  } = useAgents();
+  const {
+    missions,
+    isLoading: missionsLoading,
+    addMission,
+    updateMission,
+  } = useMissions();
 
   // FCL user subscription
   useEffect(() => {
@@ -235,9 +252,9 @@ const DroneSimDashboard: React.FC = () => {
                 };
               } else {
                 // Mission completed
-                setMissions(prev => prev.map(m => 
-                  m.id === mission.id ? { ...m, status: 'completed' as const } : m
-                ));
+                if (drone.lastMissionId) {
+                  updateMission(drone.lastMissionId, { status: 'completed' });
+                }
                 return { ...drone, status: 'idle' as const, lastMissionId: undefined };
               }
             }
@@ -246,42 +263,43 @@ const DroneSimDashboard: React.FC = () => {
         })
       );
 
-      // Autonomous agent logic
-      setAgents(prevAgents => 
-        prevAgents.map(agent => {
-          if (agent.status === 'idle' && Math.random() < 0.3) {
-            // Agent decides to take action
+      // Enhanced autonomous agent logic
+      agents.forEach(agent => {
+        if (agent.status === 'idle' && Math.random() < 0.3) {
+          if (agent.strategy === 'assigner') {
+            // Assigner: assign missions
             const availableMissions = missions.filter(m => m.status === 'pending');
             const availableDrones = drones.filter(d => d.status === 'idle');
-            
             if (availableMissions.length > 0 && availableDrones.length > 0) {
               const mission = availableMissions[0];
               const drone = availableDrones[0];
-              
-              // Assign mission
-              setMissions(prev => prev.map(m => 
-                m.id === mission.id ? { ...m, droneId: drone.id, status: 'in-progress' as const } : m
-              ));
-              
+              updateMission(mission.id, { droneId: drone.id, status: 'active', assignedAgentId: agent.id });
               setDrones(prev => prev.map(d => 
                 d.id === drone.id ? { ...d, status: 'in-mission' as const, lastMissionId: mission.id } : d
               ));
-
               setNotification({
-                message: `${agent.name} assigned mission "${mission.description}" to ${drone.model}`,
+                message: `${agent.name} (assigner) assigned mission "${mission.description}" to ${drone.model}`,
                 type: 'info'
               });
-
-              return { ...agent, status: 'active' as const };
+            }
+          } else if (agent.strategy === 'trader' || agent.strategy === 'social') {
+            // Trader/social: interact with another agent
+            const otherAgents = agents.filter(a => a.id !== agent.id);
+            if (otherAgents.length > 0) {
+              const target = otherAgents[Math.floor(Math.random() * otherAgents.length)];
+              setNotification({
+                message: `${agent.name} (${agent.strategy}) interacted with ${target.name}`,
+                type: 'info'
+              });
+              // Optionally, call on-chain interaction here for onchain agents
             }
           }
-          return agent;
-        })
-      );
+        }
+      });
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [isRunning, missions, drones]);
+  }, [isRunning, missions, drones, agents]);
 
   // Event listeners for on-chain transactions
   useEffect(() => {
@@ -316,49 +334,71 @@ const DroneSimDashboard: React.FC = () => {
     setNotification({ message: 'Drone added successfully', type: 'success' });
   };
 
-  const handleAddMission = () => {
-    const newMission: Mission = {
-      id: `mission_${Date.now()}`,
+  const handleAddMission = async () => {
+    const newMission = {
       droneId: '',
       pilot: user?.addr || 'user_wallet',
       description: missionForm.description || `${missionForm.type} mission`,
       type: missionForm.type as Mission['type'],
       reward: missionForm.reward,
-      status: 'pending',
+      status: 'pending' as const,
       target: { x: missionForm.targetX, y: 0, z: missionForm.targetZ },
     };
-    setMissions(prev => [...prev, newMission]);
+    await addMission(newMission);
     setMissionForm({ type: 'mapping', description: '', reward: 10, targetX: 20, targetZ: 20 });
     setNotification({ message: 'Mission created successfully', type: 'success' });
   };
 
-  const handleAddAgent = (type: Agent['type']) => {
-    const newAgent: Agent = {
-      id: `agent_${Date.now()}`,
+  const handleAddAgent = async (type: Agent['type']) => {
+    const strategies: Agent['strategy'][] = ['assigner', 'trader', 'social'];
+    const strategy = strategies[Math.floor(Math.random() * strategies.length)];
+    const newAgent = {
       name: `${type.charAt(0).toUpperCase() + type.slice(1)} Agent ${agents.length + 1}`,
       type,
-      status: 'idle',
+      status: 'idle' as const,
       location: { x: Math.random() * 80 - 40, y: 0, z: Math.random() * 80 - 40 },
+      strategy,
     };
-    setAgents(prev => [...prev, newAgent]);
-    setNotification({ message: `${type} agent added successfully`, type: 'success' });
+    await addAgent(newAgent);
+    setNotification({ message: `${type} agent (${strategy}) added successfully`, type: 'success' });
   };
 
-  const handleAssignMission = (droneId: string, missionId: string) => {
-    setDrones(prev => prev.map(d => 
+  const handleAssignMission = async (droneId: string, missionId: string) => {
+    // Find an onchain agent
+    const onchainAgent = agents.find(a => a.type === 'onchain');
+    if (!user?.addr) {
+      setNotification({ message: 'Please login with Flow to assign on-chain mission.', type: 'error' });
+      return;
+    }
+    setDrones(prev => prev.map(d =>
       d.id === droneId ? { ...d, status: 'in-mission' as const, lastMissionId: missionId } : d
     ));
-    setMissions(prev => prev.map(m => 
-      m.id === missionId ? { ...m, droneId, status: 'in-progress' as const } : m
-    ));
-    setNotification({ message: 'Mission assigned successfully', type: 'success' });
+    await updateMission(missionId, { droneId, status: 'active', assignedAgentId: onchainAgent?.id });
+    setNotification({ message: 'Assigning mission on-chain...', type: 'info' });
+    try {
+      if (onchainAgent) {
+        const txId = await assignMissionOnChain(droneId, missionId);
+        setTxStatus(`Mission assigned on-chain! Tx: ${txId}`);
+      } else {
+        setNotification({ message: 'No onchain agent available, assigned locally.', type: 'info' });
+      }
+    } catch (err) {
+      setNotification({ message: 'On-chain mission assignment failed.', type: 'error' });
+    }
   };
 
-  const handleAgentInteract = (agent1: Agent, agent2: Agent) => {
-    setNotification({ 
-      message: `${agent1.name} interacted with ${agent2.name}`, 
-      type: 'info' 
-    });
+  const handleAgentInteract = async (agent1: Agent, agent2: Agent) => {
+    setNotification({ message: `${agent1.name} interacting with ${agent2.name}...`, type: 'info' });
+    if (agent1.type === 'onchain' && user?.addr) {
+      try {
+        const txId = await interactWithAgentOnChain(agent2.id, 'Hello from agent!');
+        setTxStatus(`Agent interaction on-chain! Tx: ${txId}`);
+      } catch (err) {
+        setNotification({ message: 'On-chain agent interaction failed.', type: 'error' });
+      }
+    } else {
+      setNotification({ message: `${agent1.name} interacted with ${agent2.name} (local)`, type: 'info' });
+    }
   };
 
   const handleLoginWithFlow = async () => {
@@ -375,10 +415,13 @@ const DroneSimDashboard: React.FC = () => {
   const handleResetSimulation = () => {
     setIsRunning(false);
     setDrones([]);
-    setMissions([]);
-    setAgents([]);
+    // setMissions([]); // Removed as per edit hint
+    // setAgents([]); // Removed as per edit hint
     setNotification({ message: 'Simulation reset', type: 'info' });
   };
+
+  // When rendering or using agents, use:
+  const activeAgents = (agents as any[]).filter(a => a.status !== 'offline' && a.strategy !== 'default');
 
   return (
     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '3fr 1fr' }, gap: 2, minHeight: 600 }}>
@@ -406,9 +449,10 @@ const DroneSimDashboard: React.FC = () => {
             {user?.addr ? (
               <Chip
                 icon={<CheckCircleIcon />}
-                label={`Connected: ${user.addr.slice(0, 8)}...`}
+                label={`Flow: ${user.addr.slice(0, 8)}...`}
                 color="success"
                 variant="outlined"
+                sx={{ fontWeight: 600, mb: 1 }}
               />
             ) : (
               <Button
@@ -631,13 +675,21 @@ const DroneSimDashboard: React.FC = () => {
                   </ListItemIcon>
                   <ListItemText
                     primary={agent.name}
-                    secondary={`${agent.type} • ${agent.status}`}
+                    secondary={`${agent.type} • ${agent.status} • ${agent.strategy}`}
                   />
                   <Chip
                     label={agent.type}
                     color={agent.type === 'onchain' ? 'secondary' : 'default'}
                     size="small"
                   />
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    sx={{ ml: 1 }}
+                    onClick={() => setNotification({ message: `Agent ${agent.name} synced to chain! (dummy)`, type: 'info' })}
+                  >
+                    Sync to Chain
+                  </Button>
                 </ListItem>
               ))}
             </List>
@@ -715,12 +767,29 @@ const DroneSimDashboard: React.FC = () => {
       {txStatus && (
         <Snackbar
           open={!!txStatus}
-          autoHideDuration={6000}
+          autoHideDuration={8000}
           onClose={() => setTxStatus(null)}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
           <Alert severity="info" sx={{ width: '100%' }}>
-            {txStatus}
+            {(() => {
+              const match = txStatus.match(/Tx: ([0-9a-fA-F]{64})/);
+              if (match) {
+                const txId = match[1];
+                return <>
+                  {txStatus.replace(`Tx: ${txId}`, '')}
+                  <a
+                    href={`https://testnet.flowscan.org/transaction/${txId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#6ec1c8', marginLeft: 8, textDecoration: 'underline' }}
+                  >
+                    View on Flow Explorer
+                  </a>
+                </>;
+              }
+              return txStatus;
+            })()}
           </Alert>
         </Snackbar>
       )}

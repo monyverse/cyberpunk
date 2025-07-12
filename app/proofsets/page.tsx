@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Container,
   Typography,
@@ -31,6 +31,7 @@ import {
   Warning as WarningIcon,
   Error as ErrorIcon
 } from '@mui/icons-material';
+import { useProofsets } from "@/hooks/useProofsets";
 
 interface ProofSet {
   id: string;
@@ -44,48 +45,8 @@ interface ProofSet {
 }
 
 const ViewProofSets: React.FC = () => {
-  const [proofSets] = useState<ProofSet[]>([
-    {
-      id: '1',
-      name: 'Drone Mission Proof',
-      type: 'Mission Verification',
-      status: 'verified',
-      createdAt: '2024-01-15 14:30',
-      size: '2.5 MB',
-      hash: '0x1234567890abcdef...',
-      description: 'Proof of successful drone mission completion'
-    },
-    {
-      id: '2',
-      name: 'Asset Ownership',
-      type: 'Ownership Verification',
-      status: 'verified',
-      createdAt: '2024-01-14 09:15',
-      size: '1.8 MB',
-      hash: '0xabcdef1234567890...',
-      description: 'Proof of digital asset ownership'
-    },
-    {
-      id: '3',
-      name: 'Agent Interaction',
-      type: 'Interaction Log',
-      status: 'pending',
-      createdAt: '2024-01-13 16:45',
-      size: '3.2 MB',
-      hash: '0x7890abcdef123456...',
-      description: 'Proof of NPC agent interaction'
-    },
-    {
-      id: '4',
-      name: 'Storage Transaction',
-      type: 'Transaction Proof',
-      status: 'failed',
-      createdAt: '2024-01-12 11:20',
-      size: '1.1 MB',
-      hash: '0x4567890abcdef123...',
-      description: 'Proof of storage transaction'
-    }
-  ]);
+  const { data, isLoading, error } = useProofsets();
+  const proofSets = data?.proofsets || [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -105,26 +66,32 @@ const ViewProofSets: React.FC = () => {
     }
   };
 
+  // Actions can be implemented as mutations if they call an API
+  // const viewProofMutation = useMutation({ ... })
+  // const downloadProofMutation = useMutation({ ... })
+  // const shareProofMutation = useMutation({ ... })
+
   const handleViewProof = (proofId: string) => {
+    // Implement proof viewing logic or mutation
     console.log(`Viewing proof: ${proofId}`);
-    // Implement proof viewing logic
   };
 
   const handleDownloadProof = (proofId: string) => {
+    // Implement proof download logic or mutation
     console.log(`Downloading proof: ${proofId}`);
-    // Implement proof download logic
   };
 
   const handleShareProof = (proofId: string) => {
+    // Implement proof sharing logic or mutation
     console.log(`Sharing proof: ${proofId}`);
-    // Implement proof sharing logic
   };
 
   const stats = {
     total: proofSets.length,
-    verified: proofSets.filter(p => p.status === 'verified').length,
-    pending: proofSets.filter(p => p.status === 'pending').length,
-    failed: proofSets.filter(p => p.status === 'failed').length
+    // Example: count live, managed, and with details
+    live: proofSets.filter(p => p.isLive).length,
+    managed: proofSets.filter(p => p.isManaged).length,
+    withDetails: proofSets.filter(p => p.details).length
   };
 
   return (
@@ -143,43 +110,40 @@ const ViewProofSets: React.FC = () => {
         <Card>
           <CardContent sx={{ textAlign: 'center' }}>
             <Typography variant="h4" color="primary" gutterBottom>
-              {stats.total}
+              {stats.total.toString()}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Total Proof Sets
             </Typography>
           </CardContent>
         </Card>
-        
         <Card>
           <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h4" color="success.main" gutterBottom>
-              {stats.verified}
+            <Typography variant="h4" color="success" gutterBottom>
+              {stats.live.toString()}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Verified
+              Live
             </Typography>
           </CardContent>
         </Card>
-        
         <Card>
           <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h4" color="warning.main" gutterBottom>
-              {stats.pending}
+            <Typography variant="h4" color="warning" gutterBottom>
+              {stats.managed.toString()}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Pending
+              Managed
             </Typography>
           </CardContent>
         </Card>
-        
         <Card>
           <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h4" color="error.main" gutterBottom>
-              {stats.failed}
+            <Typography variant="h4" color="info" gutterBottom>
+              {stats.withDetails.toString()}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Failed
+              With Details
             </Typography>
           </CardContent>
         </Card>
@@ -191,123 +155,66 @@ const ViewProofSets: React.FC = () => {
           <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <VerifiedIcon /> Proof Sets
           </Typography>
-          
-          <TableContainer component={Paper} sx={{ bgcolor: 'background.paper' }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Type</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Created</TableCell>
-                  <TableCell>Size</TableCell>
-                  <TableCell>Hash</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {proofSets.map((proof) => (
-                  <TableRow key={proof.id} hover>
-                    <TableCell>
-                      <Box>
-                        <Typography variant="body2" fontWeight={600}>
-                          {proof.name}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {proof.description}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Chip label={proof.type} size="small" variant="outlined" />
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        icon={getStatusIcon(proof.status)}
-                        label={proof.status}
-                        color={getStatusColor(proof.status) as any}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {proof.createdAt}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {proof.size}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>
-                        {proof.hash}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', gap: 1 }}>
+          {isLoading ? (
+            <Typography>Loading...</Typography>
+          ) : error ? (
+            <Typography color="error">{(error as Error).message}</Typography>
+          ) : (
+            <TableContainer component={Paper} sx={{ bgcolor: 'background.paper' }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>ProofSet ID</TableCell>
+                    <TableCell>Metadata</TableCell>
+                    <TableCell>Live</TableCell>
+                    <TableCell>Managed</TableCell>
+                    <TableCell>Provider</TableCell>
+                    <TableCell>Details</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {proofSets.map((proof) => (
+                    <TableRow key={proof.pdpVerifierProofSetId} hover>
+                      <TableCell>{proof.pdpVerifierProofSetId}</TableCell>
+                      <TableCell>{proof.metadata}</TableCell>
+                      <TableCell>{proof.isLive ? 'Yes' : 'No'}</TableCell>
+                      <TableCell>{proof.isManaged ? 'Yes' : 'No'}</TableCell>
+                      <TableCell>{proof.provider?.pdpUrl || '-'}</TableCell>
+                      <TableCell>
+                        {proof.details ? (
+                          <Box>
+                            <Typography variant="caption">Roots: {proof.details.roots.length}</Typography>
+                            <br />
+                            <Typography variant="caption">Next Epoch: {proof.details.nextChallengeEpoch}</Typography>
+                          </Box>
+                        ) : (
+                          <Typography variant="caption" color="text.secondary">No details</Typography>
+                        )}
+                      </TableCell>
+                      <TableCell>
                         <Tooltip title="View Proof">
-                          <IconButton
-                            size="small"
-                            onClick={() => handleViewProof(proof.id)}
-                            color="primary"
-                          >
+                          <IconButton onClick={() => handleViewProof(proof.pdpVerifierProofSetId)}>
                             <ViewIcon />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title="Download">
-                          <IconButton
-                            size="small"
-                            onClick={() => handleDownloadProof(proof.id)}
-                            color="secondary"
-                          >
+                        <Tooltip title="Download Proof">
+                          <IconButton onClick={() => handleDownloadProof(proof.pdpVerifierProofSetId)}>
                             <DownloadIcon />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title="Share">
-                          <IconButton
-                            size="small"
-                            onClick={() => handleShareProof(proof.id)}
-                            color="info"
-                          >
+                        <Tooltip title="Share Proof">
+                          <IconButton onClick={() => handleShareProof(proof.pdpVerifierProofSetId)}>
                             <ShareIcon />
                           </IconButton>
                         </Tooltip>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
-
-      {/* Recent Activity */}
-      <Card sx={{ mt: 4 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Recent Activity
-          </Typography>
-          
-          <List>
-            {proofSets.slice(0, 3).map((proof) => (
-              <ListItem key={proof.id} divider>
-                <ListItemIcon>
-                  <VerifiedIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary={proof.name}
-                  secondary={`${proof.type} • ${proof.createdAt} • ${proof.status}`}
-                />
-                <Chip
-                  label={proof.status}
-                  color={getStatusColor(proof.status) as any}
-                  size="small"
-                />
-              </ListItem>
-            ))}
-          </List>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
         </CardContent>
       </Card>
     </Container>

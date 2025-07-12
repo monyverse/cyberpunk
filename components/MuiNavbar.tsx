@@ -14,7 +14,8 @@ import {
   useTheme,
   useMediaQuery,
   Snackbar,
-  Alert
+  Alert,
+  Tooltip
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -24,7 +25,8 @@ import {
   CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
 import { useAccount } from 'wagmi';
-import { useFlow } from '@/providers/FlowProvider';
+import { useFlowUser } from '@/hooks/useFlowUser';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 interface MuiNavbarProps {
   onMenuClick: () => void;
@@ -42,11 +44,11 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
   const { address, isConnected } = useAccount();
 
   // Flow hooks
-  const flow = useFlow();
+  const flow = useFlowUser();
 
   // Helper: determine which network is active
   const getActiveNetwork = () => {
-    if (flow.isConnected) return 'Flow Testnet';
+    if (flow && flow.addr) return 'Flow Testnet';
     // For EVM, just show the selected network (local state)
     return currentNetwork;
   };
@@ -187,71 +189,28 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
         </Box>
 
         {/* Wallet Connection */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {isConnected ? (
-            <>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          {/* EVM Wallet (RainbowKit) */}
+          <ConnectButton
+            showBalance={false}
+            accountStatus={{ smallScreen: 'avatar', largeScreen: 'full' }}
+            chainStatus={{ smallScreen: 'icon', largeScreen: 'full' }}
+            label="EVM Wallet"
+          />
+          {/* Flow Wallet */}
+          {flow && flow.addr ? (
+            <Tooltip title={flow.addr} arrow>
               <Chip
                 icon={<CheckCircleIcon />}
-                label={`${address?.slice(0, 6)}...${address?.slice(-4)}`}
+                label={`Flow: ${flow.addr.slice(0, 6)}...${flow.addr.slice(-4)}`}
                 color="success"
                 variant="outlined"
                 onClick={handleWalletClick}
-                sx={{ fontWeight: 600 }}
+                sx={{ fontWeight: 600, cursor: 'pointer' }}
               />
-              <Menu
-                anchorEl={walletAnchorEl}
-                open={Boolean(walletAnchorEl)}
-                onClose={handleWalletClose}
-                PaperProps={{
-                  sx: { bgcolor: 'background.paper', border: 1, borderColor: 'divider' }
-                }}
-              >
-                <MenuItem onClick={disconnectWallet}>
-                  Disconnect Wallet
-                </MenuItem>
-              </Menu>
-            </>
-          ) : flow.isConnected ? (
-            <>
-              <Chip
-                icon={<CheckCircleIcon />}
-                label={`Flow: ${flow.account?.address?.slice(0, 6)}...${flow.account?.address?.slice(-4)}`}
-                color="success"
-                variant="outlined"
-                onClick={handleWalletClick}
-                sx={{ fontWeight: 600 }}
-              />
-              <Menu
-                anchorEl={walletAnchorEl}
-                open={Boolean(walletAnchorEl)}
-                onClose={handleWalletClose}
-                PaperProps={{
-                  sx: { bgcolor: 'background.paper', border: 1, borderColor: 'divider' }
-                }}
-              >
-                <MenuItem onClick={logoutFlow}>
-                  Logout Flow
-                </MenuItem>
-              </Menu>
-            </>
+            </Tooltip>
           ) : (
-            <>
-              <Button
-                variant="outlined"
-                startIcon={<WalletIcon />}
-                onClick={connectWallet}
-                sx={{ 
-                  color: 'primary.main',
-                  borderColor: 'primary.main',
-                  '&:hover': {
-                    borderColor: 'primary.dark',
-                    bgcolor: 'primary.main',
-                    color: 'primary.contrastText'
-                  }
-                }}
-              >
-                Connect Wallet
-              </Button>
+            <Tooltip title="Connect Flow Wallet" arrow>
               <Button
                 variant="contained"
                 startIcon={<LoginIcon />}
@@ -266,7 +225,7 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
               >
                 Login with Flow
               </Button>
-            </>
+            </Tooltip>
           )}
         </Box>
       </Toolbar>

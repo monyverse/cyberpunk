@@ -2,6 +2,10 @@
 
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useBalance } from 'wagmi';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
 
 export const NavbarWalletComponent = () => {
   const { address } = useAccount();
@@ -25,10 +29,10 @@ export const NavbarWalletComponent = () => {
           chain &&
           (!authenticationStatus || authenticationStatus === 'authenticated');
         return (
-          <div
+          <Box
             {...(!ready && {
               'aria-hidden': true,
-              style: {
+              sx: {
                 opacity: 0,
                 pointerEvents: 'none',
                 userSelect: 'none',
@@ -39,57 +43,40 @@ export const NavbarWalletComponent = () => {
               if (connected) {
                 if (chain.unsupported) {
                   return (
-                    <button
+                    <Button
                       onClick={openChainModal}
-                      className="text-black items-center inline-flex bg-white border-2 border-black duration-200 ease-in-out focus:outline-none hover:bg-black hover:shadow-none hover:text-white justify-center rounded-[20px] shadow-[5px_5px_black] text-center transform transition w-full lg:px-8 lg:py-2 lg:text-xl px-8 py-2"
+                      color="warning"
+                      variant="contained"
+                      sx={{ borderRadius: 5, fontWeight: 600, px: 3, py: 1 }}
                     >
                       Wrong network
-                    </button>
+                    </Button>
                   );
                 }
                 return (
-                  <div style={{ display: 'flex', gap: 12 }}>
-                    <div className="text-black items-center inline-flex bg-white border-2 border-black duration-200 ease-in-out focus:outline-none hover:bg-black hover:shadow-none hover:text-white justify-center rounded-[20px] shadow-[5px_5px_black] text-center transform transition w-full lg:px-8 lg:py-2 lg:text-xl px-8 py-2">
-                      <div style={{ display: 'flex', gap: 12 }}>
-                        <button
-                          onClick={openChainModal}
-                          style={{ display: 'flex', alignItems: 'center' }}
-                          type="button"
-                        >
-                          {chain.hasIcon && (
-                            <div
-                              style={{
-                                background: chain.iconBackground,
-                                width: 20,
-                                height: 20,
-                                borderRadius: 999,
-                                overflow: 'hidden',
-                                marginRight: 4,
-                              }}
-                            >
-                              {chain.iconUrl && (
-                                <img
-                                  alt={chain.name ?? 'Chain icon'}
-                                  src={chain.iconUrl}
-                                  style={{ width: 20, height: 20 }}
-                                />
-                              )}
-                            </div>
-                          )}
-                          {chain.name}
-                        </button>
-                        |
-                        <button onClick={openAccountModal} type="button">
-                          {account.displayName}
-                          {account.displayBalance ? ` (${account.displayBalance})` : ''}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Button
+                      onClick={openChainModal}
+                      variant="outlined"
+                      color="primary"
+                      sx={{ borderRadius: 5, fontWeight: 600, px: 2, py: 1, display: 'flex', alignItems: 'center' }}
+                      startIcon={chain.hasIcon && chain.iconUrl ? (
+                        <Box component="span" sx={{ bgcolor: chain.iconBackground, width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', mr: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <img alt={chain.name ?? 'Chain icon'} src={chain.iconUrl} style={{ width: 20, height: 20 }} />
+                        </Box>
+                      ) : null}
+                    >
+                      {chain.name}
+                    </Button>
+                    <Button onClick={openAccountModal} variant="contained" color="primary" sx={{ borderRadius: 5, fontWeight: 600, px: 2, py: 1 }}>
+                      {account.displayName}
+                      {account.displayBalance ? ` (${account.displayBalance})` : ''}
+                    </Button>
+                  </Box>
                 );
               }
             })()}
-          </div>
+          </Box>
         );
       }}
     </ConnectButton.Custom>

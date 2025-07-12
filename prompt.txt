@@ -1,0 +1,54 @@
+This error is a common React hydration issue in Next.js 15, specifically related to Web3/Wagmi providers trying to update state during the initial render/hydration process. The problem occurs when the ConnectModal component tries to update its state while the Hydrate component is still rendering.
+Solution 1: Wrap Web3 Providers in a Client Component with useEffect
+Create a separate client component for your Web3 providers:
+tsx// components/Web3Provider.tsx
+'use client';
+
+import { WagmiProvider } from 'wagmi';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ConnectKitProvider } from 'connectkit';
+import { config } from '@/lib/wagmi'; // your wagmi config
+import { useState, useEffect } from 'react';
+
+const queryClient = new QueryClient();
+
+export function Web3Provider({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <>{children}</>;
+  }
+
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <ConnectKitProvider>
+          {children}
+        </ConnectKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+Then update your root layout:
+tsx// app/layout.tsx
+import { Web3Provider } from '@/components/Web3Provider';
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>
+        <Web3Provider>
+          {children}
+        </Web3Provider>
+      </body>
+    </html>
+  );
+}

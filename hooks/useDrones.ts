@@ -1,4 +1,7 @@
+"use client"; 
+
 import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Drone, DroneMission, DroneTelemetry } from '../types';
 
 export interface UseDronesReturn {
@@ -12,6 +15,13 @@ export interface UseDronesReturn {
   removeMission: (id: string) => void;
   assignMission: (droneId: string, missionId: string) => void;
   updateTelemetry: (droneId: string, telemetry: DroneTelemetry) => void;
+}
+
+export interface UseMissionsReturn {
+  missions: DroneMission[];
+  isLoading: boolean;
+  addMission: (mission: Omit<DroneMission, 'id'>) => Promise<DroneMission>;
+  updateMission: (id: string, updates: Partial<DroneMission>) => Promise<DroneMission>;
 }
 
 const DRONES_KEY = 'metaverse_drones';
@@ -94,5 +104,54 @@ export function useDrones(): UseDronesReturn {
     removeMission,
     assignMission,
     updateTelemetry,
+  };
+}
+
+export function useMissions(): UseMissionsReturn {
+  const queryClient = useQueryClient();
+
+  // Fetch missions
+  const { data, isLoading } = useQuery<DroneMission[]>({
+    queryKey: ['missions'],
+    queryFn: async () => {
+      const res = await fetch('/api/missions');
+      const json = await res.json();
+      return json.missions;
+    },
+  });
+
+  // Add mission
+  const addMutation = useMutation({
+    mutationFn: async (mission: Omit<DroneMission, 'id'>) => {
+      const res = await fetch('/api/missions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(mission),
+      });
+      const json = await res.json();
+      return json.mission as DroneMission;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['missions'] }),
+  });
+
+  // Update mission
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<DroneMission> }) => {
+      const res = await fetch('/api/missions', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, ...updates }),
+      });
+      const json = await res.json();
+      return json.mission as DroneMission;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['missions'] }),
+  });
+
+  return {
+    missions: data || [],
+    isLoading,
+    addMission: (mission) => addMutation.mutateAsync(mission),
+    updateMission: (id, updates) => updateMutation.mutateAsync({ id, updates }),
   };
 } 

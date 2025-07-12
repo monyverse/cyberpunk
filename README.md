@@ -111,6 +111,17 @@ Open [http://localhost:3000](http://localhost:3000) to enter the CyberPunk Metav
 - Monitor storage capacity and persistence periods
 - View proof sets and file verification status
 
+## Analytics Dashboard
+
+The app includes a modern Analytics Dashboard at `/analytics`:
+- **Live stats**: See total agents, active agents, total missions, and completed missions in real time.
+- **MUI-based UI**: Clean, responsive layout using Material UI components.
+- **Ready for expansion**: Placeholders for charts and advanced analytics (e.g., mission completion over time, agent activity, etc.).
+
+**How to use:**
+- Navigate to `/analytics` in your browser after starting the app.
+- The dashboard will automatically update as agents and missions are created or completed.
+
 ## 🏗️ Architecture
 
 ### Core Components

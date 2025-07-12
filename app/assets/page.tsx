@@ -28,6 +28,7 @@ import {
   AudioFile as AudioIcon,
   Description as DocumentIcon
 } from '@mui/icons-material';
+import { useMetaverseAssets } from '@/hooks/useMetaverseAssets';
 
 interface Asset {
   id: string;
@@ -40,58 +41,38 @@ interface Asset {
 
 const MetaverseAssetManager: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
-  const [assets] = useState<Asset[]>([
-    {
-      id: '1',
-      name: 'Cyberpunk Avatar 1',
-      type: 'avatar',
-      size: '2.5 MB',
-      uploadedAt: '2024-01-15',
-      status: 'uploaded'
-    },
-    {
-      id: '2',
-      name: 'Drone Model',
-      type: '3d-model',
-      size: '15.2 MB',
-      uploadedAt: '2024-01-14',
-      status: 'uploaded'
-    },
-    {
-      id: '3',
-      name: 'Background Music',
-      type: 'audio',
-      size: '8.7 MB',
-      uploadedAt: '2024-01-13',
-      status: 'processing'
-    }
-  ]);
-
-  const storageStats = {
-    used: 45.2,
-    total: 100,
-    images: 12,
-    videos: 8,
-    audio: 5,
-    documents: 3
-  };
+  const {
+    assets,
+    isLoadingAssets,
+    uploadAsset,
+    storage,
+    isLoadingStorage,
+    error,
+    clearError
+  } = useMetaverseAssets();
 
   const assetCategories = [
     { label: 'All Assets', icon: <StorageIcon /> },
     { label: 'Avatars', icon: <PersonIcon /> },
-    { label: 'Images', icon: <ImageIcon /> },
-    { label: 'Videos', icon: <VideoIcon /> },
+    { label: 'Buildings', icon: <StorageIcon /> },
+    { label: 'Vehicles', icon: <StorageIcon /> },
+    { label: 'Weapons', icon: <StorageIcon /> },
+    { label: 'Clothing', icon: <StorageIcon /> },
+    { label: 'Textures', icon: <ImageIcon /> },
     { label: 'Audio', icon: <AudioIcon /> },
-    { label: 'Documents', icon: <DocumentIcon /> }
+    { label: 'Scripts', icon: <DocumentIcon /> }
   ];
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
-  const handleFileUpload = (file: File) => {
-    console.log('Uploading file:', file.name);
-    // Implement file upload logic
+  const handleFileUpload = async (file: File) => {
+    try {
+      await uploadAsset(file, 'generic');
+    } catch (e) {
+      // handle error if needed
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -102,6 +83,23 @@ const MetaverseAssetManager: React.FC = () => {
       default: return 'default';
     }
   };
+
+  // Map tab index to asset type string as used in FilecoinAsset
+  const tabTypeMap = [
+    null, // 0: All Assets
+    'avatars',
+    'buildings',
+    'vehicles',
+    'weapons',
+    'clothing',
+    'textures',
+    'audio',
+    'scripts'
+  ];
+
+  const filteredAssets = activeTab === 0
+    ? assets
+    : assets.filter(asset => asset.type === tabTypeMap[activeTab]);
 
   return (
     <Container maxWidth="xl" sx={{ mt: 2 }}>
@@ -121,27 +119,34 @@ const MetaverseAssetManager: React.FC = () => {
             <Typography variant="h6" gutterBottom>
               Storage Overview
             </Typography>
-            <Box sx={{ mb: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                <Typography variant="body2">Used Storage</Typography>
-                <Typography variant="body2">{storageStats.used}GB / {storageStats.total}GB</Typography>
-              </Box>
-              <LinearProgress 
-                variant="determinate" 
-                value={(storageStats.used / storageStats.total) * 100}
-                sx={{ height: 8, borderRadius: 4 }}
-              />
-            </Box>
-            <Box sx={{ 
-              display: 'grid', 
-              gridTemplateColumns: '1fr 1fr',
-              gap: 2
-            }}>
-              <Typography variant="body2" color="text.secondary">Images: {storageStats.images}</Typography>
-              <Typography variant="body2" color="text.secondary">Videos: {storageStats.videos}</Typography>
-              <Typography variant="body2" color="text.secondary">Audio: {storageStats.audio}</Typography>
-              <Typography variant="body2" color="text.secondary">Documents: {storageStats.documents}</Typography>
-            </Box>
+            {isLoadingStorage ? (
+              <LinearProgress />
+            ) : error ? (
+              <Typography color="error">{error}</Typography>
+            ) : storage ? (
+              <>
+                <Box sx={{ mb: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="body2">Used Storage</Typography>
+                    <Typography variant="body2">{(storage.totalUsed / (1024 * 1024 * 1024)).toFixed(2)}GB / {(storage.totalCapacity / (1024 * 1024 * 1024)).toFixed(2)}GB</Typography>
+                  </Box>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={(storage.totalUsed / storage.totalCapacity) * 100}
+                    sx={{ height: 8, borderRadius: 4 }}
+                  />
+                </Box>
+                <Box sx={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: 2
+                }}>
+                  {Object.entries(storage.categories).map(([cat, val]) => (
+                    <Typography key={cat} variant="body2" color="text.secondary">{cat}: {(val / (1024 * 1024 * 1024)).toFixed(2)}GB</Typography>
+                  ))}
+                </Box>
+              </>
+            ) : null}
           </CardContent>
         </Card>
 
@@ -156,6 +161,7 @@ const MetaverseAssetManager: React.FC = () => {
                 startIcon={<UploadIcon />}
                 component="label"
                 sx={{ justifyContent: 'flex-start' }}
+                // Optionally, you can add a loading state here
               >
                 Upload New Asset
                 <input
@@ -208,30 +214,35 @@ const MetaverseAssetManager: React.FC = () => {
           <Typography variant="h6" gutterBottom>
             {assetCategories[activeTab].label}
           </Typography>
-          <List>
-            {assets.map((asset) => (
-              <ListItem key={asset.id} divider>
-                <ListItemAvatar>
-                  <Avatar>
-                    {asset.type === 'avatar' && <PersonIcon />}
-                    {asset.type === '3d-model' && <ImageIcon />}
-                    {asset.type === 'audio' && <AudioIcon />}
-                    {asset.type === 'video' && <VideoIcon />}
-                    {asset.type === 'document' && <DocumentIcon />}
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary={asset.name}
-                  secondary={`${asset.size} • Uploaded ${asset.uploadedAt}`}
-                />
-                <Chip
-                  label={asset.status}
-                  color={getStatusColor(asset.status) as any}
-                  size="small"
-                />
-              </ListItem>
-            ))}
-          </List>
+          {isLoadingAssets ? (
+            <LinearProgress />
+          ) : error ? (
+            <Typography color="error">{error}</Typography>
+          ) : (
+            <List>
+              {filteredAssets.map((asset) => (
+                <ListItem key={asset.id} divider>
+                  <ListItemAvatar>
+                    <Avatar>
+                      {asset.type === 'avatars' && <PersonIcon />}
+                      {asset.type === 'buildings' && <StorageIcon />}
+                      {asset.type === 'vehicles' && <StorageIcon />}
+                      {asset.type === 'weapons' && <StorageIcon />}
+                      {asset.type === 'clothing' && <StorageIcon />}
+                      {asset.type === 'textures' && <ImageIcon />}
+                      {asset.type === 'audio' && <AudioIcon />}
+                      {asset.type === 'scripts' && <DocumentIcon />}
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={asset.name}
+                    secondary={`${asset.size} • Uploaded ${asset.uploadedAt}`}
+                  />
+                  {/* No status field on FilecoinAsset, so skip status chip */}
+                </ListItem>
+              ))}
+            </List>
+          )}
         </CardContent>
       </Card>
     </Container>
