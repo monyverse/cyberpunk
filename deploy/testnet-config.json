@@ -1,0 +1,54 @@
+{
+  "filecoin": {
+    "calibration": {
+      "rpcUrl": "https://api.calibration.node.glif.io/rpc/v1",
+      "explorer": "https://calibration.filfox.info",
+      "faucet": "https://faucet.calibration.fildev.network",
+      "contracts": {
+        "storage": "0x1234567890123456789012345678901234567890",
+        "bridge": "0x1234567890123456789012345678901234567890",
+        "payment": "0x1234567890123456789012345678901234567890"
+      },
+      "deployment": {
+        "script": "scripts/deploy-filecoin.js",
+        "environment": "calibration"
+      }
+    }
+  },
+  "near": {
+    "testnet": {
+      "rpcUrl": "https://rpc.testnet.near.org",
+      "explorer": "https://explorer.testnet.near.org",
+      "faucet": "https://wallet.testnet.near.org",
+      "contracts": {
+        "intent": "cyberpunk.testnet",
+        "agent": "cyberpunk-agent.testnet",
+        "bridge": "cyberpunk-bridge.testnet"
+      },
+      "deployment": {
+        "script": "scripts/deploy-near.js",
+        "environment": "testnet"
+      }
+    }
+  },
+  "ethereum": {
+    "sepolia": {
+      "rpcUrl": "https://sepolia.infura.io/v3/YOUR_PROJECT_ID",
+      "explorer": "https://sepolia.etherscan.io",
+      "faucet": "https://sepoliafaucet.com",
+      "contracts": {
+        "bridge": "0x1234567890123456789012345678901234567890"
+      }
+    }
+  },
+  "polygon": {
+    "mumbai": {
+      "rpcUrl": "https://polygon-mumbai.infura.io/v3/YOUR_PROJECT_ID",
+      "explorer": "https://mumbai.polygonscan.com",
+      "faucet": "https://faucet.polygon.technology",
+      "contracts": {
+        "bridge": "0x1234567890123456789012345678901234567890"
+      }
+    }
+  }
+} 

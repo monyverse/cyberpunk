@@ -25,10 +25,10 @@ import {
   Login as LoginIcon,
   ExpandMore as ExpandMoreIcon,
   CheckCircle as CheckCircleIcon,
-  PlayArrow as DemoIcon
+  PlayArrow as DemoIcon,
+  Logout as LogoutIcon
 } from '@mui/icons-material';
-import { useAccount } from 'wagmi';
-import { useFlowUser } from '@/hooks/useFlowUser';
+import { useAccount, useDisconnect } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 interface MuiNavbarProps {
@@ -39,7 +39,6 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [networkAnchorEl, setNetworkAnchorEl] = useState<null | HTMLElement>(null);
-  const [walletAnchorEl, setWalletAnchorEl] = useState<null | HTMLElement>(null);
   const [currentNetwork, setCurrentNetwork] = useState('Filecoin Calibration');
   const [showEvmToast, setShowEvmToast] = useState(false);
   const [isDemoMode, setIsDemoMode] = useState(false);
@@ -47,14 +46,10 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
 
   // WAGMI hooks for EVM/Filecoin
   const { address, isConnected } = useAccount();
-
-  // Flow hooks
-  const flow = useFlowUser();
+  const { disconnect: disconnectEVMWallet } = useDisconnect();
 
   // Helper: determine which network is active
   const getActiveNetwork = () => {
-    if (flow && flow.addr) return 'Flow Testnet';
-    // For EVM, just show the selected network (local state)
     return currentNetwork;
   };
 
@@ -66,45 +61,13 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
     setCurrentNetwork(network);
     setNetworkAnchorEl(null);
     if (network === 'Flow Testnet') {
-      flow.connect();
+      // RainbowKit will handle Flow wallet connection automatically
+      setShowEvmToast(true);
     } else if (network === 'Near') {
       // No provider logic yet, just update UI
     } else if (network === 'Filecoin Mainnet' || network === 'Filecoin Calibration') {
       setShowEvmToast(true);
     }
-  };
-
-  const handleWalletClick = (event: React.MouseEvent<HTMLElement>) => {
-    setWalletAnchorEl(event.currentTarget);
-  };
-
-  const handleWalletClose = () => {
-    setWalletAnchorEl(null);
-  };
-
-  const handleNetworkClose = () => {
-    setNetworkAnchorEl(null);
-  };
-
-  const connectWallet = () => {
-    // Use RainbowKit modal or similar in real app
-    // For now, just close menu
-    handleWalletClose();
-  };
-
-  const disconnectWallet = () => {
-    // No direct disconnect in wagmi, but you can reset connectors if needed
-    handleWalletClose();
-  };
-
-  const loginWithFlow = () => {
-    flow.connect();
-    handleWalletClose();
-  };
-
-  const logoutFlow = () => {
-    flow.disconnect();
-    handleWalletClose();
   };
 
   const handleDemoModeToggle = async () => {
@@ -212,8 +175,6 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
                 selected={getActiveNetwork() === network.name}
               >
                 {network.name}
-
-                
               </MenuItem>
             ))}
           </Menu>
@@ -249,7 +210,7 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
 
         {/* Wallet Connection */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          {/* EVM Wallet (RainbowKit) */}
+          {/* RainbowKit Wallet (supports EVM, Flow, and other chains) */}
           <ConnectButton.Custom>
             {({
               account,
@@ -282,56 +243,42 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
                 );
               }
               return (
-                <Button
-                  variant="outlined"
-                  startIcon={<WalletIcon />}
-                  onClick={openAccountModal}
-                  sx={{
-                    color: 'primary.main',
-                    borderColor: 'primary.main',
-                    '&:hover': {
-                      borderColor: 'primary.dark',
-                      bgcolor: 'primary.main',
-                      color: 'primary.contrastText'
-                    }
-                  }}
-                >
-                  {account.displayName}
-                </Button>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<WalletIcon />}
+                    onClick={openAccountModal}
+                    sx={{
+                      color: 'primary.main',
+                      borderColor: 'primary.main',
+                      '&:hover': {
+                        borderColor: 'primary.dark',
+                        bgcolor: 'primary.main',
+                        color: 'primary.contrastText'
+                      }
+                    }}
+                  >
+                    {account.displayName}
+                  </Button>
+                  <Tooltip title="Disconnect Wallet" arrow>
+                    <IconButton
+                      size="small"
+                      onClick={() => disconnectEVMWallet()}
+                      sx={{
+                        color: 'error.main',
+                        '&:hover': {
+                          bgcolor: 'error.main',
+                          color: 'error.contrastText'
+                        }
+                      }}
+                    >
+                      <LogoutIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
               );
             }}
           </ConnectButton.Custom>
-
-          {/* Flow Wallet */}
-          {flow && flow.addr ? (
-            <Tooltip title={flow.addr} arrow>
-              <Chip
-                icon={<CheckCircleIcon />}
-                label={`Flow: ${flow.addr.slice(0, 6)}...${flow.addr.slice(-4)}`}
-                color="success"
-                variant="outlined"
-                onClick={handleWalletClick}
-                sx={{ fontWeight: 600, cursor: 'pointer' }}
-              />
-            </Tooltip>
-          ) : (
-            <Tooltip title="Connect Flow Wallet" arrow>
-              <Button
-                variant="contained"
-                startIcon={<LoginIcon />}
-                onClick={loginWithFlow}
-                sx={{ 
-                  bgcolor: 'secondary.main',
-                  color: 'secondary.contrastText',
-                  '&:hover': {
-                    bgcolor: 'secondary.dark'
-                  }
-                }}
-              >
-                Login with Flow
-              </Button>
-            </Tooltip>
-          )}
         </Box>
       </Toolbar>
       <Snackbar
@@ -341,7 +288,7 @@ const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert onClose={() => setShowEvmToast(false)} severity="info" sx={{ width: '100%' }}>
-          Please use your wallet modal (e.g. MetaMask, RainbowKit) to switch EVM networks.
+          Please use your wallet modal (e.g. MetaMask, RainbowKit) to switch networks.
         </Alert>
       </Snackbar>
       

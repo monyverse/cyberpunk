@@ -2,7 +2,6 @@
 
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { ConfettiProvider } from "@/providers/ConfettiProvider";
-import FlowProvider from "@/providers/FlowProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
@@ -44,9 +43,7 @@ export function Providers({ children }: { children: React.ReactNode }): React.Re
               modalSize="compact" 
               initialChain={filecoinCalibration.id}
             >
-              <FlowProvider>
-                {children}
-              </FlowProvider>
+              {children}
             </RainbowKitProvider>
           </WagmiProvider>
         </QueryClientProvider>

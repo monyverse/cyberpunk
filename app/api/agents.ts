@@ -7,20 +7,43 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const data = await req.json();
-  const newAgent: Agent = {
-    ...data,
-    id: `agent-${Date.now()}`,
-    status: 'idle',
-    level: 1,
-    experience: 0,
-    reputation: 0,
-    skills: [],
-    logs: [],
-    missionHistory: [],
-  };
-  agents.push(newAgent);
-  return NextResponse.json({ agent: newAgent });
+  try {
+    const data = await req.json();
+    
+    // Validate required fields
+    if (!data.name || !data.type) {
+      return NextResponse.json(
+        { error: 'Missing required fields: name and type' },
+        { status: 400 }
+      );
+    }
+
+    const newAgent: Agent = {
+      id: `agent-${Date.now()}`,
+      name: data.name,
+      type: data.type,
+      status: 'idle',
+      location: data.location || { x: 0, y: 0, z: 0 },
+      strategy: data.strategy || 'default',
+      level: data.level || 1,
+      experience: data.experience || 0,
+      reputation: data.reputation || 0,
+      skills: data.skills || [],
+      logs: data.logs || [],
+      missionHistory: data.missionHistory || [],
+      metadata: data.metadata || {},
+    };
+    
+    agents.push(newAgent);
+    console.log('Agent created successfully:', newAgent);
+    return NextResponse.json({ agent: newAgent });
+  } catch (error) {
+    console.error('Error creating agent:', error);
+    return NextResponse.json(
+      { error: 'Failed to create agent' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function PATCH(req: NextRequest) {
