@@ -7,7 +7,6 @@ import {
   Button,
   TextField,
   Box,
-  Grid,
   List,
   ListItem,
   ListItemText,
@@ -17,13 +16,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Card,
-  CardContent,
-  Divider,
   Alert,
-  Snackbar,
-  IconButton,
-  Tooltip
+  Snackbar
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -32,8 +26,6 @@ import {
   Person as AgentIcon,
   Login as LoginIcon,
   CheckCircle as CheckCircleIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon,
   PlayArrow as PlayIcon,
   Stop as StopIcon,
   Refresh as RefreshIcon
@@ -46,9 +38,6 @@ import { useMissions } from '@/hooks/useDrones';
 import { useAccount } from 'wagmi';
 import { 
   assignMissionToBestAgent, 
-  detectAnomalies, 
-  generateOptimizationSuggestions,
-  mlPredictor,
   droneSwarmAI
 } from '@/utils/aiUtils';
 import DroneSimVR from './DroneSimVR';
@@ -100,8 +89,6 @@ const DroneSimDashboard: React.FC = () => {
   const [txStatus, setTxStatus] = useState<string | null>(null);
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error' | 'info'} | null>(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
-  const [anomalies, setAnomalies] = useState<Array<{ type: string; severity: 'low' | 'medium' | 'high'; message: string }>>([]);
-  const [suggestions, setSuggestions] = useState<Array<{ type: string; suggestion: string; impact: 'low' | 'medium' | 'high' }>>([]);
   const [aiInsights, setAiInsights] = useState<{ successRate: number; avgTime: number; efficiency: number }>({ successRate: 0, avgTime: 0, efficiency: 0 });
   const [isVRMode, setIsVRMode] = useState(false);
   
@@ -125,14 +112,11 @@ const DroneSimDashboard: React.FC = () => {
   // Use React Query hooks for agents and missions
   const {
     agents,
-    isLoading: agentsLoading,
     addAgent,
     updateAgent,
-    performAction,
   } = useAgents();
   const {
     missions,
-    isLoading: missionsLoading,
     addMission,
     updateMission,
   } = useMissions();
@@ -301,7 +285,7 @@ const DroneSimDashboard: React.FC = () => {
 
       // Enhanced autonomous agent logic
       agents.forEach(agent => {
-        if (agent.status === 'idle' && Math.random() < 0.3) {
+          if (agent.status === 'idle' && Math.random() < 0.3) {
           if (agent.strategy === 'assigner') {
             // Assigner: assign missions
             const availableMissions = missions.filter(m => m.status === 'pending');
@@ -343,10 +327,10 @@ const DroneSimDashboard: React.FC = () => {
     // For now, we'll simulate the event handling
     const interval = setInterval(() => {
       if (isRunning && Math.random() < 0.1) {
-        setNotification({
+      setNotification({
           message: `Simulated Flow event: Mission assigned on-chain`,
           type: 'info'
-        });
+      });
       }
     }, 10000);
     
@@ -390,9 +374,9 @@ const DroneSimDashboard: React.FC = () => {
       
       const newAgent = {
         name: agentName,
-        type,
+      type,
         status: 'idle' as const,
-        location: { x: Math.random() * 80 - 40, y: 0, z: Math.random() * 80 - 40 },
+      location: { x: Math.random() * 80 - 40, y: 0, z: Math.random() * 80 - 40 },
         strategy,
         level: 1,
         experience: 0,
@@ -465,7 +449,7 @@ const DroneSimDashboard: React.FC = () => {
       setNotification({ message: 'Please login with Flow to assign on-chain mission.', type: 'error' });
       return;
     }
-    setDrones(prev => prev.map(d =>
+    setDrones(prev => prev.map(d => 
       d.id === droneId ? { ...d, status: 'in-mission' as const, lastMissionId: missionId } : d
     ));
     await updateMission(missionId, { droneId, status: 'active', assignedAgentId: onchainAgent?.id });
@@ -508,7 +492,7 @@ const DroneSimDashboard: React.FC = () => {
   const handleAgentInteract = async (agent1: LocalAgent, agent2: LocalAgent) => {
     setNotification({ message: `${agent1.name} interacting with ${agent2.name}...`, type: 'info' });
     if (agent1.type === 'onchain' && user?.addr) {
-      try {
+    try {
         const txId = await interactWithAgentOnChain(agent2.id, 'Hello from agent!');
         setTxStatus(`Agent interaction on-chain! Tx: ${txId}`);
       } catch (err) {
@@ -535,9 +519,6 @@ const DroneSimDashboard: React.FC = () => {
     setNotification({ message: 'Simulation reset', type: 'info' });
   };
 
-  // When rendering or using agents, use:
-  const activeAgents = (agents as any[]).filter(a => a.status !== 'offline' && a.strategy !== 'default');
-
   return (
     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '3fr 1fr' }, gap: 2, minHeight: 600 }}>
       {/* 3D Scene */}
@@ -553,16 +534,16 @@ const DroneSimDashboard: React.FC = () => {
             isRunning={isRunning}
           />
         ) : (
-          <DroneSim3DView
-            drones={drones}
+        <DroneSim3DView
+          drones={drones}
             agents={agents as LocalAgent[]}
-            selectedDroneId={selectedDroneId}
-            onDroneClick={(drone) => {
-              setSelectedDroneId(drone.id);
-              setDroneInfoSnackbar({ open: true, message: `${drone.model} | Battery: ${drone.battery.toFixed(1)}% | Status: ${drone.status}` });
-            }}
+          selectedDroneId={selectedDroneId}
+          onDroneClick={(drone) => {
+            setSelectedDroneId(drone.id);
+            setDroneInfoSnackbar({ open: true, message: `${drone.model} | Battery: ${drone.battery.toFixed(1)}% | Status: ${drone.status}` });
+          }}
             isRunning={isRunning}
-          />
+        />
         )}
       </Box>
 
@@ -601,8 +582,6 @@ const DroneSimDashboard: React.FC = () => {
               </Button>
             )}
           </Box>
-
-          <Divider sx={{ my: 2 }} />
 
           {/* Simulation Controls */}
           <Box sx={{ mb: 3 }}>
@@ -653,8 +632,6 @@ const DroneSimDashboard: React.FC = () => {
             />
           </Box>
 
-          <Divider sx={{ my: 2 }} />
-
           {/* Add Drones */}
           <Box sx={{ mb: 3 }}>
             <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -688,8 +665,6 @@ const DroneSimDashboard: React.FC = () => {
               ))}
             </List>
           </Box>
-
-          <Divider sx={{ my: 2 }} />
 
           {/* Add Missions */}
           <Box sx={{ mb: 3 }}>
@@ -777,8 +752,6 @@ const DroneSimDashboard: React.FC = () => {
             </List>
           </Box>
 
-          <Divider sx={{ my: 2 }} />
-
           {/* Add Agents */}
           <Box sx={{ mb: 3 }}>
             <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -845,7 +818,6 @@ const DroneSimDashboard: React.FC = () => {
           {/* Mission Assignment */}
           {missions.filter(m => m.status === 'pending').length > 0 && drones.filter(d => d.status === 'idle').length > 0 && (
             <>
-              <Divider sx={{ my: 2 }} />
               <Box>
                 <Typography variant="h6" gutterBottom>Assign Missions</Typography>
                 {missions.filter(m => m.status === 'pending').map(mission => (
@@ -881,7 +853,6 @@ const DroneSimDashboard: React.FC = () => {
           {/* AI Insights */}
           {isRunning && (
             <>
-              <Divider sx={{ my: 2 }} />
               <Box>
                 <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   🤖 AI Insights
@@ -913,7 +884,6 @@ const DroneSimDashboard: React.FC = () => {
           {/* Agent Interactions */}
           {agents.length > 1 && (
             <>
-              <Divider sx={{ my: 2 }} />
               <Box>
                 <Typography variant="h6" gutterBottom>Agent Interactions</Typography>
                 {agents.map(agent1 => 

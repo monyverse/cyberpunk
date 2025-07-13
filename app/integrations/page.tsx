@@ -517,6 +517,38 @@ const IntegrationsPage: React.FC = () => {
         </Card>
       </TabPanel>
 
+      {/* Integration Status */}
+      <Box sx={{ mt: 6 }}>
+        <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 3, fontWeight: 600 }}>
+          Integration Status
+        </Typography>
+        
+        <Grid container spacing={2}>
+          {integrations.map((integration) => (
+            <Grid item xs={12} sm={6} md={4} key={integration.id}>
+              <Card sx={{ p: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Box sx={{ color: integration.color, mr: 1 }}>
+                      {integration.icon}
+                    </Box>
+                    <Typography variant="body2" fontWeight={500}>
+                      {integration.name}
+                    </Typography>
+                  </Box>
+                  <Chip 
+                    label="Live" 
+                    color="success" 
+                    size="small"
+                    sx={{ fontSize: '0.7rem' }}
+                  />
+                </Box>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
       {/* Ultimate Agent Dialog */}
       <Dialog open={ultimateDialog} onClose={() => setUltimateDialog(false)}>
         <DialogTitle>Create Ultimate Agent</DialogTitle>

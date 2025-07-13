@@ -1,27 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { DroneMission, MissionLog, Agent } from '../../types';
-import { agents } from '../../utils/agentStore';
+import { DroneMission, MissionLog, Agent } from '../../../types';
+import { agents } from '../../../utils/agentStore';
+import { missions as demoMissions } from '../../../utils/demoSeed';
 
 // In-memory mission store (mock)
-const missions: DroneMission[] = [
+const missions = [
   {
-    id: 'mission-1',
-    droneId: 'drone-1',
-    pilot: 'user-1',
-    description: 'Map sector A',
-    type: 'mapping',
-    status: 'pending',
+    id: '1',
+    title: 'Data Collection Mission',
+    description: 'Collect environmental data from specified coordinates',
+    status: 'active',
     reward: 100,
-    difficulty: 'easy',
-    xpReward: 10,
-    reputationReward: 1,
-    missionLog: [],
-    metadata: {},
+    location: { lat: 40.7128, lng: -74.0060 }
   },
+  {
+    id: '2', 
+    title: 'Surveillance Mission',
+    description: 'Monitor area for suspicious activity',
+    status: 'completed',
+    reward: 150,
+    location: { lat: 34.0522, lng: -118.2437 }
+  }
 ];
 
 export async function GET() {
-  return NextResponse.json({ missions });
+  // Check if we have demo missions and use them instead
+  const missionsToReturn = demoMissions.length > 0 ? demoMissions : missions;
+  
+  return NextResponse.json({ missions: missionsToReturn });
 }
 
 export async function POST(req: NextRequest) {
@@ -39,7 +45,11 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const data = await req.json();
   const { id, ...updates } = data;
-  const mission = missions.find((m) => m.id === id);
+  
+  // Check demo missions first, then fallback to regular missions
+  const allMissions = [...demoMissions, ...missions];
+  const mission = allMissions.find((m) => m.id === id);
+  
   if (!mission) return NextResponse.json({ error: 'Mission not found' }, { status: 404 });
 
   // If status is being set to 'completed', update agent XP, logs, etc.

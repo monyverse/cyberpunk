@@ -3,14 +3,12 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMetaverseAssets } from '../hooks/useMetaverseAssets';
 import { config } from '../config';
-import { FilecoinAsset } from '../types';
 import { Upload, Trash2, Eye, Download, FolderOpen } from 'lucide-react';
 
 type AssetType = keyof typeof config.metaverse.assetTypes;
 
 export function MetaverseAssetManager() {
   const { 
-    assets, 
     storage, 
     uploadAsset, 
     deleteAsset, 

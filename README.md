@@ -1,27 +1,6 @@
 # 🚀 CyberPunk Metaverse - Multi-Sponsor Integration Platform
 
-> **The World's First Comprehensive Multi-Sponsor Web3 Integration Platform**  
-> Integrating 8 major hackathon sponsors into a unified metaverse experience
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Next.js](https://img.shields.io/badge/Next.js-15.3.2-black)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
-[![Sponsors](https://img.shields.io/badge/Sponsors-8%2B-brightgreen)](https://github.com/yourusername/cyberpunk)
-
-## 🏆 Hackathon Prize Eligibility
-
-This project qualifies for **8 major hackathon prizes** with a total value of **$140,000+**:
-
-| Sponsor | Prize | Integration | Status |
-|---------|-------|-------------|--------|
-| **Filecoin Foundation** | $50,000 | FVM + Programmable Storage | ✅ Complete |
-| **NEAR Foundation** | $25,000 | AI Agents + Cross-chain | ✅ Complete |
-| **WeatherXM** | $15,000 | Real-time Weather Data | ✅ Complete |
-| **Mosaia** | $10,000 | AI Agent Tooling | ✅ Complete |
-| **Nouns** | $10,000 | ENS + IPFS Deployment | ✅ Complete |
-| **Bio AI** | $10,000 | DID + GDPR Compliance | ✅ Complete |
-| **Reppo** | $10,000 | MCP Solver Nodes | ✅ Complete |
-| **Spexi** | $10,000 | Aerial Imagery Analysis | ✅ Complete |
 
 ## 🌟 Features
 
@@ -311,45 +290,6 @@ npm run test:near
 npm run test:weatherxm
 ```
 
-## 📊 Performance Metrics
-
-- **Contract Deployment:** <30 seconds
-- **Cross-chain Transactions:** <2 minutes
-- **AI Agent Response:** <2 seconds
-- **Weather Data Fetch:** <1 second
-- **Image Analysis:** <10 seconds
-- **DID Creation:** <5 seconds
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🏆 Acknowledgments
-
-- **Filecoin Foundation** - For FVM and programmable storage
-- **NEAR Foundation** - For AI agents and cross-chain execution
-- **WeatherXM** - For real-time weather data
-- **Mosaia** - For AI agent tooling
-- **Nouns** - For ENS + IPFS deployment
-- **Bio AI** - For DID and GDPR compliance
-- **Reppo** - For MCP solver nodes
-- **Spexi** - For aerial imagery analysis
-
-## 📞 Contact
-
-- **Project Lead:** [Your Name]
-- **Email:** [your.email@example.com]
-- **GitHub:** [github.com/yourusername]
-- **Demo:** [your-demo-url.com]
-- **Documentation:** [docs.yourproject.com]
 
 ## 🔗 Links
 

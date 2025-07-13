@@ -1,11 +1,3 @@
-# CyberPunk Metaverse - Multi-Sponsor Integration Demo Script
-
-## 🎬 Demo Overview
-**Duration:** 15-20 minutes  
-**Target Audience:** Hackathon Judges & Sponsor Representatives  
-**Demo Type:** Live Interactive Walkthrough  
-
----
 
 ## 🎯 Demo Structure
 

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { VRButton, XR, Interactive, useXR } from "@react-three/xr";
+import { useXR } from "@react-three/xr";
 import { OrbitControls, Sky, Environment, Text } from "@react-three/drei";
 import { Physics, useBox, usePlane } from "@react-three/cannon";
 import { Mesh } from "three";
@@ -133,8 +133,6 @@ export default function DroneSimVR({
   onDroneClick,
   isRunning = false 
 }: DroneSimVRProps) {
-  const [isVRActive, setIsVRActive] = useState(false);
-
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <Canvas camera={{ position: [0, 5, 10], fov: 75 }}>

@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useRef, useEffect, useState, useMemo } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Sky, Environment, Text, Html, useGLTF, Float } from "@react-three/drei";
+import React, { useEffect, useMemo } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls, Sky, Environment, Html, Float } from "@react-three/drei";
 import { Physics, useBox, usePlane, useSphere } from "@react-three/cannon";
 import { Mesh, Vector3 as ThreeVector3, Color } from "three";
-import * as THREE from 'three';
 import type { LocalAgent } from './DroneSimDashboard';
 
 interface Vector3 {

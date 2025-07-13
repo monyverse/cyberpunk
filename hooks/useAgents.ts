@@ -26,6 +26,15 @@ export interface UseAgentsReturn {
   addAgentReppo: (agent: Omit<Agent, 'id'>) => Promise<Agent>;
   addAgentSpexi: (agent: Omit<Agent, 'id'>, location: { lat: number; lng: number }) => Promise<Agent>;
   addAgentUltimate: (agent: Omit<Agent, 'id'>) => Promise<Agent>;
+  addSpexiAgent: (agent: Omit<Agent, 'id'>, location: { lat: number; lng: number }) => Promise<Agent>;
+  addFilecoinAgent: (agent: Omit<Agent, 'id'>) => Promise<Agent>;
+  addNEARAgent: (agent: Omit<Agent, 'id'>) => Promise<Agent>;
+  addWeatherXMAgent: (agent: Omit<Agent, 'id'>) => Promise<Agent>;
+  addMosaiaAgent: (agent: Omit<Agent, 'id'>) => Promise<Agent>;
+  addSecuredFinanceAgent: (agent: Omit<Agent, 'id'>) => Promise<Agent>;
+  addNounsAgent: (agent: Omit<Agent, 'id'>, ensName: string) => Promise<Agent>;
+  addBioAIAgent: (agent: Omit<Agent, 'id'>) => Promise<Agent>;
+  addReppoAgent: (agent: Omit<Agent, 'id'>) => Promise<Agent>;
 }
 
 export function useAgents(): UseAgentsReturn {
@@ -355,7 +364,7 @@ export function useAgents(): UseAgentsReturn {
         const defiData = await reppoFactory.processDeFiMarketData('ETH', ['price', 'volume', 'liquidity']);
 
         const reppoAgent = {
-          ...agent,
+            ...agent,
           reppoData: {
             solvers: [defiSolver, sportsSolver, iotSolver],
             nbaAnalysis: nbaStats,

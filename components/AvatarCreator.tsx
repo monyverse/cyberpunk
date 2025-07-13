@@ -1,244 +1,365 @@
-"use client";
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useMetaverse } from '../hooks/useMetaverse';
-import { config } from '../config';
+import { useState, useEffect } from 'react';
+import { AvatarCreator } from '@readyplayerme/react-avatar-creator';
+import { useAvatar } from '../hooks/useAvatar';
+import { useAccount } from 'wagmi';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  Alert,
+  CircularProgress,
+  Chip,
+  Grid,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  Tooltip,
+  Divider
+} from '@mui/material';
+import {
+  CloudUpload as UploadIcon,
+  Storage as StorageIcon,
+  Edit as EditIcon,
+  Visibility as ViewIcon,
+  CheckCircle as SuccessIcon,
+  Error as ErrorIcon,
+  Info as InfoIcon,
+  Wallet as WalletIcon,
+  Refresh as RefreshIcon
+} from '@mui/icons-material';
 
-interface AvatarAppearance {
-  skinColor: string;
-  hairStyle: string;
-  hairColor: string;
-  eyeColor: string;
+interface AvatarCreatorProps {
+  onAvatarCreated?: (url: string) => void;
+  initialAvatarUrl?: string;
 }
 
-const skinColors = [
-  '#8B4513', '#CD853F', '#DEB887', '#F5DEB3', '#FFE4B5',
-  '#FFDAB9', '#FFE4E1', '#F0E68C', '#BDB76B', '#556B2F'
-];
-
-const hairStyles = [
-  'short', 'long', 'spiky', 'mohawk', 'dreadlocks', 
-  'buzzcut', 'undercut', 'fade', 'quiff', 'slicked'
-];
-
-const hairColors = [
-  '#000000', '#8B4513', '#A0522D', '#CD853F', '#D2691E',
-  '#FF4500', '#FF6347', '#FF69B4', '#FF1493', '#8A2BE2',
-  '#4B0082', '#0000FF', '#00CED1', '#00FF00', '#FFFF00',
-  '#FFD700', '#FFA500', '#FF0000', '#FFFFFF', '#808080'
-];
-
-const eyeColors = [
-  '#00ff41', '#ff006e', '#ffd700', '#00ffff', '#ff00ff',
-  '#0000ff', '#ff4500', '#32cd32', '#ff1493', '#00bfff',
-  '#ff6347', '#9370db', '#20b2aa', '#ff69b4', '#00fa9a'
-];
-
-export function AvatarCreator() {
-  const { createAvatar, isLoadingAvatar, error, clearError } = useMetaverse();
+export default function AvatarCreatorComponent({ onAvatarCreated, initialAvatarUrl }: AvatarCreatorProps) {
+  const [showCreator, setShowCreator] = useState(!initialAvatarUrl);
+  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl || '');
+  const [showMetadataDialog, setShowMetadataDialog] = useState(false);
   const [avatarName, setAvatarName] = useState('');
-  const [appearance, setAppearance] = useState<AvatarAppearance>({
-    skinColor: '#8B4513',
-    hairStyle: 'short',
-    hairColor: '#000000',
-    eyeColor: '#00ff41'
-  });
+  const [avatarDescription, setAvatarDescription] = useState('');
+  
+  const { address, isConnected } = useAccount();
+  const { avatar, loading, error, storeAvatar, hasAvatar } = useAvatar();
 
-  const handleCreateAvatar = async () => {
-    if (!avatarName.trim()) {
-      clearError();
+  const handleAvatarExported = ({ url }: { url: string }) => {
+    setAvatarUrl(url);
+    setShowCreator(false);
+    onAvatarCreated?.(url);
+    setShowMetadataDialog(true);
+  };
+
+  const handleStoreAvatar = async () => {
+    if (!isConnected) {
+      alert('Please connect your wallet first');
       return;
     }
-    
-    await createAvatar(avatarName, appearance);
+
+    const result = await storeAvatar(avatarUrl, {
+      name: avatarName || 'CyberPunk Avatar',
+      description: avatarDescription || 'A futuristic avatar for the metaverse',
+      traits: {
+        platform: 'readyplayerme',
+        style: 'cyberpunk',
+        createdAt: new Date().toISOString()
+      }
+    });
+
+    if (result) {
+      setShowMetadataDialog(false);
+    }
+  };
+
+  const handleEditAvatar = () => {
+    setShowCreator(true);
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-2xl mx-auto p-6 rounded-lg"
-      style={{
-        background: `linear-gradient(135deg, ${config.metaverse.theme.backgroundColor} 0%, #1a1a1a 100%)`,
-        border: `2px solid ${config.metaverse.theme.primaryColor}`,
-        boxShadow: `0 0 20px ${config.metaverse.theme.primaryColor}40`
-      }}
-    >
-      <motion.h2 
-        className="text-3xl font-bold mb-6 text-center"
-        style={{ color: config.metaverse.theme.primaryColor }}
+    <Box sx={{ 
+      minHeight: '100vh', 
+      background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%)',
+      color: 'white',
+      p: 3
+    }}>
+      <Grid container spacing={3}>
+        {/* Header */}
+        <Grid item xs={12}>
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <Typography variant="h3" sx={{ 
+              fontWeight: 'bold', 
+              background: 'linear-gradient(45deg, #00ff41, #ff006e)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              mb: 2
+            }}>
+              Avatar Creator
+            </Typography>
+            <Typography variant="h6" sx={{ color: '#888', mb: 3 }}>
+              Create your digital identity in the metaverse
+            </Typography>
+            
+            {/* Wallet Status */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, mb: 3 }}>
+              <Chip
+                icon={isConnected ? <SuccessIcon /> : <ErrorIcon />}
+                label={isConnected ? 'Wallet Connected' : 'Wallet Not Connected'}
+                color={isConnected ? 'success' : 'error'}
+                variant="outlined"
+              />
+              {isConnected && (
+                <Chip
+                  icon={<WalletIcon />}
+                  label={`${address?.slice(0, 6)}...${address?.slice(-4)}`}
+                  color="primary"
+                  variant="outlined"
+                />
+              )}
+            </Box>
+          </Box>
+        </Grid>
+
+        {/* Main Content */}
+        <Grid item xs={12} md={8}>
+          <Card sx={{ 
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: 3
+          }}>
+            <CardContent sx={{ p: 0, minHeight: '600px' }}>
+              {showCreator ? (
+                <Box sx={{ position: 'relative', height: '600px' }}>
+                  <AvatarCreator
+                    subdomain="cyberpunk-1y2xpj"
+                    onAvatarExported={handleAvatarExported}
+                    frameInitializer={undefined}
+                  />
+                </Box>
+              ) : (
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  height: '600px',
+                  p: 4
+                }}>
+                  {avatarUrl ? (
+                    <>
+                      <Typography variant="h5" sx={{ mb: 3, color: '#00ff41' }}>
+                        Avatar Created Successfully!
+                      </Typography>
+                      <Box sx={{ 
+                        width: 200, 
+                        height: 200, 
+                        borderRadius: '50%',
+                        background: 'linear-gradient(45deg, #00ff41, #ff006e)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        mb: 3
+                      }}>
+                        <Typography variant="h4">🎭</Typography>
+                      </Box>
+                      <Button
+                        variant="contained"
+                        startIcon={<EditIcon />}
+                        onClick={handleEditAvatar}
+                        sx={{ 
+                          background: 'linear-gradient(45deg, #00ff41, #ff006e)',
+                          mb: 2
+                        }}
+                      >
+                        Edit Avatar
+                      </Button>
+                    </>
+                  ) : (
+                    <Typography variant="h6" color="text.secondary">
+                      No avatar created yet
+                    </Typography>
+                  )}
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Sidebar */}
+        <Grid item xs={12} md={4}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {/* Current Avatar Status */}
+            <Card sx={{ 
+              background: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              <CardContent>
+                <Typography variant="h6" sx={{ mb: 2, color: '#00ff41' }}>
+                  Avatar Status
+                </Typography>
+                
+                {loading && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                    <CircularProgress size={20} />
+                    <Typography>Processing...</Typography>
+                  </Box>
+                )}
+
+                {error && (
+                  <Alert severity="error" sx={{ mb: 2 }}>
+                    {error}
+                  </Alert>
+                )}
+
+                {hasAvatar && avatar && (
+                  <Box>
+                    <Chip
+                      icon={<SuccessIcon />}
+                      label="Stored on Filecoin/IPFS"
+                      color="success"
+                      sx={{ mb: 2 }}
+                    />
+                    <Typography variant="body2" sx={{ mb: 1 }}>
+                      <strong>Name:</strong> {avatar.metadata.name}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 1 }}>
+                      <strong>IPFS Hash:</strong> {avatar.ipfsHash?.slice(0, 10)}...
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 2 }}>
+                      <strong>Stored:</strong> {new Date(avatar.storedAt || '').toLocaleDateString()}
+                    </Typography>
+                  </Box>
+                )}
+
+                {!hasAvatar && !loading && (
+                  <Typography variant="body2" color="text.secondary">
+                    No avatar stored yet
+                  </Typography>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Filecoin Integration Info */}
+            <Card sx={{ 
+              background: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              <CardContent>
+                <Typography variant="h6" sx={{ mb: 2, color: '#ff006e' }}>
+                  <StorageIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+                  Filecoin Storage
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 2 }}>
+                  Your avatar is securely stored on Filecoin/IPFS using Pinata's decentralized storage network.
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <Chip label="Decentralized" size="small" color="primary" />
+                  <Chip label="Immutable" size="small" color="secondary" />
+                  <Chip label="Censorship Resistant" size="small" color="info" />
+                </Box>
+              </CardContent>
+            </Card>
+
+            {/* Quick Actions */}
+            <Card sx={{ 
+              background: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              <CardContent>
+                <Typography variant="h6" sx={{ mb: 2, color: '#ffd700' }}>
+                  Quick Actions
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<ViewIcon />}
+                    fullWidth
+                    disabled={!hasAvatar}
+                    sx={{ borderColor: '#00ff41', color: '#00ff41' }}
+                  >
+                    View in Metaverse
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    startIcon={<RefreshIcon />}
+                    fullWidth
+                    onClick={() => window.location.reload()}
+                    sx={{ borderColor: '#ff006e', color: '#ff006e' }}
+                  >
+                    Refresh
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
+        </Grid>
+      </Grid>
+
+      {/* Metadata Dialog */}
+      <Dialog 
+        open={showMetadataDialog} 
+        onClose={() => setShowMetadataDialog(false)}
+        maxWidth="sm"
+        fullWidth
       >
-        CREATE YOUR CYBERPUNK AVATAR
-      </motion.h2>
-
-      {error && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="mb-4 p-3 rounded bg-red-900/50 border border-red-500 text-red-200"
-        >
-          {error}
-        </motion.div>
-      )}
-
-      <div className="space-y-6">
-        {/* Avatar Name */}
-        <div>
-          <label className="block text-sm font-semibold mb-2" style={{ color: config.metaverse.theme.textColor }}>
-            AVATAR NAME
-          </label>
-          <input
-            type="text"
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(45deg, #00ff41, #ff006e)',
+          color: 'white'
+        }}>
+          Store Avatar on Filecoin/IPFS
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3 }}>
+          <Typography variant="body2" sx={{ mb: 3 }}>
+            Your avatar will be stored securely on the decentralized Filecoin network via IPFS.
+          </Typography>
+          
+          <TextField
+            fullWidth
+            label="Avatar Name"
             value={avatarName}
             onChange={(e) => setAvatarName(e.target.value)}
-            className="w-full p-3 rounded bg-gray-900/50 border border-gray-600 text-white placeholder-gray-400 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-400/20"
-            placeholder="Enter your cyberpunk name..."
-            maxLength={20}
+            sx={{ mb: 2 }}
+            placeholder="Enter a name for your avatar"
           />
-        </div>
-
-        {/* Skin Color */}
-        <div>
-          <label className="block text-sm font-semibold mb-2" style={{ color: config.metaverse.theme.textColor }}>
-            SKIN TONE
-          </label>
-          <div className="grid grid-cols-5 gap-2">
-            {skinColors.map((color) => (
-              <motion.button
-                key={color}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setAppearance(prev => ({ ...prev, skinColor: color }))}
-                className={`w-12 h-12 rounded-full border-2 transition-all ${
-                  appearance.skinColor === color 
-                    ? 'border-green-400 shadow-lg shadow-green-400/50' 
-                    : 'border-gray-600 hover:border-gray-400'
-                }`}
-                style={{ backgroundColor: color }}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Hair Style */}
-        <div>
-          <label className="block text-sm font-semibold mb-2" style={{ color: config.metaverse.theme.textColor }}>
-            HAIR STYLE
-          </label>
-          <select
-            value={appearance.hairStyle}
-            onChange={(e) => setAppearance(prev => ({ ...prev, hairStyle: e.target.value }))}
-            className="w-full p-3 rounded bg-gray-900/50 border border-gray-600 text-white focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-400/20"
+          
+          <TextField
+            fullWidth
+            label="Description"
+            value={avatarDescription}
+            onChange={(e) => setAvatarDescription(e.target.value)}
+            multiline
+            rows={3}
+            placeholder="Describe your avatar"
+          />
+        </DialogContent>
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={() => setShowMetadataDialog(false)}
+            sx={{ color: '#888' }}
           >
-            {hairStyles.map((style) => (
-              <option key={style} value={style} className="bg-gray-900">
-                {style.toUpperCase()}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Hair Color */}
-        <div>
-          <label className="block text-sm font-semibold mb-2" style={{ color: config.metaverse.theme.textColor }}>
-            HAIR COLOR
-          </label>
-          <div className="grid grid-cols-5 gap-2">
-            {hairColors.map((color) => (
-              <motion.button
-                key={color}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setAppearance(prev => ({ ...prev, hairColor: color }))}
-                className={`w-12 h-12 rounded-full border-2 transition-all ${
-                  appearance.hairColor === color 
-                    ? 'border-green-400 shadow-lg shadow-green-400/50' 
-                    : 'border-gray-600 hover:border-gray-400'
-                }`}
-                style={{ backgroundColor: color }}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Eye Color */}
-        <div>
-          <label className="block text-sm font-semibold mb-2" style={{ color: config.metaverse.theme.textColor }}>
-            EYE COLOR (CYBERNETIC)
-          </label>
-          <div className="grid grid-cols-5 gap-2">
-            {eyeColors.map((color) => (
-              <motion.button
-                key={color}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setAppearance(prev => ({ ...prev, eyeColor: color }))}
-                className={`w-12 h-12 rounded-full border-2 transition-all ${
-                  appearance.eyeColor === color 
-                    ? 'border-green-400 shadow-lg shadow-green-400/50' 
-                    : 'border-gray-600 hover:border-gray-400'
-                }`}
-                style={{ 
-                  backgroundColor: color,
-                  boxShadow: appearance.eyeColor === color ? `0 0 15px ${color}` : 'none'
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Avatar Preview */}
-        <div className="mt-8 p-4 rounded bg-gray-900/30 border border-gray-700">
-          <h3 className="text-lg font-semibold mb-3 text-center" style={{ color: config.metaverse.theme.textColor }}>
-            AVATAR PREVIEW
-          </h3>
-          <div className="flex items-center justify-center space-x-4">
-            <div className="relative">
-              {/* Head */}
-              <div 
-                className="w-16 h-16 rounded-full border-2"
-                style={{ 
-                  backgroundColor: appearance.skinColor,
-                  borderColor: config.metaverse.theme.primaryColor
-                }}
-              >
-                {/* Eyes */}
-                <div className="absolute top-4 left-3 w-3 h-3 rounded-full" style={{ backgroundColor: appearance.eyeColor }} />
-                <div className="absolute top-4 right-3 w-3 h-3 rounded-full" style={{ backgroundColor: appearance.eyeColor }} />
-              </div>
-              {/* Hair */}
-              <div 
-                className="absolute -top-2 left-0 right-0 h-4 rounded-t-full"
-                style={{ backgroundColor: appearance.hairColor }}
-              />
-            </div>
-            <div>
-              <p className="text-lg font-bold" style={{ color: config.metaverse.theme.primaryColor }}>
-                {avatarName || 'UNNAMED'}
-              </p>
-              <p className="text-sm text-gray-400">
-                Level 1 • Cyberpunk
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Create Button */}
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={handleCreateAvatar}
-          disabled={!avatarName.trim() || isLoadingAvatar}
-          className="w-full py-4 px-6 rounded font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{
-            background: `linear-gradient(135deg, ${config.metaverse.theme.primaryColor} 0%, ${config.metaverse.theme.secondaryColor} 100%)`,
-            color: config.metaverse.theme.backgroundColor,
-            boxShadow: `0 0 20px ${config.metaverse.theme.primaryColor}40`
-          }}
-        >
-          {isLoadingAvatar ? 'CREATING AVATAR...' : 'ENTER THE METAVERSE'}
-        </motion.button>
-      </div>
-    </motion.div>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleStoreAvatar}
+            variant="contained"
+            disabled={loading}
+            sx={{ 
+              background: 'linear-gradient(45deg, #00ff41, #ff006e)'
+            }}
+          >
+            {loading ? <CircularProgress size={20} /> : 'Store on Filecoin'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 } 

@@ -29,18 +29,20 @@ export default function NearAgentPage() {
   // Initialize NEAR connection
   useEffect(() => {
     (async () => {
+      const keyStore = new keyStores.BrowserLocalStorageKeyStore();
       const near = await connect({
+        keyStore,
+        headers: {},
         networkId: "testnet",
-        keyStore: new keyStores.BrowserLocalStorageKeyStore(),
         nodeUrl: "https://rpc.testnet.near.org",
         walletUrl: "https://wallet.testnet.near.org",
         helperUrl: "https://helper.testnet.near.org",
       });
-      const walletConnection = new WalletConnection(near, "cyberpunk-app");
-      setWallet(walletConnection);
-      setAccountId(walletConnection.getAccountId() || null);
+      const nearWallet = new WalletConnection(near, "cyberpunk-app");
+      setWallet(nearWallet);
+      setAccountId(nearWallet.getAccountId() || null);
 
-      const contractInstance = new Contract(walletConnection.account(), CONTRACT_ID, {
+      const contractInstance = new Contract(nearWallet.account(), CONTRACT_ID, {
         viewMethods: ["get_intents"],
         changeMethods: ["submit_intent", "fulfill_intent"],
       });

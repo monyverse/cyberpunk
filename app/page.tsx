@@ -1,308 +1,401 @@
 "use client";
 
-import React from 'react';
-import { Container, Typography, Box, Card, CardContent, Button, Chip, Grid } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, Container, Button, Grid, Card, CardContent, Chip, IconButton, Tooltip } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import DashboardCard from '../components/DashboardCard';
+import Metaverse3DCanvas from '../components/Metaverse3DCanvas';
+import { useAgents } from '../hooks/useAgents';
+import { useDrones } from '../hooks/useDrones';
 import {
-  CloudUpload as AssetsIcon,
-  Person as AvatarsIcon,
-  Storage as StorageIcon,
-  Verified as ProofSetsIcon,
-  Flight as DroneSimIcon,
-  WbSunny as WeatherIcon,
-  Psychology as AIIcon,
-  Language as BridgeIcon,
-  Security as SecurityIcon,
-  PhotoCamera as AerialIcon,
-  Storage as FilecoinIcon,
-  AccountTree as NEARIcon
-} from '@mui/icons-material';
+  Plane,
+  Play,
+  Pause,
+  RotateCcw,
+  Eye,
+  EyeOff,
+  Target,
+  Users,
+  Zap,
+  TrendingUp
+} from 'lucide-react';
 
 const HomePage: React.FC = () => {
   const router = useRouter();
+  const [isSimulationActive, setIsSimulationActive] = useState(false);
+  const [showAdvancedControls, setShowAdvancedControls] = useState(false);
 
-  const features = [
-    {
-      title: 'Assets',
-      description: 'Manage your metaverse assets, upload new content, and organize your digital collection.',
-      icon: <AssetsIcon sx={{ fontSize: 40 }} />,
-      path: '/assets',
-      color: 'primary.main',
-      sponsor: null
-    },
-    {
-      title: 'Avatars',
-      description: 'Create and customize your cyberpunk avatar with unique characteristics and traits.',
-      icon: <AvatarsIcon sx={{ fontSize: 40 }} />,
-      path: '/avatars',
-      color: 'secondary.main',
-      sponsor: null
-    },
-    {
-      title: 'Storage',
-      description: 'Monitor your wallet balances, storage status, and manage your digital storage allowance.',
-      icon: <StorageIcon sx={{ fontSize: 40 }} />,
-      path: '/storage',
-      color: 'success.main',
-      sponsor: null
-    },
-    {
-      title: 'Proof Sets',
-      description: 'View and manage your proof sets for verification and authentication.',
-      icon: <ProofSetsIcon sx={{ fontSize: 40 }} />,
-      path: '/proofsets',
-      color: 'warning.main',
-      sponsor: null
-    },
-    {
-      title: 'Drone Sim',
-      description: 'Control drones, interact with NPC agents, and manage autonomous missions.',
-      icon: <DroneSimIcon sx={{ fontSize: 40 }} />,
-      path: '/drone-sim',
-      color: 'info.main',
-      sponsor: null
+  // Connect to real data
+  const { agents, isLoading: agentsLoading } = useAgents();
+  const { drones, missions } = useDrones();
+  const dronesLoading = false; // useDrones doesn't have isLoading yet
+
+  // Live simulation data
+  const [simulationData, setSimulationData] = useState({
+    activeDrones: 12,
+    completedMissions: 156,
+    aiAgents: 8,
+    systemEfficiency: 94,
+    weatherConditions: 'Optimal',
+    batteryLevels: [85, 92, 78, 96, 88, 91]
+  });
+
+  // Update simulation data when active
+  useEffect(() => {
+    if (isSimulationActive) {
+      const interval = setInterval(() => {
+        setSimulationData(prev => ({
+          ...prev,
+          activeDrones: drones?.length || prev.activeDrones,
+          completedMissions: missions?.filter(m => m.status === 'completed').length || prev.completedMissions,
+          aiAgents: agents?.length || prev.aiAgents,
+          systemEfficiency: Math.max(85, Math.min(99, prev.systemEfficiency + (Math.random() > 0.5 ? 1 : -1))),
+          batteryLevels: prev.batteryLevels.map(bat => Math.max(20, Math.min(100, bat + (Math.random() > 0.5 ? 2 : -2))))
+        }));
+      }, 2000);
+      return () => clearInterval(interval);
     }
-  ];
+  }, [isSimulationActive, drones, missions, agents]);
 
-  const sponsorFeatures = [
+  const handleLaunchSimulation = () => {
+    setIsSimulationActive(true);
+    router.push('/drone-sim');
+  };
+
+  const quickActions = [
     {
-      title: 'Filecoin Storage',
-      description: 'Decentralized storage with FVM smart contracts, USDFC payments, and programmable storage.',
-      icon: <FilecoinIcon sx={{ fontSize: 40 }} />,
-      path: '/filecoin',
-      color: '#0090FF',
-      sponsor: 'Filecoin Foundation',
-      prize: '$50,000'
+      title: '3D Drone Control',
+      description: 'Immersive 3D environment with real-time drone control and AI navigation',
+      icon: <Plane size={40} color="#6ec1c8" />,
+      action: () => router.push('/drone-sim'),
+      color: '#6ec1c8',
+      features: ['Real-time 3D visualization', 'AI-powered navigation', 'Weather integration']
     },
     {
-      title: 'NEAR Agents',
-      description: 'AI-driven agents with cross-chain signatures and intent-based execution on NEAR.',
-      icon: <NEARIcon sx={{ fontSize: 40 }} />,
-      path: '/near-agents',
-      color: '#00C851',
-      sponsor: 'NEAR Foundation',
-      prize: '$30,000'
+      title: 'Mission Control',
+      description: 'Manage autonomous drone missions with advanced AI coordination',
+      icon: <Target size={40} color="#ffd700" />,
+      action: () => router.push('/near-agent'),
+      color: '#ffd700',
+      features: ['Mission planning', 'AI coordination', 'Real-time tracking']
     },
     {
-      title: 'Weather Data',
-      description: 'Real-time weather data integration for risk assessment and environmental monitoring.',
-      icon: <WeatherIcon sx={{ fontSize: 40 }} />,
-      path: '/weather',
-      color: '#FF6B35',
-      sponsor: 'WeatherXM',
-      prize: '$15,000'
-    },
-    {
-      title: 'AI Tooling',
-      description: 'Advanced AI agent tooling with GitHub integration and MCP solver nodes.',
-      icon: <AIIcon sx={{ fontSize: 40 }} />,
-      path: '/ai-tooling',
-      color: '#9C27B0',
-      sponsor: 'Mosaia',
-      prize: '$20,000'
-    },
-    {
-      title: 'Cross-Chain Bridge',
-      description: 'Seamless asset and data transfer between Ethereum, Polygon, and other chains.',
-      icon: <BridgeIcon sx={{ fontSize: 40 }} />,
-      path: '/bridge',
-      color: '#FF9800',
-      sponsor: 'Secured Finance',
-      prize: '$10,000'
-    },
-    {
-      title: 'ENS + IPFS',
-      description: 'Decentralized frontend hosting with ENS domains and IPFS deployment.',
-      icon: <SecurityIcon sx={{ fontSize: 40 }} />,
-      path: '/ens-ipfs',
-      color: '#E91E63',
-      sponsor: 'Nouns',
-      prize: '$5,000'
-    },
-    {
-      title: 'DID System',
-      description: 'GDPR-compliant Decentralized Identifier system for secure identity management.',
-      icon: <SecurityIcon sx={{ fontSize: 40 }} />,
-      path: '/did-system',
-      color: '#607D8B',
-      sponsor: 'Bio AI',
-      prize: '$5,000'
-    },
-    {
-      title: 'Aerial Analysis',
-      description: 'AI-powered aerial imagery analysis for environmental and urban planning.',
-      icon: <AerialIcon sx={{ fontSize: 40 }} />,
-      path: '/aerial',
-      color: '#4CAF50',
-      sponsor: 'Spexi',
-      prize: '$5,000'
+      title: 'AI Agents',
+      description: 'Interact with intelligent agents across multiple blockchain networks',
+      icon: <Users size={40} color="#bdb89c" />,
+      action: () => router.push('/near-agents'),
+      color: '#bdb89c',
+      features: ['Cross-chain agents', 'Smart contracts', 'Automated trading']
     }
   ];
 
   return (
     <Container maxWidth="xl" sx={{ mt: 2 }}>
-      {/* Main Dashboard Card */}
+      {/* Enhanced Dashboard Card */}
       <DashboardCard />
 
-      {/* Core Features */}
-      <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4, mb: 3, fontWeight: 600 }}>
-        Core Features
-      </Typography>
-
-      <Box sx={{ 
-        display: 'grid', 
-        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(5, 1fr)' },
-        gap: 3,
-        mb: 6
-      }}>
-        {features.map((feature) => (
-          <Card 
-            key={feature.title}
+      {/* Immersive Drone Simulation Section */}
+      <Box sx={{ mt: 6, mb: 6 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between', 
+          mb: 4 
+        }}>
+          <Typography 
+            variant="h4" 
+            component="h2" 
             sx={{ 
-              height: '100%',
+              fontWeight: 700,
               display: 'flex',
-              flexDirection: 'column',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: 4
-              }
+              alignItems: 'center',
+              gap: 2,
+              background: 'linear-gradient(45deg, #6ec1c8, #bdb89c)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
             }}
           >
-            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Box sx={{ color: feature.color, mr: 2 }}>
-                  {feature.icon}
-                </Box>
-                <Typography variant="h6" component="h3" fontWeight={600}>
-                  {feature.title}
-                </Typography>
-              </Box>
-              
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3, flexGrow: 1 }}>
-                {feature.description}
-              </Typography>
-              
-              <Button
-                variant="contained"
-                onClick={() => router.push(feature.path)}
+            <Plane size={40} />
+            Immersive Drone Simulation
+          </Typography>
+          
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Tooltip title={isSimulationActive ? "Pause Simulation" : "Start Simulation"}>
+              <IconButton 
+                onClick={() => setIsSimulationActive(!isSimulationActive)}
                 sx={{ 
-                  alignSelf: 'flex-start',
-                  bgcolor: feature.color,
+                  color: isSimulationActive ? '#ff6b35' : '#6ec1c8',
+                  border: `2px solid ${isSimulationActive ? '#ff6b35' : '#6ec1c8'}`,
                   '&:hover': {
-                    bgcolor: feature.color,
-                    opacity: 0.9
+                    background: `${isSimulationActive ? '#ff6b35' : '#6ec1c8'}20`
                   }
                 }}
               >
-                Open {feature.title}
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
+                {isSimulationActive ? <Pause size={20} /> : <Play size={20} />}
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Reset Simulation">
+              <IconButton 
+                onClick={() => setSimulationData({
+                  activeDrones: drones?.length || 12,
+                  completedMissions: missions?.filter(m => m.status === 'completed').length || 156,
+                  aiAgents: agents?.length || 8,
+                  systemEfficiency: 94,
+                  weatherConditions: 'Optimal',
+                  batteryLevels: [85, 92, 78, 96, 88, 91]
+                })}
+                sx={{ 
+                  color: '#bdb89c',
+                  border: '2px solid #bdb89c',
+                  '&:hover': {
+                    background: '#bdb89c20'
+                  }
+                }}
+              >
+                <RotateCcw size={20} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={showAdvancedControls ? "Hide Advanced Controls" : "Show Advanced Controls"}>
+              <IconButton 
+                onClick={() => setShowAdvancedControls(!showAdvancedControls)}
+                sx={{ 
+                  color: '#ffd700',
+                  border: '2px solid #ffd700',
+                  '&:hover': {
+                    background: '#ffd70020'
+                  }
+                }}
+              >
+                {showAdvancedControls ? <EyeOff size={20} /> : <Eye size={20} />}
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Box>
 
-      {/* Sponsor Integrations */}
-      <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 6, mb: 3, fontWeight: 600 }}>
-        🏆 Hackathon Sponsor Integrations
-        <Chip 
-          label="Total Prize: $140,000+" 
-          color="success" 
-          size="small" 
-          sx={{ ml: 2, fontWeight: 'bold' }}
-        />
-      </Typography>
+        <Grid container spacing={4}>
+          {/* Live 3D Metaverse Canvas */}
+          <Grid xs={12} lg={8}>
+            <Card sx={{ 
+              height: 500,
+              background: 'linear-gradient(135deg, rgba(26, 34, 54, 0.9) 0%, rgba(35, 44, 67, 0.9) 100%)',
+              border: '2px solid rgba(110, 193, 200, 0.3)',
+              borderRadius: 3,
+              overflow: 'hidden',
+              position: 'relative'
+            }}>
+              {/* Enhanced 3D Canvas with real data */}
+              <Metaverse3DCanvas 
+                agents={agents || []}
+                drones={drones || []}
+                missions={missions || []}
+                isRunning={isSimulationActive}
+                isLoading={agentsLoading || dronesLoading}
+              />
+            </Card>
+          </Grid>
 
-      <Box sx={{ 
-        display: 'grid', 
-        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' },
-        gap: 3,
-        mb: 6
-      }}>
-        {sponsorFeatures.map((feature) => (
-          <Card 
-            key={feature.title}
-            sx={{ 
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              border: `2px solid ${feature.color}`,
-              '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: 8,
-                borderColor: feature.color
-              }
-            }}
-          >
-            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Box sx={{ color: feature.color, mr: 2 }}>
-                  {feature.icon}
+          {/* Real-time Stats */}
+          <Grid xs={12} lg={4}>
+            <Card sx={{ 
+              height: 500,
+              background: 'linear-gradient(135deg, rgba(26, 34, 54, 0.9) 0%, rgba(35, 44, 67, 0.9) 100%)',
+              border: '2px solid rgba(110, 193, 200, 0.3)',
+              borderRadius: 3,
+              overflow: 'auto'
+            }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom sx={{ color: '#6ec1c8', fontWeight: 600 }}>
+                  🎮 Live Simulation Stats
+                </Typography>
+                
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    Active Drones
+                  </Typography>
+                  <Typography variant="h4" sx={{ color: '#00ff00', fontWeight: 'bold' }}>
+                    {drones?.filter(d => d.status === 'in-mission').length || 0}
+                  </Typography>
                 </Box>
-                <Box sx={{ flexGrow: 1 }}>
-                  <Typography variant="h6" component="h3" fontWeight={600}>
-                    {feature.title}
+
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    AI Agents
+                  </Typography>
+                  <Typography variant="h4" sx={{ color: '#ff00ff', fontWeight: 'bold' }}>
+                    {agents?.length || 0}
+                  </Typography>
+                </Box>
+
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    Active Missions
+                  </Typography>
+                  <Typography variant="h4" sx={{ color: '#ffd700', fontWeight: 'bold' }}>
+                    {missions?.filter(m => m.status === 'active').length || 0}
+                  </Typography>
+                </Box>
+
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    System Status
                   </Typography>
                   <Chip 
-                    label={feature.sponsor} 
-                    size="small" 
-                    sx={{ 
-                      bgcolor: feature.color, 
-                      color: 'white',
-                      fontSize: '0.7rem',
-                      height: 20
-                    }}
+                    label={isSimulationActive ? 'Running' : 'Paused'}
+                    color={isSimulationActive ? 'success' : 'warning'}
+                    sx={{ fontWeight: 'bold' }}
                   />
                 </Box>
-              </Box>
-              
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2, flexGrow: 1 }}>
-                {feature.description}
-              </Typography>
-              
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Chip 
-                  label={`Prize: ${feature.prize}`} 
-                  color="warning" 
-                  size="small"
-                  sx={{ fontWeight: 'bold' }}
-                />
-              </Box>
-              
-              <Button
-                variant="outlined"
-                onClick={() => router.push(feature.path)}
-                sx={{ 
-                  alignSelf: 'flex-start',
-                  borderColor: feature.color,
-                  color: feature.color,
-                  '&:hover': {
-                    borderColor: feature.color,
-                    bgcolor: `${feature.color}10`
-                  }
-                }}
-              >
-                Try {feature.title}
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+
+                {/* Simulation Controls */}
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={() => setIsSimulationActive(!isSimulationActive)}
+                    startIcon={isSimulationActive ? <Pause /> : <Play />}
+                    sx={{ 
+                      background: isSimulationActive ? '#ff6b35' : '#00ff00',
+                      '&:hover': { background: isSimulationActive ? '#e55a2b' : '#00cc00' }
+                    }}
+                  >
+                    {isSimulationActive ? 'Pause' : 'Start'}
+                  </Button>
+                  
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => {
+                      setIsSimulationActive(false);
+                      setTimeout(() => setIsSimulationActive(true), 100);
+                    }}
+                    startIcon={<RotateCcw />}
+                    sx={{ borderColor: '#6ec1c8', color: '#6ec1c8' }}
+                  >
+                    Reset
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
       </Box>
 
-      {/* Quick Stats */}
-      <Box sx={{ mt: 6 }}>
-        <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 3, fontWeight: 600 }}>
-          Quick Stats
+      {/* Quick Actions Grid */}
+      <Box sx={{ mt: 6, mb: 6 }}>
+        <Typography 
+          variant="h4" 
+          component="h2" 
+          sx={{ 
+            mb: 4,
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            background: 'linear-gradient(45deg, #ffd700, #bdb89c)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}
+        >
+          <Zap size={40} />
+          Quick Actions
         </Typography>
-        
+
         <Grid container spacing={3}>
-          <Grid item xs={6} md={3}>
-            <Card>
+          {quickActions.map((action, index) => (
+            <Grid key={index} xs={12} md={4}>
+              <Card 
+                sx={{ 
+                  height: 200,
+                  background: `linear-gradient(135deg, rgba(26, 34, 54, 0.9) 0%, rgba(35, 44, 67, 0.9) 100%)`,
+                  border: `2px solid ${action.color}40`,
+                  borderRadius: 3,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    borderColor: action.color,
+                    boxShadow: `0 8px 32px ${action.color}40`
+                  }
+                }}
+                onClick={action.action}
+              >
+                <CardContent sx={{ 
+                  height: '100%', 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  justifyContent: 'space-between',
+                  p: 3
+                }}>
+                  <Box sx={{ textAlign: 'center' }}>
+                    {action.icon}
+                    <Typography variant="h6" sx={{ mt: 2, color: 'white', fontWeight: 600 }}>
+                      {action.title}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 1, color: '#bdb89c' }}>
+                      {action.description}
+                    </Typography>
+                  </Box>
+                  
+                  <Box sx={{ mt: 2 }}>
+                    {action.features.map((feature, featureIndex) => (
+                      <Chip
+                        key={featureIndex}
+                        label={feature}
+                        size="small"
+                        sx={{
+                          mr: 1,
+                          mb: 1,
+                          background: `${action.color}20`,
+                          color: action.color,
+                          border: `1px solid ${action.color}40`,
+                          fontSize: '0.7rem'
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
+      {/* System Status Overview */}
+      <Box sx={{ mt: 6, mb: 6 }}>
+        <Typography 
+          variant="h4" 
+          component="h2" 
+          sx={{ 
+            mb: 4,
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            background: 'linear-gradient(45deg, #bdb89c, #6ec1c8)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}
+        >
+          <TrendingUp size={40} />
+          System Status
+        </Typography>
+
+        <Grid container spacing={3}>
+          <Grid xs={12} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, rgba(26, 34, 54, 0.9) 0%, rgba(35, 44, 67, 0.9) 100%)',
+              border: '2px solid rgba(0, 255, 0, 0.3)',
+              borderRadius: 3
+            }}>
               <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" color="primary" gutterBottom>
-                  12
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+                  <Target size={40} style={{ color: '#00ff00', marginRight: 8 }} />
+                </Box>
+                <Typography variant="h4" sx={{ color: '#00ff00', fontWeight: 'bold', mb: 1 }}>
+                  {drones?.filter(d => d.status === 'in-mission').length || 0}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Active Drones
@@ -310,77 +403,66 @@ const HomePage: React.FC = () => {
               </CardContent>
             </Card>
           </Grid>
-          
-          <Grid item xs={6} md={3}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" color="secondary" gutterBottom>
-                  8
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  NPC Agents
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          
-          <Grid item xs={6} md={3}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" color="success.main" gutterBottom>
-                  45.2GB
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Storage Used
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          
-          <Grid item xs={6} md={3}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" color="warning.main" gutterBottom>
-                  156
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Proof Sets
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </Box>
 
-      {/* Integration Status */}
-      <Box sx={{ mt: 6 }}>
-        <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 3, fontWeight: 600 }}>
-          Integration Status
-        </Typography>
-        
-        <Grid container spacing={2}>
-          {sponsorFeatures.map((feature) => (
-            <Grid item xs={12} sm={6} md={4} key={feature.title}>
-              <Card sx={{ p: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Box sx={{ color: feature.color, mr: 1 }}>
-                      {feature.icon}
-                    </Box>
-                    <Typography variant="body2" fontWeight={500}>
-                      {feature.title}
-                    </Typography>
-                  </Box>
-                  <Chip 
-                    label="Live" 
-                    color="success" 
-                    size="small"
-                    sx={{ fontSize: '0.7rem' }}
-                  />
+          <Grid xs={12} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, rgba(26, 34, 54, 0.9) 0%, rgba(35, 44, 67, 0.9) 100%)',
+              border: '2px solid rgba(255, 0, 255, 0.3)',
+              borderRadius: 3
+            }}>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+                  <Users size={40} style={{ color: '#ff00ff', marginRight: 8 }} />
                 </Box>
-              </Card>
-            </Grid>
-          ))}
+                <Typography variant="h4" sx={{ color: '#ff00ff', fontWeight: 'bold', mb: 1 }}>
+                  {agents?.length || 0}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  AI Agents
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid xs={12} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, rgba(26, 34, 54, 0.9) 0%, rgba(35, 44, 67, 0.9) 100%)',
+              border: '2px solid rgba(255, 215, 0, 0.3)',
+              borderRadius: 3
+            }}>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+                  <Zap size={40} style={{ color: '#ffd700', marginRight: 8 }} />
+                </Box>
+                <Typography variant="h4" sx={{ color: '#ffd700', fontWeight: 'bold', mb: 1 }}>
+                  {missions?.filter(m => m.status === 'active').length || 0}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Active Missions
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid xs={12} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, rgba(26, 34, 54, 0.9) 0%, rgba(35, 44, 67, 0.9) 100%)',
+              border: '2px solid rgba(110, 193, 200, 0.3)',
+              borderRadius: 3
+            }}>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+                  <TrendingUp size={40} style={{ color: '#6ec1c8', marginRight: 8 }} />
+                </Box>
+                <Typography variant="h4" sx={{ color: '#6ec1c8', fontWeight: 'bold', mb: 1 }}>
+                  {isSimulationActive ? 'ON' : 'OFF'}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  System Status
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
       </Box>
     </Container>
