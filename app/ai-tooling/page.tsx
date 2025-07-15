@@ -76,12 +76,12 @@ const AIToolingPage: React.FC = () => {
       // Add Mosaia agent for AI tooling
       await addMosaiaAgent({
         name: agentName,
-        type: 'ai_tool',
-        capabilities: ['ai_processing', 'github_integration', 'mcp_solver'],
+        type: 'offchain',
         metadata: {
           toolType,
           githubRepo: `https://github.com/mosaia/${agentName}`,
-          mcpNodes: 3
+          mcpNodes: 3,
+          capabilities: ['ai_processing', 'github_integration', 'mcp_solver']
         }
       });
 
