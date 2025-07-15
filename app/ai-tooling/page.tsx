@@ -77,6 +77,8 @@ const AIToolingPage: React.FC = () => {
       await addMosaiaAgent({
         name: agentName,
         type: 'offchain',
+        status: 'active',
+        location: { x: 0, y: 0, z: 0 },
         metadata: {
           toolType,
           githubRepo: `https://github.com/mosaia/${agentName}`,
