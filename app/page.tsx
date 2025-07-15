@@ -25,7 +25,7 @@ const HomePage: React.FC = () => {
   const [isSimulationActive, setIsSimulationActive] = useState(false);
   const [showAdvancedControls, setShowAdvancedControls] = useState(false);
 
-  // Add quickActions array from backup
+  // Quick Actions for dashboard
   const quickActions = [
     {
       title: '3D Drone Control',

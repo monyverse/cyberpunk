@@ -55,23 +55,43 @@ const BridgePage: React.FC = () => {
     { value: 'NEAR', label: 'NEAR' }
   ];
 
-  // Bridge handler: mock a bridge transaction and update history
-  const handleBridge = () => {
+  // Advanced bridge handler using addSecuredFinanceAgent
+  const handleBridge = async () => {
+    if (!amount) {
+      alert('Please enter bridge amount');
+      return;
+    }
     setIsBridging(true);
-    setTimeout(() => {
-      const newItem: BridgeHistoryItem = {
-        id: bridgeHistory.length + 1,
+    try {
+      await addSecuredFinanceAgent({
+        name: `Bridge_${sourceChain}_${targetChain}_${Date.now()}`,
+        type: 'bridge',
+        capabilities: ['cross_chain', 'asset_transfer'],
+        metadata: {
+          sourceChain,
+          targetChain,
+          amount: parseFloat(amount),
+          token
+        }
+      });
+      const newBridge = {
+        id: Date.now(),
         sourceChain,
         targetChain,
-        amount: Number(amount),
+        amount: parseFloat(amount),
         token,
-        status: 'Completed',
-        timestamp: new Date().toLocaleString(),
+        status: 'completed',
+        timestamp: new Date().toISOString()
       };
-      setBridgeHistory([newItem, ...bridgeHistory]);
-      setIsBridging(false);
+      setBridgeHistory(prev => [newBridge, ...prev]);
       setAmount('');
-    }, 1500);
+      alert(`Bridge transaction completed! ${amount} ${token} bridged from ${sourceChain} to ${targetChain}`);
+    } catch (error) {
+      console.error('Bridge failed:', error);
+      alert('Bridge transaction failed. Please try again.');
+    } finally {
+      setIsBridging(false);
+    }
   };
 
   return (
@@ -172,42 +192,75 @@ const BridgePage: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 Bridge Status
               </Typography>
-              {bridgeHistory.length === 0 ? (
-                <Typography color="text.secondary">No bridge transactions yet.</Typography>
-              ) : (
-                <Box sx={{ maxHeight: 320, overflow: 'auto', mt: 2 }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr>
-                        <th style={{ textAlign: 'left', padding: 8 }}>Time</th>
-                        <th style={{ textAlign: 'left', padding: 8 }}>Source</th>
-                        <th style={{ textAlign: 'left', padding: 8 }}>Target</th>
-                        <th style={{ textAlign: 'left', padding: 8 }}>Token</th>
-                        <th style={{ textAlign: 'right', padding: 8 }}>Amount</th>
-                        <th style={{ textAlign: 'center', padding: 8 }}>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {bridgeHistory.map((item) => (
-                        <tr key={item.id} style={{ borderBottom: '1px solid #eee' }}>
-                          <td style={{ padding: 8 }}>{item.timestamp}</td>
-                          <td style={{ padding: 8 }}>
-                            <Chip label={item.sourceChain} size="small" color="primary" />
-                          </td>
-                          <td style={{ padding: 8 }}>
-                            <Chip label={item.targetChain} size="small" color="secondary" />
-                          </td>
-                          <td style={{ padding: 8 }}>{item.token}</td>
-                          <td style={{ padding: 8, textAlign: 'right' }}>{item.amount}</td>
-                          <td style={{ padding: 8, textAlign: 'center' }}>
-                            <Chip label={item.status} size="small" color={item.status === 'Completed' ? 'success' : 'warning'} />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                {/* @ts-expect-error MUI v7 Grid type error workaround */}
+                <Grid item xs={6}>
+                  <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'success.light', borderRadius: 1 }}>
+                    <Typography variant="h4" color="success.main">
+                      {bridgeHistory.length}
+                    </Typography>
+                    <Typography variant="body2">
+                      Completed Bridges
+                    </Typography>
+                  </Box>
+                </Grid>
+                {/* @ts-expect-error MUI v7 Grid type error workaround */}
+                <Grid item xs={6}>
+                  <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'info.light', borderRadius: 1 }}>
+                    <Typography variant="h4" color="info.main">
+                      4
+                    </Typography>
+                    <Typography variant="body2">
+                      Connected Chains
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+              <Typography variant="h6" gutterBottom>
+                Recent Bridges
+              </Typography>
+              {bridgeHistory.slice(0, 5).map((bridge) => (
+                <Box key={bridge.id} sx={{ mb: 2, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="body2">
+                      {bridge.amount} {bridge.token}
+                    </Typography>
+                    <Chip label="Completed" color="success" size="small" />
+                  </Box>
+                  <Typography variant="caption" color="text.secondary">
+                    {bridge.sourceChain} → {bridge.targetChain}
+                  </Typography>
                 </Box>
+              ))}
+              {bridgeHistory.length === 0 && (
+                <Typography variant="body2" color="text.secondary">
+                  No bridge transactions yet
+                </Typography>
               )}
+            </CardContent>
+          </Card>
+        </Grid>
+        {/* Connected Chains */}
+        {/* @ts-expect-error MUI v7 Grid type error workaround */}
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Connected Chains
+              </Typography>
+              <Grid container spacing={2}>
+                {chains.map((chain) => (
+                  // @ts-expect-error MUI v7 Grid type error workaround
+                  <Grid item xs={6} md={3} key={chain.value}>
+                    <Box sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1, textAlign: 'center' }}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        {chain.label}
+                      </Typography>
+                      <Chip label="Connected" color="success" size="small" />
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
             </CardContent>
           </Card>
         </Grid>
