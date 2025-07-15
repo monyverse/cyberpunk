@@ -3,7 +3,7 @@ import { NounsFrontendFactory } from '../../../../utils/nounsIntegration';
 
 export async function POST(request: NextRequest) {
   try {
-    const { ensName, frontendConfig } = await request.json();
+    const { ensName } = await request.json();
 
     if (!ensName) {
       return NextResponse.json(
@@ -16,12 +16,12 @@ export async function POST(request: NextRequest) {
     const mockProvider = {
       getNetwork: () => Promise.resolve({ chainId: 1 }),
       getCode: () => Promise.resolve('0x'),
-    } as any;
+    } as unknown as ethers.providers.JsonRpcProvider;
 
     const mockSigner = {
       getAddress: () => Promise.resolve('0x1234567890123456789012345678901234567890'),
       signMessage: () => Promise.resolve('0x'),
-    } as any;
+    } as unknown as ethers.Signer;
 
     const nounsFactory = new NounsFrontendFactory(mockProvider, mockSigner);
 

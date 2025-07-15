@@ -16,8 +16,6 @@ import {
   Alert,
   CircularProgress,
   Tooltip,
-  Badge,
-  IconButton,
 } from '@mui/material';
 import {
   AccountBalanceWallet as WalletIcon,
@@ -25,19 +23,15 @@ import {
   LinkOff as DisconnectIcon,
   SwapHoriz as SwitchIcon,
   CheckCircle as ConnectedIcon,
-  Error as ErrorIcon,
   AccountCircle as AccountIcon,
-  Settings as SettingsIcon,
   CurrencyExchange as BalanceIcon,
   NetworkCheck as NetworkIcon,
 } from '@mui/icons-material';
 
 export const AppKitWalletConnect: React.FC = () => {
   const {
-    state,
     isConnected,
     address,
-    chainId,
     chainName,
     balance,
     isLoading,
@@ -133,11 +127,11 @@ export const AppKitWalletConnect: React.FC = () => {
       {/* Network Badge */}
       <Tooltip title={`Connected to ${chainName || 'Unknown Network'}`}>
         <Chip
-          icon={getChainIcon(chainId)}
+          icon={getChainIcon(null)}
           label={chainName || 'Unknown'}
           size="small"
           sx={{
-            backgroundColor: getChainColor(chainId),
+            backgroundColor: getChainColor(null),
             color: 'white',
             '& .MuiChip-icon': { color: 'white' },
           }}
@@ -174,7 +168,7 @@ export const AppKitWalletConnect: React.FC = () => {
             sx={{
               width: 32,
               height: 32,
-              backgroundColor: getChainColor(chainId),
+              backgroundColor: getChainColor(null),
               fontSize: '0.875rem',
             }}
           >

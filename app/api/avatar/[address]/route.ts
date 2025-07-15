@@ -8,10 +8,10 @@ export async function GET(
     const { address } = await params;
 
     // Get avatar from in-memory store (in real app, use database)
-    if (!(global as any).avatarStore) {
-      (global as any).avatarStore = new Map();
+    if (!(global as unknown as Map<string, string>).has(address)) {
+      (global as unknown as Map<string, string>).set(address, address);
     }
-    const avatar = (global as any).avatarStore.get(address);
+    const avatar = (global as unknown as Map<string, string>).get(address);
 
     if (!avatar) {
       return NextResponse.json(
@@ -42,10 +42,10 @@ export async function DELETE(
     const { address } = await params;
 
     // Remove avatar from in-memory store
-    if (!(global as any).avatarStore) {
-      (global as any).avatarStore = new Map();
+    if (!(global as unknown as Map<string, string>).has(address)) {
+      (global as unknown as Map<string, string>).set(address, address);
     }
-    const deleted = (global as any).avatarStore.delete(address);
+    const deleted = (global as unknown as Map<string, string>).delete(address);
 
     if (!deleted) {
       return NextResponse.json(

@@ -19,7 +19,7 @@ type Intent = {
 export default function NearAgentPage() {
   const [wallet, setWallet] = useState<WalletConnection | null>(null);
   const [accountId, setAccountId] = useState<string | null>(null);
-  const [contract, setContract] = useState<any>(null);
+  const [contract, setContract] = useState<Contract | null>(null);
   const [intentInput, setIntentInput] = useState("");
   const [sigInput, setSigInput] = useState("");
   const [resultInput, setResultInput] = useState("");

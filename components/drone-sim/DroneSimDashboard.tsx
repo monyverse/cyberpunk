@@ -38,7 +38,6 @@ import { useMissions } from '@/hooks/useDrones';
 import { useAccount } from 'wagmi';
 import { 
   assignMissionToBestAgent, 
-  droneSwarmAI
 } from '@/utils/aiUtils';
 import DroneSimVR from './DroneSimVR';
 

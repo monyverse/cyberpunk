@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { DroneMission, MissionLog, Agent } from '../../../types';
+import { DroneMission, MissionLog } from '../../../types';
 import { agents } from '../../../utils/agentStore';
 import { missions as demoMissions } from '../../../utils/demoSeed';
 

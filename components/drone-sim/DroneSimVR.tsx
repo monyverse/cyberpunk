@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Canvas } from "@react-three/fiber";
 import { useXR } from "@react-three/xr";
 import { OrbitControls, Sky, Environment, Text } from "@react-three/drei";
 import { Physics, useBox, usePlane } from "@react-three/cannon";
 import { Mesh } from "three";
 import type { LocalAgent } from './DroneSimDashboard';
+import { Interactive } from '@react-three/xr';
 
 interface Vector3 {
   x: number;

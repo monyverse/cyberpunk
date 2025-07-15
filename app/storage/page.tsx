@@ -9,7 +9,6 @@ import {
   CardContent,
   Button,
   Alert,
-  CircularProgress,
   Chip,
   List,
   ListItem,
@@ -28,14 +27,6 @@ import {
 } from '@mui/icons-material';
 import { useAccount } from 'wagmi';
 import { useBalances } from '@/hooks/useBalances';
-
-interface StorageMetrics {
-  totalStorage: number;
-  usedStorage: number;
-  availableStorage: number;
-  allowance: number;
-  balance: number;
-}
 
 const StoragePage: React.FC = () => {
   const { address, isConnected } = useAccount();

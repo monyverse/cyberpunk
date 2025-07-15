@@ -13,10 +13,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Get avatar from store
-    if (!(global as any).avatarStore) {
-      (global as any).avatarStore = new Map();
+    if (!(global as unknown as Map<string, any>).avatarStore) {
+      (global as unknown as Map<string, any>).avatarStore = new Map();
     }
-    const avatar = (global as any).avatarStore.get(walletAddress);
+    const avatar = (global as unknown as Map<string, any>).avatarStore.get(walletAddress);
 
     if (!avatar) {
       return NextResponse.json(
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       nftContractAddress: mockNFTData.contractAddress
     };
 
-    (global as any).avatarStore.set(walletAddress, updatedAvatar);
+    (global as unknown as Map<string, any>).avatarStore.set(walletAddress, updatedAvatar);
 
     return NextResponse.json({
       success: true,

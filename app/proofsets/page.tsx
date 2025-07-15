@@ -7,11 +7,6 @@ import {
   Box,
   Card,
   CardContent,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Chip,
   Paper,
   Table,
   TableBody,
@@ -47,24 +42,6 @@ interface ProofSet {
 const ViewProofSets: React.FC = () => {
   const { data, isLoading, error } = useProofsets();
   const proofSets = data?.proofsets || [];
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'verified': return 'success';
-      case 'pending': return 'warning';
-      case 'failed': return 'error';
-      default: return 'default';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'verified': return <CheckCircleIcon />;
-      case 'pending': return <WarningIcon />;
-      case 'failed': return <ErrorIcon />;
-      default: return <WarningIcon />;
-    }
-  };
 
   // Actions can be implemented as mutations if they call an API
   // const viewProofMutation = useMutation({ ... })

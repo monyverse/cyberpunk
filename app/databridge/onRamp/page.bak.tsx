@@ -18,7 +18,8 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import CloseIcon from '@mui/icons-material/Close';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 
-import { uploadToIPFS } from './pinata';
+import { uploadToIPFS } from './pinata.bak';
+import Image from 'next/image';
 
 const PAYMENT_TOKEN_ADDRESS = process.env.NEXT_PUBLIC_PAYMENT_TOKEN_ADDRESS;
 
@@ -231,7 +232,12 @@ export default function OnRamp() {
                       {isPending && <p className="items-left text-sm text-blue-800">Transaction pending...</p>}
                       {isConfirming && <p className="items-left text-sm text-blue-800">Confirming transaction...</p>}
                       {isConfirmed && hash && <div className="flex justify-center items-center flex-col">
-                        <img className="w-64 mb-16" src="https://cdn.vectorstock.com/i/500p/15/05/green-tick-checkmark-icon-vector-22691505.jpg" alt="Success checkmark" />
+                        <Image
+                          src="https://cdn.vectorstock.com/i/500p/15/05/green-tick-checkmark-icon-vector-22691505.jpg"
+                          alt="Success checkmark"
+                          width={256}
+                          height={256}
+                        />
                         <div className="flex flex-col gap-2 w-full text-[10px] sm:text-xs z-50">
                           <div
                             className="succsess-alert cursor-default flex items-center justify-between w-full h-12 sm:h-14 rounded-lg bg-[#232531] px-[10px]"
@@ -333,9 +339,11 @@ export default function OnRamp() {
                         <div className="preview-container">
                           {previewUrl && (
                             <div className="rounded-lg overflow-hidden border border-gray-200">
-                              <img
+                              <Image
                                 src={previewUrl}
                                 alt="File preview"
+                                width={256}
+                                height={256}
                                 className="w-full h-auto object-contain max-h-64"
                               />
                             </div>

@@ -25,7 +25,28 @@ const HomePage: React.FC = () => {
   const [isSimulationActive, setIsSimulationActive] = useState(false);
   const [showAdvancedControls, setShowAdvancedControls] = useState(false);
 
-  // Add quickActions array from backup
+  // Connect to real data
+  const { agents, isLoading: agentsLoading } = useAgents();
+  const { drones, missions } = useDrones();
+  const dronesLoading = false; // useDrones doesn't have isLoading yet
+
+  // Update simulation data when active
+  useEffect(() => {
+    if (isSimulationActive) {
+      const interval = setInterval(() => {
+        // setSimulationData(prev => ({
+        //   ...prev,
+        //   activeDrones: drones?.length || prev.activeDrones,
+        //   completedMissions: missions?.filter(m => m.status === 'completed').length || prev.completedMissions,
+        //   aiAgents: agents?.length || prev.aiAgents,
+        //   systemEfficiency: Math.max(85, Math.min(99, prev.systemEfficiency + (Math.random() > 0.5 ? 1 : -1))),
+        //   batteryLevels: prev.batteryLevels.map(bat => Math.max(20, Math.min(100, bat + (Math.random() > 0.5 ? 2 : -2))))
+        // }));
+      }, 2000);
+      return () => clearInterval(interval);
+    }
+  }, [isSimulationActive, drones, missions, agents]);
+
   const quickActions = [
     {
       title: '3D Drone Control',
@@ -52,28 +73,6 @@ const HomePage: React.FC = () => {
       features: ['Cross-chain agents', 'Smart contracts', 'Automated trading']
     }
   ];
-
-  // Connect to real data
-  const { agents, isLoading: agentsLoading } = useAgents();
-  const { drones, missions } = useDrones();
-  const dronesLoading = false; // useDrones doesn't have isLoading yet
-
-  // Update simulation data when active
-  useEffect(() => {
-    if (isSimulationActive) {
-      const interval = setInterval(() => {
-        // setSimulationData(prev => ({
-        //   ...prev,
-        //   activeDrones: drones?.length || prev.activeDrones,
-        //   completedMissions: missions?.filter(m => m.status === 'completed').length || prev.completedMissions,
-        //   aiAgents: agents?.length || prev.aiAgents,
-        //   systemEfficiency: Math.max(85, Math.min(99, prev.systemEfficiency + (Math.random() > 0.5 ? 1 : -1))),
-        //   batteryLevels: prev.batteryLevels.map(bat => Math.max(20, Math.min(100, bat + (Math.random() > 0.5 ? 2 : -2))))
-        // }));
-      }, 2000);
-      return () => clearInterval(interval);
-    }
-  }, [isSimulationActive, drones, missions, agents]);
 
   return (
     <Box sx={{ maxWidth: 'xl', mt: 2, mx: 'auto' }}>
@@ -288,7 +287,7 @@ const HomePage: React.FC = () => {
 
         <Grid container spacing={3}>
           {quickActions.map((action, index) => (
-            // @ts-expect-error MUI v7 Grid type error workaround
+            {/* @ts-expect-error MUI v7 Grid type error workaround */}
             <Grid item key={index} xs={12} md={4}>
               <Card 
                 sx={{ 
@@ -458,4 +457,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage; 
+export default HomePage;

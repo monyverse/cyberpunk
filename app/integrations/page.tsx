@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Container,
   Typography,
@@ -23,11 +23,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel
+  TextField
 } from '@mui/material';
 import {
   Storage as FilecoinIcon,
@@ -38,7 +34,6 @@ import {
   Security as SecurityIcon,
   PhotoCamera as AerialIcon,
   CheckCircle as CheckIcon,
-  Error as ErrorIcon,
   Info as InfoIcon,
   AutoAwesome as UltimateIcon
 } from '@mui/icons-material';
@@ -70,7 +65,6 @@ const IntegrationsPage: React.FC = () => {
   const [isCreatingUltimate, setIsCreatingUltimate] = useState(false);
   const [ultimateDialog, setUltimateDialog] = useState(false);
   const [ultimateAgentName, setUltimateAgentName] = useState('');
-  const [integrationStatus, setIntegrationStatus] = useState<any>({});
   const [activeIntegrations, setActiveIntegrations] = useState<string[]>([]);
 
   const { 
@@ -82,7 +76,6 @@ const IntegrationsPage: React.FC = () => {
     addSecuredFinanceAgent,
     addNounsAgent,
     addBioAIAgent,
-    addReppoAgent,
     addSpexiAgent,
     addAgentUltimate
   } = useAgents();
@@ -261,68 +254,71 @@ const IntegrationsPage: React.FC = () => {
       {/* Integration Overview */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {integrations.map((integration) => (
-          <Grid item xs={12} sm={6} md={3} key={integration.id}>
-            <Card 
-              sx={{ 
-                height: '100%',
-                border: `2px solid ${integration.color}`,
-                transition: 'transform 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: 4
-                }
-              }}
-            >
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Box sx={{ color: integration.color, mr: 2 }}>
-                    {integration.icon}
+          <Box key={integration.id}>
+            {/* @ts-expect-error MUI v7 Grid type error workaround */}
+            <Grid item xs={12} sm={6} md={3}>
+              <Card 
+                sx={{ 
+                  height: '100%',
+                  border: `2px solid ${integration.color}`,
+                  transition: 'transform 0.2s',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: 4
+                  }
+                }}
+              >
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Box sx={{ color: integration.color, mr: 2 }}>
+                      {integration.icon}
+                    </Box>
+                    <Box sx={{ flexGrow: 1 }}>
+                      <Typography variant="h6" fontWeight={600}>
+                        {integration.name}
+                      </Typography>
+                      <Chip 
+                        label={integration.prize} 
+                        size="small" 
+                        sx={{ 
+                          bgcolor: integration.color, 
+                          color: 'white',
+                          fontSize: '0.7rem'
+                        }}
+                      />
+                    </Box>
                   </Box>
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="h6" fontWeight={600}>
-                      {integration.name}
-                    </Typography>
+                  
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    {integration.description}
+                  </Typography>
+                  
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Chip 
-                      label={integration.prize} 
-                      size="small" 
-                      sx={{ 
-                        bgcolor: integration.color, 
-                        color: 'white',
-                        fontSize: '0.7rem'
-                      }}
+                      label={activeIntegrations.includes(integration.id) ? 'Active' : 'Ready'} 
+                      color={activeIntegrations.includes(integration.id) ? 'success' : 'default'} 
+                      size="small"
                     />
-                  </Box>
-                </Box>
-                
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  {integration.description}
-                </Typography>
-                
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Chip 
-                    label={activeIntegrations.includes(integration.id) ? 'Active' : 'Ready'} 
-                    color={activeIntegrations.includes(integration.id) ? 'success' : 'default'} 
-                    size="small"
-                  />
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() => testIntegration(integration.id)}
-                    sx={{ 
-                      borderColor: integration.color,
-                      color: integration.color,
-                      '&:hover': {
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => testIntegration(integration.id)}
+                      sx={{ 
                         borderColor: integration.color,
-                        bgcolor: `${integration.color}10`
-                      }
-                    }}
-                  >
-                    Test
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+                        color: integration.color,
+                        '&:hover': {
+                          borderColor: integration.color,
+                          bgcolor: `${integration.color}10`
+                        }
+                      }}
+                    >
+                      Test
+                    </Button>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Box>
         ))}
       </Grid>
 

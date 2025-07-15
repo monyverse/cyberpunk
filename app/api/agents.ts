@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Agent } from '../../types';
-import { agents, setAgents } from '../../utils/agentStore';
+import { agents } from '../../utils/agentStore';
 
 export async function GET() {
   return NextResponse.json({ agents });

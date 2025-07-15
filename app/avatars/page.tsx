@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import AvatarCreatorComponent from '../../components/AvatarCreator';
-import { Box, Container, Typography, Alert } from '@mui/material';
+import { Container } from '@mui/material';
 
 export default function AvatarsPage() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);

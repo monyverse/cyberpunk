@@ -93,10 +93,10 @@ export async function POST(request: NextRequest) {
 
     // In a real app, you'd store this in a database
     // For demo purposes, we'll use a simple in-memory store
-    if (!(global as any).avatarStore) {
-      (global as any).avatarStore = new Map();
+    if (!(global as unknown as { avatarStore: Map<string, any> }).avatarStore) {
+      (global as unknown as { avatarStore: Map<string, any> }).avatarStore = new Map();
     }
-    (global as any).avatarStore.set(walletAddress, avatarRecord);
+    (global as unknown as { avatarStore: Map<string, any> }).avatarStore.set(walletAddress, avatarRecord);
 
     return NextResponse.json({
       success: true,

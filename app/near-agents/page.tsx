@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Container,
   Typography,
@@ -12,7 +12,6 @@ import {
   Grid,
   Chip,
   LinearProgress,
-  Alert,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -29,15 +28,23 @@ import {
 } from '@mui/material';
 import {
   Psychology as AgentIcon,
-  PlayArrow as ExecuteIcon,
   SwapHoriz as BridgeIcon,
-  CheckCircle as CheckIcon,
-  Error as ErrorIcon,
   Info as InfoIcon,
   AccountTree as NEARIcon,
   AutoAwesome as IntentIcon
 } from '@mui/icons-material';
 import { useAgents } from '../../hooks/useAgents';
+
+interface Agent {
+  id: number;
+  name: string;
+  type: string;
+  capabilities: string[];
+  status: string;
+  balance: string;
+  created: string;
+  executions: number;
+}
 
 const NEARAgentsPage: React.FC = () => {
   const [agentName, setAgentName] = useState('');
@@ -45,8 +52,8 @@ const NEARAgentsPage: React.FC = () => {
   const [capabilities, setCapabilities] = useState<string[]>([]);
   const [isCreating, setIsCreating] = useState(false);
   const [createProgress, setCreateProgress] = useState(0);
-  const [agents, setAgents] = useState<any[]>([]);
-  const [selectedAgent, setSelectedAgent] = useState<any>(null);
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [intentDialog, setIntentDialog] = useState(false);
   const [intentType, setIntentType] = useState('weather_analysis');
   const [intentParams, setIntentParams] = useState('');
@@ -115,7 +122,7 @@ const NEARAgentsPage: React.FC = () => {
       });
 
       // Add to agents list
-      const newAgent = {
+      const newAgent: Agent = {
         id: Date.now(),
         name: agentName,
         type: agentType,
@@ -216,210 +223,224 @@ const NEARAgentsPage: React.FC = () => {
 
       <Grid container spacing={4}>
         {/* Agent Creation */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ height: '100%' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <AgentIcon sx={{ fontSize: 40, color: 'success.main', mr: 2 }} />
-                <Typography variant="h6" fontWeight={600}>
-                  Create AI Agent
-                </Typography>
-              </Box>
-
-              <TextField
-                fullWidth
-                label="Agent Name"
-                value={agentName}
-                onChange={(e) => setAgentName(e.target.value)}
-                sx={{ mb: 2 }}
-                placeholder="WeatherAnalyzer_001"
-              />
-
-              <FormControl fullWidth sx={{ mb: 2 }}>
-                <InputLabel>Agent Type</InputLabel>
-                <Select
-                  value={agentType}
-                  onChange={(e) => setAgentType(e.target.value)}
-                  label="Agent Type"
-                >
-                  {agentTypes.map(type => (
-                    <MenuItem key={type.value} value={type.value}>
-                      {type.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <Typography variant="subtitle2" gutterBottom>
-                Capabilities
-              </Typography>
-              <Box sx={{ mb: 2 }}>
-                {capabilityOptions.map(capability => (
-                  <Chip
-                    key={capability}
-                    label={capability.replace(/_/g, ' ')}
-                    onClick={() => handleCapabilityToggle(capability)}
-                    color={capabilities.includes(capability) ? 'primary' : 'default'}
-                    sx={{ m: 0.5 }}
-                  />
-                ))}
-              </Box>
-
-              {isCreating && (
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="body2" gutterBottom>
-                    Creating agent on NEAR... {createProgress}%
+        <Box>
+          {/* @ts-expect-error MUI v7 Grid type error workaround */}
+          <Grid item xs={12} md={6}>
+            <Card sx={{ height: '100%' }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                  <AgentIcon sx={{ fontSize: 40, color: 'success.main', mr: 2 }} />
+                  <Typography variant="h6" fontWeight={600}>
+                    Create AI Agent
                   </Typography>
-                  <LinearProgress variant="determinate" value={createProgress} />
                 </Box>
-              )}
 
-              <Button
-                variant="contained"
-                onClick={handleCreateAgent}
-                disabled={isCreating || !agentName || capabilities.length === 0}
-                fullWidth
-                sx={{ mb: 2 }}
-                color="success"
-              >
-                {isCreating ? 'Creating...' : 'Create AI Agent'}
-              </Button>
+                <TextField
+                  fullWidth
+                  label="Agent Name"
+                  value={agentName}
+                  onChange={(e) => setAgentName(e.target.value)}
+                  sx={{ mb: 2 }}
+                  placeholder="WeatherAnalyzer_001"
+                />
 
-              <Button
-                variant="outlined"
-                onClick={() => setBridgeDialog(true)}
-                fullWidth
-                startIcon={<BridgeIcon />}
-                color="success"
-              >
-                Bridge to Other Chains
-              </Button>
-            </CardContent>
-          </Card>
-        </Grid>
+                <FormControl fullWidth sx={{ mb: 2 }}>
+                  <InputLabel>Agent Type</InputLabel>
+                  <Select
+                    value={agentType}
+                    onChange={(e) => setAgentType(e.target.value)}
+                    label="Agent Type"
+                  >
+                    {agentTypes.map(type => (
+                      <MenuItem key={type.value} value={type.value}>
+                        {type.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <Typography variant="subtitle2" gutterBottom>
+                  Capabilities
+                </Typography>
+                <Box sx={{ mb: 2 }}>
+                  {capabilityOptions.map(capability => (
+                    <Chip
+                      key={capability}
+                      label={capability.replace(/_/g, ' ')}
+                      onClick={() => handleCapabilityToggle(capability)}
+                      color={capabilities.includes(capability) ? 'primary' : 'default'}
+                      sx={{ m: 0.5 }}
+                    />
+                  ))}
+                </Box>
+
+                {isCreating && (
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="body2" gutterBottom>
+                      Creating agent on NEAR... {createProgress}%
+                    </Typography>
+                    <LinearProgress variant="determinate" value={createProgress} />
+                  </Box>
+                )}
+
+                <Button
+                  variant="contained"
+                  onClick={handleCreateAgent}
+                  disabled={isCreating || !agentName || capabilities.length === 0}
+                  fullWidth
+                  sx={{ mb: 2 }}
+                  color="success"
+                >
+                  {isCreating ? 'Creating...' : 'Create AI Agent'}
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  onClick={() => setBridgeDialog(true)}
+                  fullWidth
+                  startIcon={<BridgeIcon />}
+                  color="success"
+                >
+                  Bridge to Other Chains
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Box>
 
         {/* Agent Management */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ height: '100%' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <NEARIcon sx={{ fontSize: 40, color: 'success.main', mr: 2 }} />
-                <Typography variant="h6" fontWeight={600}>
-                  Agent Management
+        <Box>
+          {/* @ts-expect-error MUI v7 Grid type error workaround */}
+          <Grid item xs={12} md={6}>
+            <Card sx={{ height: '100%' }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                  <NEARIcon sx={{ fontSize: 40, color: 'success.main', mr: 2 }} />
+                  <Typography variant="h6" fontWeight={600}>
+                    Agent Management
+                  </Typography>
+                </Box>
+
+                <Grid container spacing={2} sx={{ mb: 3 }}>
+                  {/* @ts-expect-error MUI v7 Grid type error workaround */}
+                  <Grid item xs={6}>
+                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'success.light', borderRadius: 1 }}>
+                      <Typography variant="h4" color="success.main">
+                        {agents.length}
+                      </Typography>
+                      <Typography variant="body2">
+                        Active Agents
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  {/* @ts-expect-error MUI v7 Grid type error workaround */}
+                  <Grid item xs={6}>
+                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'primary.light', borderRadius: 1 }}>
+                      <Typography variant="h4" color="primary">
+                        {agents.reduce((acc, agent) => acc + agent.executions, 0)}
+                      </Typography>
+                      <Typography variant="body2">
+                        Total Executions
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+
+                <Typography variant="h6" gutterBottom>
+                  Your Agents
                 </Typography>
-              </Box>
-
-              <Grid container spacing={2} sx={{ mb: 3 }}>
-                <Grid item xs={6}>
-                  <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'success.light', borderRadius: 1 }}>
-                    <Typography variant="h4" color="success.main">
-                      {agents.length}
-                    </Typography>
-                    <Typography variant="body2">
-                      Active Agents
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={6}>
-                  <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'primary.light', borderRadius: 1 }}>
-                    <Typography variant="h4" color="primary">
-                      {agents.reduce((acc, agent) => acc + agent.executions, 0)}
-                    </Typography>
-                    <Typography variant="body2">
-                      Total Executions
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-
-              <Typography variant="h6" gutterBottom>
-                Your Agents
-              </Typography>
-              
-              <List sx={{ maxHeight: 300, overflow: 'auto' }}>
-                {agents.map((agent) => (
-                  <React.Fragment key={agent.id}>
-                    <ListItem 
-                      button
-                      onClick={() => {
-                        setSelectedAgent(agent);
-                        setIntentDialog(true);
-                      }}
-                    >
+                
+                <List sx={{ maxHeight: 300, overflow: 'auto' }}>
+                  {agents.map((agent) => (
+                    <React.Fragment key={agent.id}>
+                      <ListItem 
+                        button
+                        onClick={() => {
+                          setSelectedAgent(agent);
+                          setIntentDialog(true);
+                        }}
+                      >
+                        <ListItemIcon>
+                          <AgentIcon color="success" />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={agent.name}
+                          secondary={`${agent.type} - ${agent.executions} executions`}
+                        />
+                        <Chip label="Active" color="success" size="small" />
+                      </ListItem>
+                      <Divider />
+                    </React.Fragment>
+                  ))}
+                  {agents.length === 0 && (
+                    <ListItem>
                       <ListItemIcon>
-                        <AgentIcon color="success" />
+                        <InfoIcon color="action" />
                       </ListItemIcon>
-                      <ListItemText
-                        primary={agent.name}
-                        secondary={`${agent.type} - ${agent.executions} executions`}
-                      />
-                      <Chip label="Active" color="success" size="small" />
+                      <ListItemText primary="No agents created yet" />
                     </ListItem>
-                    <Divider />
-                  </React.Fragment>
-                ))}
-                {agents.length === 0 && (
-                  <ListItem>
-                    <ListItemIcon>
-                      <InfoIcon color="action" />
-                    </ListItemIcon>
-                    <ListItemText primary="No agents created yet" />
-                  </ListItem>
-                )}
-              </List>
-            </CardContent>
-          </Card>
-        </Grid>
+                  )}
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Box>
 
         {/* Intent Execution */}
-        <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                <IntentIcon sx={{ mr: 1 }} />
-                Intent-Based Execution
-              </Typography>
-              
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={4}>
-                  <Box sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-                    <Typography variant="subtitle2" gutterBottom>
-                      Weather Analysis
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Analyze weather data and assess risks
-                    </Typography>
-                    <Chip label="Available" color="success" size="small" />
-                  </Box>
-                </Grid>
+        <Box>
+          {/* @ts-expect-error MUI v7 Grid type error workaround */}
+          <Grid item xs={12}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                  <IntentIcon sx={{ mr: 1 }} />
+                  Intent-Based Execution
+                </Typography>
                 
-                <Grid item xs={12} md={4}>
-                  <Box sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-                    <Typography variant="subtitle2" gutterBottom>
-                      Cross-chain Bridge
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Execute cross-chain transactions
-                    </Typography>
-                    <Chip label="Available" color="success" size="small" />
-                  </Box>
+                <Grid container spacing={2}>
+                  {/* @ts-expect-error MUI v7 Grid type error workaround */}
+                  <Grid item xs={12} md={4}>
+                    <Box sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Weather Analysis
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        Analyze weather data and assess risks
+                      </Typography>
+                      <Chip label="Available" color="success" size="small" />
+                    </Box>
+                  </Grid>
+                  
+                  {/* @ts-expect-error MUI v7 Grid type error workaround */}
+                  <Grid item xs={12} md={4}>
+                    <Box sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Cross-chain Bridge
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        Execute cross-chain transactions
+                      </Typography>
+                      <Chip label="Available" color="success" size="small" />
+                    </Box>
+                  </Grid>
+                  
+                  {/* @ts-expect-error MUI v7 Grid type error workaround */}
+                  <Grid item xs={12} md={4}>
+                    <Box sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Data Processing
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        Process and analyze large datasets
+                      </Typography>
+                      <Chip label="Available" color="success" size="small" />
+                    </Box>
+                  </Grid>
                 </Grid>
-                
-                <Grid item xs={12} md={4}>
-                  <Box sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-                    <Typography variant="subtitle2" gutterBottom>
-                      Data Processing
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Process and analyze large datasets
-                    </Typography>
-                    <Chip label="Available" color="success" size="small" />
-                  </Box>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Box>
       </Grid>
 
       {/* Intent Dialog */}

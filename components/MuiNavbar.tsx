@@ -2,20 +2,15 @@
 
 import React, { useState } from 'react';
 import {
-  AppBar,
   Toolbar,
-  Typography,
   IconButton,
   Box,
   useTheme,
   Snackbar,
   Alert,
-  Switch,
-  FormControlLabel
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  PlayArrow as DemoIcon,
   Home as HomeIcon, SportsEsports as GameFiIcon, People as AvatarsIcon, ViewInAr as XRIcon, Build as ToolsIcon, Brightness4, Brightness7
 } from '@mui/icons-material';
 import { AppKitWalletConnect } from './AppKitWalletConnect';
@@ -38,14 +33,6 @@ export default function MuiNavbar({ onMenuClick }: MuiNavbarProps) {
   const theme = useTheme();
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [demoNotification, setDemoNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
-
-  const handleDemoToggle = () => {
-    setIsDemoMode(!isDemoMode);
-    setDemoNotification({
-      message: `${!isDemoMode ? 'Demo mode enabled' : 'Demo mode disabled'}`,
-      type: 'success'
-    });
-  };
 
   const handleCloseNotification = () => {
     setDemoNotification(null);
