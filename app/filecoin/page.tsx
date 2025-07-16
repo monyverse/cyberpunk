@@ -57,7 +57,7 @@ const FilecoinPage: React.FC = () => {
   const [bridgeTarget, setBridgeTarget] = useState('ethereum');
   const [bridgeAmount, setBridgeAmount] = useState('');
 
-  const { addFilecoinAgent, addHybridAgent } = useAgents();
+  const { addFilecoinAgent } = useAgents();
 
   // Calculate storage cost
   useEffect(() => {
@@ -92,12 +92,14 @@ const FilecoinPage: React.FC = () => {
       // Add Filecoin agent
       await addFilecoinAgent({
         name: `Filecoin_${Date.now()}`,
-        type: 'filecoin',
-        capabilities: ['storage', 'payment', 'bridge'],
+        type: 'onchain',
+        status: 'active',
+        location: { x: 0, y: 0, z: 0 },
         metadata: {
           fileSize: parseInt(fileSize),
           metadata,
-          cost: storageCost
+          cost: storageCost,
+          capabilities: ['storage', 'payment', 'bridge']
         }
       });
 
@@ -145,34 +147,7 @@ const FilecoinPage: React.FC = () => {
     }
   };
 
-  const handleBridge = async () => {
-    if (!bridgeAmount) {
-      alert('Please enter bridge amount');
-      return;
-    }
-
-    try {
-      // Add hybrid agent for cross-chain bridge
-      await addHybridAgent({
-        name: `Bridge_${Date.now()}`,
-        type: 'hybrid',
-        capabilities: ['filecoin', 'ethereum', 'bridge'],
-        metadata: {
-          sourceChain: 'filecoin',
-          targetChain: bridgeTarget,
-          amount: parseFloat(bridgeAmount)
-        }
-      });
-
-      setBridgeDialog(false);
-      setBridgeAmount('');
-      alert(`Bridge transaction initiated to ${bridgeTarget}!`);
-
-    } catch (error) {
-      console.error('Bridge failed:', error);
-      alert('Bridge transaction failed. Please try again.');
-    }
-  };
+  // Remove addHybridAgent and related bridge logic, or adapt as needed
 
   return (
     <Container maxWidth="xl" sx={{ mt: 2 }}>
@@ -246,14 +221,7 @@ const FilecoinPage: React.FC = () => {
                 {isUploading ? 'Uploading...' : 'Upload to Filecoin'}
               </Button>
 
-              <Button
-                variant="outlined"
-                onClick={() => setBridgeDialog(true)}
-                fullWidth
-                startIcon={<BridgeIcon />}
-              >
-                Bridge to Other Chains
-              </Button>
+              {/* Remove Bridge to Other Chains button */}
             </CardContent>
           </Card>
         </Grid>
@@ -433,7 +401,11 @@ const FilecoinPage: React.FC = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setBridgeDialog(false)}>Cancel</Button>
-          <Button onClick={handleBridge} variant="contained">
+          <Button onClick={() => {
+            // This button is now effectively a placeholder for a bridge action
+            // that would involve addFilecoinAgent with type: 'hybrid'
+            alert(`Bridge to ${bridgeTarget} functionality not yet implemented.`);
+          }} variant="contained">
             Bridge Assets
           </Button>
         </DialogActions>

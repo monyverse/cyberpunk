@@ -76,12 +76,14 @@ const DIDSystemPage: React.FC = () => {
       // Add Bio AI agent for DID creation
       await addBioAIAgent({
         name: `DID_${didName}_${Date.now()}`,
-        type: 'did',
-        capabilities: ['identity_management', 'privacy_compliance', 'gdpr'],
+        type: 'offchain',
+        status: 'active',
+        location: { x: 0, y: 0, z: 0 },
         metadata: {
           didName,
           didType,
-          compliance: 'GDPR'
+          compliance: 'GDPR',
+          capabilities: ['identity_management', 'privacy_compliance', 'gdpr']
         }
       });
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { NounsFrontendFactory } from '../../../../utils/nounsIntegration';
+import { ethers, JsonRpcProvider, Signer } from 'ethers';
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,12 +17,12 @@ export async function POST(request: NextRequest) {
     const mockProvider = {
       getNetwork: () => Promise.resolve({ chainId: 1 }),
       getCode: () => Promise.resolve('0x'),
-    } as unknown as ethers.providers.JsonRpcProvider;
+    } as unknown as JsonRpcProvider;
 
     const mockSigner = {
       getAddress: () => Promise.resolve('0x1234567890123456789012345678901234567890'),
       signMessage: () => Promise.resolve('0x'),
-    } as unknown as ethers.Signer;
+    } as unknown as Signer;
 
     const nounsFactory = new NounsFrontendFactory(mockProvider, mockSigner);
 

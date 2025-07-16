@@ -38,6 +38,7 @@ import {
   AutoAwesome as UltimateIcon
 } from '@mui/icons-material';
 import { useAgents } from '../../hooks/useAgents';
+import type { Agent } from '../../types';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -170,12 +171,14 @@ const IntegrationsPage: React.FC = () => {
       // Create ultimate agent that combines all integrations
       await addAgentUltimate({
         name: ultimateAgentName,
-        type: 'ultimate',
-        capabilities: integrations.map(i => i.id),
+        type: 'hybrid', // changed from 'ultimate' to valid AgentType
+        status: 'active',
+        location: { x: 0, y: 0, z: 0 },
         metadata: {
           integrations: integrations.map(i => i.id),
           totalPrizeValue: '$140,000+',
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          capabilities: integrations.map(i => i.id)
         }
       });
 
@@ -193,11 +196,12 @@ const IntegrationsPage: React.FC = () => {
 
   const testIntegration = async (integrationId: string) => {
     try {
-      const testAgent = {
+      const testAgent: Omit<Agent, 'id'> = {
         name: `Test_${integrationId}_${Date.now()}`,
-        type: integrationId,
-        capabilities: [integrationId],
-        metadata: { test: true, timestamp: new Date().toISOString() }
+        type: 'hybrid', // use 'hybrid' for test agents
+        status: 'active', // use allowed literal value
+        location: { x: 0, y: 0, z: 0 },
+        metadata: { test: true, timestamp: new Date().toISOString(), capabilities: [integrationId] }
       };
 
       switch (integrationId) {
@@ -416,7 +420,7 @@ const IntegrationsPage: React.FC = () => {
                     </ListItemIcon>
                     <ListItemText
                       primary={agent.name}
-                      secondary={`Type: ${agent.type} | Capabilities: ${agent.capabilities.join(', ')}`}
+                      secondary={`Type: ${agent.type} | Capabilities: ${(agent.metadata?.capabilities || []).join(', ') || '-'}`}
                     />
                     <Chip label="Active" color="success" size="small" />
                   </ListItem>

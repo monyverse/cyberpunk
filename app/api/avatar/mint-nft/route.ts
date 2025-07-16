@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+type GlobalWithAvatarStore = typeof globalThis & { avatarStore: Map<string, any> };
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -13,10 +15,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Get avatar from store
-    if (!(global as unknown as Map<string, any>).avatarStore) {
-      (global as unknown as Map<string, any>).avatarStore = new Map();
+    if (!(globalThis as GlobalWithAvatarStore).avatarStore) {
+      (globalThis as GlobalWithAvatarStore).avatarStore = new Map();
     }
-    const avatar = (global as unknown as Map<string, any>).avatarStore.get(walletAddress);
+    const avatar = (globalThis as GlobalWithAvatarStore).avatarStore.get(walletAddress);
 
     if (!avatar) {
       return NextResponse.json(
@@ -64,7 +66,7 @@ export async function POST(request: NextRequest) {
       nftContractAddress: mockNFTData.contractAddress
     };
 
-    (global as unknown as Map<string, any>).avatarStore.set(walletAddress, updatedAvatar);
+    (globalThis as GlobalWithAvatarStore).avatarStore.set(walletAddress, updatedAvatar);
 
     return NextResponse.json({
       success: true,

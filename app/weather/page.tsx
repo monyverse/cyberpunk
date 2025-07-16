@@ -43,7 +43,7 @@ const WeatherPage: React.FC = () => {
   const [selectedTimeframe, setSelectedTimeframe] = useState('24h');
   const [riskThreshold, setRiskThreshold] = useState(0.7);
 
-  const { addWeatherXMAgent, addHybridAgent } = useAgents();
+  const { addWeatherXMAgent } = useAgents();
 
   const locations = [
     'New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix',
@@ -86,13 +86,15 @@ const WeatherPage: React.FC = () => {
       // Add WeatherXM agent
       await addWeatherXMAgent({
         name: `Weather_${location}_${Date.now()}`,
-        type: 'weather',
-        capabilities: ['weather_data', 'risk_assessment', 'real_time_monitoring'],
+        type: 'offchain',
+        status: 'active',
+        location: { x: 0, y: 0, z: 0 },
         metadata: {
           location,
           riskLevel: risk,
           dataSource: 'WeatherXM',
-          timestamp: mockWeatherData.timestamp
+          timestamp: mockWeatherData.timestamp,
+          capabilities: ['weather_data', 'risk_assessment', 'real_time_monitoring']
         }
       });
 
@@ -126,15 +128,17 @@ const WeatherPage: React.FC = () => {
   const handleRiskAssessment = async () => {
     try {
       // Add hybrid agent for risk assessment
-      await addHybridAgent({
+      await addWeatherXMAgent({
         name: `Risk_Assessment_${Date.now()}`,
-        type: 'hybrid',
-        capabilities: ['weather', 'risk_assessment', 'ai_analysis'],
+        type: 'offchain',
+        status: 'active',
+        location: { x: 0, y: 0, z: 0 },
         metadata: {
           location,
           riskLevel,
           threshold: riskThreshold,
-          timeframe: selectedTimeframe
+          timeframe: selectedTimeframe,
+          capabilities: ['weather', 'risk_assessment', 'ai_analysis']
         }
       });
 

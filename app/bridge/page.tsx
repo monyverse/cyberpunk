@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import {
-  Container,
   Typography,
   Box,
   Card,
@@ -65,13 +64,15 @@ const BridgePage: React.FC = () => {
     try {
       await addSecuredFinanceAgent({
         name: `Bridge_${sourceChain}_${targetChain}_${Date.now()}`,
-        type: 'bridge',
-        capabilities: ['cross_chain', 'asset_transfer'],
+        type: 'hybrid',
+        status: 'active',
+        location: { x: 0, y: 0, z: 0 },
         metadata: {
           sourceChain,
           targetChain,
           amount: parseFloat(amount),
-          token
+          token,
+          capabilities: ['cross_chain', 'asset_transfer']
         }
       });
       const newBridge = {

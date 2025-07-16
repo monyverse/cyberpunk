@@ -62,7 +62,7 @@ const NEARAgentsPage: React.FC = () => {
   const [bridgeAmount, setBridgeAmount] = useState('');
   const [bridgeTarget, setBridgeTarget] = useState('ethereum');
 
-  const { addNEARAgent, addHybridAgent } = useAgents();
+  const { addNEARAgent } = useAgents();
 
   const agentTypes = [
     { value: 'weather_analyzer', label: 'Weather Analyzer' },
@@ -112,12 +112,14 @@ const NEARAgentsPage: React.FC = () => {
       // Add NEAR agent
       await addNEARAgent({
         name: agentName,
-        type: agentType,
-        capabilities,
+        type: 'offchain',
+        status: 'active',
+        location: { x: 0, y: 0, z: 0 },
         metadata: {
           chain: 'near',
           accountId: 'cyberpunk.testnet',
-          balance: '10 NEAR'
+          balance: '10 NEAR',
+          capabilities
         }
       });
 
@@ -184,15 +186,17 @@ const NEARAgentsPage: React.FC = () => {
     }
 
     try {
-      // Add hybrid agent for cross-chain bridge
-      await addHybridAgent({
+      // Add NEAR agent for bridge
+      await addNEARAgent({
         name: `NEAR_Bridge_${Date.now()}`,
         type: 'hybrid',
-        capabilities: ['near', bridgeTarget, 'bridge'],
+        status: 'active',
+        location: { x: 0, y: 0, z: 0 },
         metadata: {
           sourceChain: 'near',
           targetChain: bridgeTarget,
-          amount: parseFloat(bridgeAmount)
+          amount: parseFloat(bridgeAmount),
+          capabilities: ['near', bridgeTarget, 'bridge']
         }
       });
 

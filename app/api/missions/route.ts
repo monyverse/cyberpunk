@@ -32,10 +32,16 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const data = await req.json();
-  const newMission: DroneMission = {
-    ...data,
+  // Map DroneMission to the expected mission structure for the missions array
+  const newMission = {
     id: `mission-${Date.now()}`,
+    title: data.title || data.description || 'Untitled Mission',
+    description: data.description || '',
     status: 'pending',
+    reward: data.reward || 0,
+    location: data.location || { lat: 0, lng: 0 },
+    // Optionally include DroneMission-specific fields if needed
+    ...data,
     missionLog: [],
   };
   missions.push(newMission);
@@ -55,22 +61,31 @@ export async function PATCH(req: NextRequest) {
   // If status is being set to 'completed', update agent XP, logs, etc.
   if (updates.status === 'completed' && mission.status !== 'completed') {
     mission.status = 'completed';
-    mission.endTime = new Date().toISOString();
+    // Only set endTime if it exists on the mission
+    if ('endTime' in mission) {
+      (mission as any).endTime = new Date().toISOString();
+    }
     // Log mission completion
     const log: MissionLog = {
-      timestamp: mission.endTime,
+      timestamp: (mission as any).endTime || new Date().toISOString(),
       event: 'Mission completed',
-      details: { agentId: mission.assignedAgentId, reward: mission.reward, xp: mission.xpReward, reputation: mission.reputationReward },
+      details: {
+        agentId: 'assignedAgentId' in mission ? (mission as any).assignedAgentId : undefined,
+        reward: 'xpReward' in mission ? (mission as any).xpReward : mission.reward,
+        xp: 'xpReward' in mission ? (mission as any).xpReward : undefined,
+        reputation: 'reputationReward' in mission ? (mission as any).reputationReward : undefined,
+      },
     };
-    mission.missionLog = mission.missionLog || [];
-    mission.missionLog.push(log);
+    if ('missionLog' in mission && Array.isArray((mission as any).missionLog)) {
+      (mission as any).missionLog.push(log);
+    }
     // Update assigned agent
-    if (mission.assignedAgentId) {
-      const agent = agents.find((a) => a.id === mission.assignedAgentId);
+    if ('assignedAgentId' in mission && (mission as any).assignedAgentId) {
+      const agent = agents.find((a) => a.id === (mission as any).assignedAgentId);
       if (agent) {
         // XP and level logic
-        agent.experience = (agent.experience || 0) + (mission.xpReward || 0);
-        agent.reputation = (agent.reputation || 0) + (mission.reputationReward || 0);
+        agent.experience = (agent.experience || 0) + (mission as any).xpReward || 0;
+        agent.reputation = (agent.reputation || 0) + (mission as any).reputationReward || 0;
         // Simple level up: every 100 XP = 1 level
         const newLevel = Math.floor((agent.experience || 0) / 100) + 1;
         if (!agent.level || agent.level < newLevel) agent.level = newLevel;
@@ -80,9 +95,13 @@ export async function PATCH(req: NextRequest) {
         // Log agent action
         agent.logs = agent.logs || [];
         agent.logs.push({
-          timestamp: mission.endTime,
+          timestamp: (mission as any).endTime || new Date().toISOString(),
           action: 'Completed mission',
-          details: { missionId: mission.id, xpGained: mission.xpReward, reputationGained: mission.reputationReward },
+          details: {
+            missionId: mission.id,
+            xpGained: (mission as any).xpReward,
+            reputationGained: (mission as any).reputationReward,
+          },
         });
       }
     }

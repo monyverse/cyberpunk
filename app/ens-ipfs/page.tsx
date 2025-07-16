@@ -63,12 +63,14 @@ const ENSIPFSPage: React.FC = () => {
       // Add Nouns agent for ENS + IPFS deployment
       await addNounsAgent({
         name: `ENS_${ensName}_${Date.now()}`,
-        type: 'nouns',
-        capabilities: ['ens', 'ipfs', 'deployment'],
+        type: 'offchain',
+        status: 'active',
+        location: { x: 0, y: 0, z: 0 },
         metadata: {
           ensName,
           ipfsHash,
-          deploymentType: 'frontend'
+          deploymentType: 'frontend',
+          capabilities: ['ens', 'ipfs', 'deployment']
         }
       }, ensName);
 
