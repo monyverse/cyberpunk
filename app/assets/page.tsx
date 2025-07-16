@@ -15,7 +15,6 @@ import {
   ListItemText,
   ListItemAvatar,
   Avatar,
-  Chip,
   LinearProgress,
   Paper
 } from '@mui/material';
@@ -24,7 +23,6 @@ import {
   Storage as StorageIcon,
   Person as PersonIcon,
   Image as ImageIcon,
-  VideoLibrary as VideoIcon,
   AudioFile as AudioIcon,
   Description as DocumentIcon
 } from '@mui/icons-material';
@@ -48,7 +46,6 @@ const MetaverseAssetManager: React.FC = () => {
     storage,
     isLoadingStorage,
     error,
-    clearError
   } = useMetaverseAssets();
 
   const assetCategories = [
@@ -72,15 +69,6 @@ const MetaverseAssetManager: React.FC = () => {
       await uploadAsset(file, 'generic');
     } catch (e) {
       // handle error if needed
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'uploaded': return 'success';
-      case 'processing': return 'warning';
-      case 'failed': return 'error';
-      default: return 'default';
     }
   };
 

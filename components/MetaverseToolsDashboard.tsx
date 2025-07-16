@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Grid, Card, CardContent, Typography, Button, Modal, Box } from "@mui/material";
+import { Card, CardContent, Typography, Button, Modal, Box } from "@mui/material";
 import { toolsConfig, ToolConfig } from "../utils/toolsConfig";
 
 export default function MetaverseToolsDashboard() {

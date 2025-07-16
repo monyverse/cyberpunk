@@ -11,7 +11,6 @@ import {
   Box,
   Typography,
   useTheme,
-  useMediaQuery
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -20,7 +19,6 @@ import {
   CloudUpload as CloudUploadIcon,
   Verified as VerifiedIcon,
   Flight as FlightIcon,
-  Close as CloseIcon
 } from '@mui/icons-material';
 import { useRouter, usePathname } from 'next/navigation';
 

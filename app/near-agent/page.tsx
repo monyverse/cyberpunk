@@ -16,10 +16,17 @@ type Intent = {
   submitter: string;
 };
 
+// Define the interface for your contract's methods
+interface NearIntentContract extends Contract {
+  get_intents: () => Promise<Intent[]>;
+  submit_intent: (args: { intent: string; cross_chain_sig: string }, gas: string, deposit: string) => Promise<void>;
+  fulfill_intent: (args: { intent_id: number; result: string }, gas: string, deposit: string) => Promise<void>;
+}
+
 export default function NearAgentPage() {
   const [wallet, setWallet] = useState<WalletConnection | null>(null);
   const [accountId, setAccountId] = useState<string | null>(null);
-  const [contract, setContract] = useState<any>(null);
+  const [contract, setContract] = useState<NearIntentContract | null>(null);
   const [intentInput, setIntentInput] = useState("");
   const [sigInput, setSigInput] = useState("");
   const [resultInput, setResultInput] = useState("");
@@ -29,21 +36,23 @@ export default function NearAgentPage() {
   // Initialize NEAR connection
   useEffect(() => {
     (async () => {
+      const keyStore = new keyStores.BrowserLocalStorageKeyStore();
       const near = await connect({
+        keyStore,
+        headers: {},
         networkId: "testnet",
-        keyStore: new keyStores.BrowserLocalStorageKeyStore(),
         nodeUrl: "https://rpc.testnet.near.org",
         walletUrl: "https://wallet.testnet.near.org",
         helperUrl: "https://helper.testnet.near.org",
       });
-      const walletConnection = new WalletConnection(near, "cyberpunk-app");
-      setWallet(walletConnection);
-      setAccountId(walletConnection.getAccountId() || null);
+      const nearWallet = new WalletConnection(near, "cyberpunk-app");
+      setWallet(nearWallet);
+      setAccountId(nearWallet.getAccountId() || null);
 
-      const contractInstance = new Contract(walletConnection.account(), CONTRACT_ID, {
+      const contractInstance = new Contract(nearWallet.account(), CONTRACT_ID, {
         viewMethods: ["get_intents"],
         changeMethods: ["submit_intent", "fulfill_intent"],
-      });
+      }) as NearIntentContract;
       setContract(contractInstance);
     })();
   }, []);
@@ -69,7 +78,7 @@ export default function NearAgentPage() {
       await contract.submit_intent(
         { intent, cross_chain_sig },
         "300000000000000",
-        utils.format.parseNearAmount("0")
+        utils.format.parseNearAmount("0") || '0'
       );
     },
     onSuccess: () => {
@@ -87,7 +96,7 @@ export default function NearAgentPage() {
       await contract.fulfill_intent(
         { intent_id, result },
         "300000000000000",
-        utils.format.parseNearAmount("0")
+        utils.format.parseNearAmount("0") || '0'
       );
     },
     onSuccess: () => {

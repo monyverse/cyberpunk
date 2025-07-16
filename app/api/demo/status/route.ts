@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server';
-import { getDemoStatus } from '@/utils/seedDemo';
+import { missions } from '@/utils/demoSeed';
+import { agents } from '@/utils/agentStore';
 
 export async function GET() {
   try {
-    const status = getDemoStatus();
+    const status = {
+      isDemoMode: agents.length > 0 || missions.length > 0,
+      agentCount: agents.length,
+      missionCount: missions.length
+    };
     return NextResponse.json(status);
   } catch (error) {
     console.error('Error getting demo status:', error);

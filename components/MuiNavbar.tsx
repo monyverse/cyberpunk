@@ -2,366 +2,179 @@
 
 import React, { useState } from 'react';
 import {
-  AppBar,
   Toolbar,
-  Typography,
   IconButton,
-  Button,
   Box,
-  Menu,
-  MenuItem,
-  Chip,
   useTheme,
-  useMediaQuery,
   Snackbar,
   Alert,
-  Tooltip,
-  Switch,
-  FormControlLabel
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  AccountBalanceWallet as WalletIcon,
-  Login as LoginIcon,
-  ExpandMore as ExpandMoreIcon,
-  CheckCircle as CheckCircleIcon,
-  PlayArrow as DemoIcon
+  Home as HomeIcon, SportsEsports as GameFiIcon, People as AvatarsIcon, ViewInAr as XRIcon, Build as ToolsIcon, Brightness4, Brightness7
 } from '@mui/icons-material';
-import { useAccount } from 'wagmi';
-import { useFlowUser } from '@/hooks/useFlowUser';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { AppKitWalletConnect } from './AppKitWalletConnect';
+import Image from 'next/image';
+import Link from 'next/link';
 
 interface MuiNavbarProps {
   onMenuClick: () => void;
 }
 
-const MuiNavbar: React.FC<MuiNavbarProps> = ({ onMenuClick }) => {
+const navLinks = [
+  { label: 'Home', href: '/', icon: <HomeIcon sx={{ fontSize: 20 }} /> },
+  { label: 'Avatars', href: '/avatars', icon: <AvatarsIcon sx={{ fontSize: 20 }} /> },
+  { label: 'XR', href: '/xr', icon: <XRIcon sx={{ fontSize: 20 }} /> },
+  { label: 'GameFi', href: '/gamefi', icon: <GameFiIcon sx={{ fontSize: 20 }} /> },
+  { label: 'Tools', href: '/tools', icon: <ToolsIcon sx={{ fontSize: 20 }} /> },
+];
+
+export default function MuiNavbar({ onMenuClick }: MuiNavbarProps) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const [networkAnchorEl, setNetworkAnchorEl] = useState<null | HTMLElement>(null);
-  const [walletAnchorEl, setWalletAnchorEl] = useState<null | HTMLElement>(null);
-  const [currentNetwork, setCurrentNetwork] = useState('Filecoin Calibration');
-  const [showEvmToast, setShowEvmToast] = useState(false);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [demoNotification, setDemoNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
 
-  // WAGMI hooks for EVM/Filecoin
-  const { address, isConnected } = useAccount();
-
-  // Flow hooks
-  const flow = useFlowUser();
-
-  // Helper: determine which network is active
-  const getActiveNetwork = () => {
-    if (flow && flow.addr) return 'Flow Testnet';
-    // For EVM, just show the selected network (local state)
-    return currentNetwork;
+  const handleCloseNotification = () => {
+    setDemoNotification(null);
   };
-
-  const handleNetworkClick = (event: React.MouseEvent<HTMLElement>) => {
-    setNetworkAnchorEl(event.currentTarget);
-  };
-
-  const handleNetworkSelect = (network: string): void => {
-    setCurrentNetwork(network);
-    setNetworkAnchorEl(null);
-    if (network === 'Flow Testnet') {
-      flow.connect();
-    } else if (network === 'Near') {
-      // No provider logic yet, just update UI
-    } else if (network === 'Filecoin Mainnet' || network === 'Filecoin Calibration') {
-      setShowEvmToast(true);
-    }
-  };
-
-  const handleWalletClick = (event: React.MouseEvent<HTMLElement>) => {
-    setWalletAnchorEl(event.currentTarget);
-  };
-
-  const handleWalletClose = () => {
-    setWalletAnchorEl(null);
-  };
-
-  const handleNetworkClose = () => {
-    setNetworkAnchorEl(null);
-  };
-
-  const connectWallet = () => {
-    // Use RainbowKit modal or similar in real app
-    // For now, just close menu
-    handleWalletClose();
-  };
-
-  const disconnectWallet = () => {
-    // No direct disconnect in wagmi, but you can reset connectors if needed
-    handleWalletClose();
-  };
-
-  const loginWithFlow = () => {
-    flow.connect();
-    handleWalletClose();
-  };
-
-  const logoutFlow = () => {
-    flow.disconnect();
-    handleWalletClose();
-  };
-
-  const handleDemoModeToggle = async () => {
-    try {
-      if (!isDemoMode) {
-        // Seed demo data
-        const response = await fetch('/api/demo/seed', { method: 'POST' });
-        if (response.ok) {
-          setIsDemoMode(true);
-          setDemoNotification({ message: 'Demo data seeded successfully!', type: 'success' });
-        } else {
-          setDemoNotification({ message: 'Failed to seed demo data', type: 'error' });
-        }
-      } else {
-        // Reset demo data
-        const response = await fetch('/api/demo/reset', { method: 'POST' });
-        if (response.ok) {
-          setIsDemoMode(false);
-          setDemoNotification({ message: 'Demo data reset successfully!', type: 'success' });
-        } else {
-          setDemoNotification({ message: 'Failed to reset demo data', type: 'error' });
-        }
-      }
-    } catch (error) {
-      setDemoNotification({ message: 'Demo mode operation failed', type: 'error' });
-    }
-  };
-
-  const networks = [
-    { name: 'Filecoin Mainnet', chainId: 'filecoin' },
-    { name: 'Filecoin Calibration', chainId: 'filecoinCalibration' },
-    { name: 'Flow Testnet', chainId: 'testnet' },
-    { name: 'Near', chainId: 'testnet' },
-  ];
 
   return (
-    <AppBar 
-      position="fixed" 
-      sx={{ 
-        zIndex: theme.zIndex.drawer + 1,
-        bgcolor: 'background.paper',
-        borderBottom: 1,
-        borderColor: 'divider'
-      }}
-    >
-      <Toolbar>
-        {/* Mobile Menu Button */}
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          edge="start"
-          onClick={onMenuClick}
-          sx={{ mr: 2, display: { md: 'none' } }}
-        >
-          <MenuIcon />
-        </IconButton>
-
-        {/* Logo/Brand */}
-        <Typography 
-          variant="h6" 
-          component="div" 
-          sx={{ 
-            flexGrow: 1,
-            fontWeight: 800,
-            letterSpacing: '0.15em',
-            color: 'primary.main'
-          }}
-        >
-          CYBER<span style={{ color: theme.palette.secondary.main }}>PUNK</span>
-        </Typography>
-
-        {/* Network Selector */}
-        <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
-          <Button
-            onClick={handleNetworkClick}
-            endIcon={<ExpandMoreIcon />}
-            sx={{ 
-              color: 'text.primary',
-              textTransform: 'none',
-              minWidth: 'auto'
-            }}
-          >
-            <Chip
-              label={getActiveNetwork()}
-              size="small"
-              sx={{ 
-                bgcolor: 'primary.main',
-                color: 'primary.contrastText',
-                fontWeight: 600
+    <>
+      {/* Animated neon glassmorphism header with floating particles */}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          zIndex: 1300,
+          background: 'rgba(10, 10, 30, 0.85)',
+          backdropFilter: 'blur(16px)',
+          borderBottom: '2px solid',
+          borderImage: 'linear-gradient(90deg, #00ffea, #ff00ea, #00ffea) 1',
+          boxShadow: '0 4px 32px 0 rgba(0,255,255,0.08)',
+          overflow: 'visible',
+        }}
+      >
+        {/* Floating particles (CSS only) */}
+        <Box sx={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+          {[...Array(18)].map((_, i) => (
+            <Box
+              key={i}
+              sx={{
+                position: 'absolute',
+                top: `${Math.random() * 90}%`,
+                left: `${Math.random() * 98}%`,
+                width: `${8 + Math.random() * 8}px`,
+                height: `${8 + Math.random() * 8}px`,
+                borderRadius: '50%',
+                background: `linear-gradient(135deg, #00ffea 0%, #ff00ea 100%)`,
+                opacity: 0.18 + Math.random() * 0.18,
+                filter: 'blur(2px)',
+                animation: `floatY 6s ease-in-out infinite alternate ${i * 0.3}s`,
               }}
             />
-          </Button>
-          <Menu
-            anchorEl={networkAnchorEl}
-            open={Boolean(networkAnchorEl)}
-            onClose={() => setNetworkAnchorEl(null)}
-            PaperProps={{
-              sx: { bgcolor: 'background.paper', border: 1, borderColor: 'divider' }
-            }}
+          ))}
+        </Box>
+        <Toolbar sx={{ position: 'relative', zIndex: 1, minHeight: 72 }}>
+          {/* Mobile Menu Button */}
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={onMenuClick}
+            sx={{ mr: 2, display: { sm: 'none' } }}
           >
-            {networks.map((network, index) => (
-              <MenuItem 
-                key={`${network.chainId}-${network.name}-${index}`}
-                onClick={() => handleNetworkSelect(network.name)}
-                selected={getActiveNetwork() === network.name}
-              >
-                {network.name}
+            <MenuIcon />
+          </IconButton>
 
-                
-              </MenuItem>
-            ))}
-          </Menu>
-        </Box>
+          {/* Animated Logo */}
+          <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', mr: 2 }}>
+            <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
+              <Image
+                src="/cyberpunk-logo.svg"
+                alt="CyberPunk Metaverse Logo"
+                width={48}
+                height={48}
+                priority
+                style={{
+                  display: 'block',
+                  filter: 'drop-shadow(0 0 12px #00ffea) drop-shadow(0 0 24px #ff00ea)',
+                  animation: 'pulseGlow 2.5s infinite alternate',
+                }}
+              />
+            </Link>
+          </Box>
 
-        {/* Demo Mode Toggle */}
-        <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
-          <Tooltip title={isDemoMode ? "Reset Demo Data" : "Seed Demo Data"} arrow>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={isDemoMode}
-                  onChange={handleDemoModeToggle}
-                  color="secondary"
-                  size="small"
-                />
-              }
-              label={
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <DemoIcon sx={{ fontSize: 16, color: isDemoMode ? 'secondary.main' : 'text.secondary' }} />
-                  <Typography variant="caption" sx={{ color: isDemoMode ? 'secondary.main' : 'text.secondary' }}>
-                    Demo
-                  </Typography>
-                </Box>
-              }
-              sx={{ 
-                mr: 0,
-                '& .MuiFormControlLabel-label': { fontSize: '0.75rem' }
-              }}
-            />
-          </Tooltip>
-        </Box>
-
-        {/* Wallet Connection */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          {/* EVM Wallet (RainbowKit) */}
-          <ConnectButton.Custom>
-            {({
-              account,
-              chain,
-              openAccountModal,
-              openChainModal,
-              openConnectModal,
-              authenticationStatus,
-              mounted,
-            }) => {
-              const ready = mounted && authenticationStatus !== 'loading';
-              if (!ready || !account || !chain) {
-                return (
-                  <Button
-                    variant="outlined"
-                    startIcon={<WalletIcon />}
-                    onClick={openConnectModal}
-                    sx={{
-                      color: 'primary.main',
-                      borderColor: 'primary.main',
-                      '&:hover': {
-                        borderColor: 'primary.dark',
-                        bgcolor: 'primary.main',
-                        color: 'primary.contrastText'
-                      }
-                    }}
-                  >
-                    Connect Wallet
-                  </Button>
-                );
-              }
-              return (
-                <Button
-                  variant="outlined"
-                  startIcon={<WalletIcon />}
-                  onClick={openAccountModal}
+          {/* Navigation Links */}
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 3 }}>
+            {navLinks.map(link => (
+              <Link key={link.href} href={link.href} style={{ textDecoration: 'none' }}>
+                <Box
                   sx={{
-                    color: 'primary.main',
-                    borderColor: 'primary.main',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    px: 2,
+                    py: 1,
+                    borderRadius: 2,
+                    color: '#fff',
+                    fontWeight: 600,
+                    fontSize: 16,
+                    letterSpacing: 1,
+                    background: 'rgba(0,0,0,0.12)',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 0 0 0 #00ffea',
                     '&:hover': {
-                      borderColor: 'primary.dark',
-                      bgcolor: 'primary.main',
-                      color: 'primary.contrastText'
-                    }
+                      background: 'linear-gradient(90deg, #00ffea 0%, #ff00ea 100%)',
+                      color: '#0a0a1e',
+                      boxShadow: '0 0 12px 2px #00ffea',
+                      transform: 'translateY(-2px) scale(1.05)',
+                    },
                   }}
                 >
-                  {account.displayName}
-                </Button>
-              );
-            }}
-          </ConnectButton.Custom>
+                  {link.icon}
+                  {link.label}
+                </Box>
+              </Link>
+            ))}
+          </Box>
 
-          {/* Flow Wallet */}
-          {flow && flow.addr ? (
-            <Tooltip title={flow.addr} arrow>
-              <Chip
-                icon={<CheckCircleIcon />}
-                label={`Flow: ${flow.addr.slice(0, 6)}...${flow.addr.slice(-4)}`}
-                color="success"
-                variant="outlined"
-                onClick={handleWalletClick}
-                sx={{ fontWeight: 600, cursor: 'pointer' }}
-              />
-            </Tooltip>
-          ) : (
-            <Tooltip title="Connect Flow Wallet" arrow>
-              <Button
-                variant="contained"
-                startIcon={<LoginIcon />}
-                onClick={loginWithFlow}
-                sx={{ 
-                  bgcolor: 'secondary.main',
-                  color: 'secondary.contrastText',
-                  '&:hover': {
-                    bgcolor: 'secondary.dark'
-                  }
-                }}
-              >
-                Login with Flow
-              </Button>
-            </Tooltip>
-          )}
-        </Box>
-      </Toolbar>
-      <Snackbar
-        open={showEvmToast}
-        autoHideDuration={4000}
-        onClose={() => setShowEvmToast(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert onClose={() => setShowEvmToast(false)} severity="info" sx={{ width: '100%' }}>
-          Please use your wallet modal (e.g. MetaMask, RainbowKit) to switch EVM networks.
-        </Alert>
-      </Snackbar>
-      
-      {/* Demo Mode Notification */}
+          {/* Wallet Connect & Theme Toggle */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <AppKitWalletConnect />
+            <IconButton sx={{ color: '#00ffea', ml: 1 }}>
+              {theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
+            </IconButton>
+          </Box>
+        </Toolbar>
+      </Box>
+      {/* Demo Mode Notification (unchanged) */}
       <Snackbar
         open={!!demoNotification}
-        autoHideDuration={4000}
-        onClose={() => setDemoNotification(null)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        autoHideDuration={3000}
+        onClose={handleCloseNotification}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <Alert 
-          onClose={() => setDemoNotification(null)} 
-          severity={demoNotification?.type || 'info'} 
+          onClose={handleCloseNotification} 
+          severity={demoNotification?.type} 
           sx={{ width: '100%' }}
         >
           {demoNotification?.message}
         </Alert>
       </Snackbar>
-    </AppBar>
+      {/* Neon/animated CSS keyframes */}
+      <style jsx global>{`
+        @keyframes pulseGlow {
+          0% { filter: drop-shadow(0 0 8px #00ffea) drop-shadow(0 0 16px #ff00ea); }
+          100% { filter: drop-shadow(0 0 24px #00ffea) drop-shadow(0 0 48px #ff00ea); }
+        }
+        @keyframes floatY {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(-16px); }
+        }
+      `}</style>
+    </>
   );
-};
-
-export default MuiNavbar; 
+} 

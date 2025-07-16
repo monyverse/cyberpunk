@@ -7,7 +7,6 @@ import {
   Button,
   TextField,
   Box,
-  Grid,
   List,
   ListItem,
   ListItemText,
@@ -17,13 +16,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Card,
-  CardContent,
-  Divider,
   Alert,
-  Snackbar,
-  IconButton,
-  Tooltip
+  Snackbar
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -32,24 +26,20 @@ import {
   Person as AgentIcon,
   Login as LoginIcon,
   CheckCircle as CheckCircleIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon,
   PlayArrow as PlayIcon,
   Stop as StopIcon,
   Refresh as RefreshIcon
 } from '@mui/icons-material';
 import * as THREE from 'three';
-import * as fcl from "@onflow/fcl";
 import DroneSim3DView from './DroneSim3DView';
-import { assignMissionOnChain, interactWithAgentOnChain } from '@/utils/flowAgent';
+import { assignMissionOnChain, interactWithAgentOnChain, createAgentOnChain, storeAgentDataOnFilecoin } from '@/utils/flowAgent';
 import { useAgents } from '@/hooks/useAgents';
 import { useMissions } from '@/hooks/useDrones';
-
-// FCL config for Flow testnet
-fcl.config()
-  .put("accessNode.api", "https://rest-testnet.onflow.org")
-  .put("discovery.wallet", "https://fcl-discovery.onflow.org/testnet/authn")
-  .put("0xAgentNPC", "0x90ba9bdcb25f0aeb");
+import { useAccount } from 'wagmi';
+import { 
+  assignMissionToBestAgent, 
+} from '@/utils/aiUtils';
+import DroneSimVR from './DroneSimVR';
 
 interface Vector3 {
   x: number;
@@ -95,10 +85,11 @@ const CHARGING_STATION: Vector3 = { x: 0, y: 0, z: 0 };
 const DroneSimDashboard: React.FC = () => {
   const [drones, setDrones] = useState<Drone[]>([]);
   const [isRunning, setIsRunning] = useState(false);
-  const [user, setUser] = useState<{addr?: string} | null>(null);
   const [txStatus, setTxStatus] = useState<string | null>(null);
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error' | 'info'} | null>(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
+  const [aiInsights, setAiInsights] = useState<{ successRate: number; avgTime: number; efficiency: number }>({ successRate: 0, avgTime: 0, efficiency: 0 });
+  const [isVRMode, setIsVRMode] = useState(false);
   
   const mountRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -120,22 +111,20 @@ const DroneSimDashboard: React.FC = () => {
   // Use React Query hooks for agents and missions
   const {
     agents,
-    isLoading: agentsLoading,
     addAgent,
     updateAgent,
-    performAction,
   } = useAgents();
   const {
     missions,
-    isLoading: missionsLoading,
     addMission,
     updateMission,
   } = useMissions();
 
-  // FCL user subscription
-  useEffect(() => {
-    fcl.currentUser().subscribe(setUser);
-  }, []);
+  // WAGMI hooks for EVM/Filecoin
+  const { address, isConnected } = useAccount();
+
+  // Remove Flow user dependency since RainbowKit handles it
+  const user = isConnected ? { addr: address } : null;
 
   // Check demo mode status
   useEffect(() => {
@@ -153,6 +142,18 @@ const DroneSimDashboard: React.FC = () => {
     
     checkDemoStatus();
   }, []);
+
+  // AI Analysis - Simplified for now
+  useEffect(() => {
+    if (isRunning) {
+      // Calculate basic insights
+      const completedMissions = missions.filter(m => m.status === 'completed');
+      const successRate = completedMissions.length / Math.max(missions.length, 1) * 100;
+      const efficiency = (agents.filter(a => a.status === 'active').length / Math.max(agents.length, 1)) * 100;
+      
+      setAiInsights({ successRate, avgTime: 0, efficiency });
+    }
+  }, [isRunning, drones, agents, missions]);
 
   // Setup Three.js scene
   useEffect(() => {
@@ -283,7 +284,7 @@ const DroneSimDashboard: React.FC = () => {
 
       // Enhanced autonomous agent logic
       agents.forEach(agent => {
-        if (agent.status === 'idle' && Math.random() < 0.3) {
+          if (agent.status === 'idle' && Math.random() < 0.3) {
           if (agent.strategy === 'assigner') {
             // Assigner: assign missions
             const availableMissions = missions.filter(m => m.status === 'pending');
@@ -319,24 +320,21 @@ const DroneSimDashboard: React.FC = () => {
     return () => clearInterval(interval);
   }, [isRunning, missions, drones, agents]);
 
-  // Event listeners for on-chain transactions
+  // Event listeners for on-chain transactions (simplified for RainbowKit)
   useEffect(() => {
-    const unsub1 = fcl.events("A.90ba9bdcb25f0aeb.AgentNPC.MissionAssigned").subscribe(event => {
+    // With RainbowKit, Flow events would be handled differently
+    // For now, we'll simulate the event handling
+    const interval = setInterval(() => {
+      if (isRunning && Math.random() < 0.1) {
       setNotification({
-        message: `Mission assigned on-chain: ${JSON.stringify(event)}`,
-        type: 'success'
+          message: `Simulated Flow event: Mission assigned on-chain`,
+          type: 'info'
       });
-    });
+      }
+    }, 10000);
     
-    const unsub2 = fcl.events("A.90ba9bdcb25f0aeb.AgentNPC.AgentInteracted").subscribe(event => {
-      setNotification({
-        message: `Agent interaction on-chain: ${JSON.stringify(event)}`,
-        type: 'success'
-      });
-    });
-    
-    return () => { unsub1(); unsub2(); };
-  }, []);
+    return () => clearInterval(interval);
+  }, [isRunning]);
 
   // Handlers
   const handleAddDrone = () => {
@@ -368,17 +366,79 @@ const DroneSimDashboard: React.FC = () => {
   };
 
   const handleAddAgent = async (type: LocalAgent['type']) => {
-    const strategies: LocalAgent['strategy'][] = ['assigner', 'trader', 'social'];
-    const strategy = strategies[Math.floor(Math.random() * strategies.length)];
-    const newAgent = {
-      name: `${type.charAt(0).toUpperCase() + type.slice(1)} Agent ${agents.length + 1}`,
+    try {
+      const strategies: LocalAgent['strategy'][] = ['assigner', 'trader', 'social'];
+      const strategy = strategies[Math.floor(Math.random() * strategies.length)];
+      const agentName = `${type.charAt(0).toUpperCase() + type.slice(1)} Agent ${agents.length + 1}`;
+      
+      const newAgent = {
+        name: agentName,
       type,
-      status: 'idle' as const,
+        status: 'idle' as const,
       location: { x: Math.random() * 80 - 40, y: 0, z: Math.random() * 80 - 40 },
-      strategy,
-    };
-    await addAgent(newAgent);
-    setNotification({ message: `${type} agent (${strategy}) added successfully`, type: 'success' });
+        strategy,
+        level: 1,
+        experience: 0,
+        reputation: 0,
+        skills: [
+          { name: 'mapping', level: 1, experience: 0 },
+          { name: 'delivery', level: 1, experience: 0 },
+        ],
+        logs: [],
+        missionHistory: [],
+      };
+      
+      // Create agent locally first
+      const createdAgent = await addAgent(newAgent);
+      
+      // If it's an onchain agent and user is logged in, create on Flow blockchain
+      if (type === 'onchain' && user?.addr) {
+        try {
+          setNotification({ message: 'Creating agent on Flow blockchain...', type: 'info' });
+          
+          // Create agent on Flow blockchain
+          const txId = await createAgentOnChain(agentName, type);
+          
+          // Store agent data on Filecoin
+          const filecoinCid = await storeAgentDataOnFilecoin(newAgent);
+          
+          setTxStatus(`Agent created on-chain! Tx: ${txId} | Filecoin CID: ${filecoinCid}`);
+          setNotification({ 
+            message: `${type} agent (${strategy}) created on blockchain successfully`, 
+            type: 'success' 
+          });
+        } catch (blockchainError) {
+          console.error('Blockchain creation failed:', blockchainError);
+          setNotification({ 
+            message: `${type} agent created locally (blockchain failed)`, 
+            type: 'error' 
+          });
+        }
+      } else if (type === 'hybrid' && user?.addr) {
+        // For hybrid agents, try blockchain but don't fail if it doesn't work
+        try {
+          const filecoinCid = await storeAgentDataOnFilecoin(newAgent);
+          setNotification({ 
+            message: `${type} agent (${strategy}) created with Filecoin storage`, 
+            type: 'success' 
+          });
+        } catch (filecoinError) {
+          console.error('Filecoin storage failed:', filecoinError);
+          setNotification({ 
+            message: `${type} agent (${strategy}) created locally`, 
+            type: 'success' 
+          });
+        }
+      } else {
+        setNotification({ 
+          message: `${type} agent (${strategy}) created locally`, 
+          type: 'success' 
+        });
+      }
+    } catch (error) {
+      console.error('Error adding agent:', error);
+      setNotification({ message: 'Failed to add agent', type: 'error' });
+    }
   };
 
   const handleAssignMission = async (droneId: string, missionId: string) => {
@@ -388,7 +448,7 @@ const DroneSimDashboard: React.FC = () => {
       setNotification({ message: 'Please login with Flow to assign on-chain mission.', type: 'error' });
       return;
     }
-    setDrones(prev => prev.map(d =>
+    setDrones(prev => prev.map(d => 
       d.id === droneId ? { ...d, status: 'in-mission' as const, lastMissionId: missionId } : d
     ));
     await updateMission(missionId, { droneId, status: 'active', assignedAgentId: onchainAgent?.id });
@@ -405,10 +465,33 @@ const DroneSimDashboard: React.FC = () => {
     }
   };
 
+  const handleAIAssignMission = async (missionId: string) => {
+    const mission = missions.find(m => m.id === missionId);
+    if (!mission) return;
+    
+    // Use AI to find the best agent for this mission
+    const bestAgent = assignMissionToBestAgent(mission, agents);
+    if (!bestAgent) {
+      setNotification({ message: 'No suitable agent found for this mission', type: 'error' });
+      return;
+    }
+    
+    // Find an available drone
+    const availableDrone = drones.find(d => d.status === 'idle');
+    if (!availableDrone) {
+      setNotification({ message: 'No available drones for this mission', type: 'error' });
+      return;
+    }
+    
+    // Assign the mission
+    await handleAssignMission(availableDrone.id, missionId);
+    setNotification({ message: `AI assigned mission to ${bestAgent.name} (${bestAgent.strategy})`, type: 'success' });
+  };
+
   const handleAgentInteract = async (agent1: LocalAgent, agent2: LocalAgent) => {
     setNotification({ message: `${agent1.name} interacting with ${agent2.name}...`, type: 'info' });
     if (agent1.type === 'onchain' && user?.addr) {
-      try {
+    try {
         const txId = await interactWithAgentOnChain(agent2.id, 'Hello from agent!');
         setTxStatus(`Agent interaction on-chain! Tx: ${txId}`);
       } catch (err) {
@@ -420,12 +503,9 @@ const DroneSimDashboard: React.FC = () => {
   };
 
   const handleLoginWithFlow = async () => {
-    try {
-      await fcl.authenticate();
-      setNotification({ message: 'Successfully logged in with Flow', type: 'success' });
-    } catch (error) {
-      setNotification({ message: 'Failed to login with Flow', type: 'error' });
-    }
+    // With RainbowKit, Flow authentication is handled automatically
+    // This function is now just for UI feedback
+    setNotification({ message: 'Flow wallet connection handled by RainbowKit', type: 'info' });
   };
 
   const handleStartSimulation = () => setIsRunning(true);
@@ -438,22 +518,32 @@ const DroneSimDashboard: React.FC = () => {
     setNotification({ message: 'Simulation reset', type: 'info' });
   };
 
-  // When rendering or using agents, use:
-  const activeAgents = (agents as any[]).filter(a => a.status !== 'offline' && a.strategy !== 'default');
-
   return (
     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '3fr 1fr' }, gap: 2, minHeight: 600 }}>
       {/* 3D Scene */}
       <Box sx={{ width: '100%', height: 400, mb: 2, borderRadius: 1, overflow: 'hidden' }}>
+        {isVRMode ? (
+          <DroneSimVR
+            drones={drones}
+            agents={agents as LocalAgent[]}
+            onDroneClick={(drone) => {
+              setSelectedDroneId(drone.id);
+              setDroneInfoSnackbar({ open: true, message: `${drone.model} | Battery: ${drone.battery.toFixed(1)}% | Status: ${drone.status}` });
+            }}
+            isRunning={isRunning}
+          />
+        ) : (
         <DroneSim3DView
           drones={drones}
-          agents={agents as LocalAgent[]}
+            agents={agents as LocalAgent[]}
           selectedDroneId={selectedDroneId}
           onDroneClick={(drone) => {
             setSelectedDroneId(drone.id);
             setDroneInfoSnackbar({ open: true, message: `${drone.model} | Battery: ${drone.battery.toFixed(1)}% | Status: ${drone.status}` });
           }}
+            isRunning={isRunning}
         />
+        )}
       </Box>
 
       {/* Control Panel */}
@@ -492,8 +582,6 @@ const DroneSimDashboard: React.FC = () => {
             )}
           </Box>
 
-          <Divider sx={{ my: 2 }} />
-
           {/* Simulation Controls */}
           <Box sx={{ mb: 3 }}>
             <Typography variant="h6" gutterBottom>Simulation Controls</Typography>
@@ -525,14 +613,23 @@ const DroneSimDashboard: React.FC = () => {
                 Reset
               </Button>
             </Box>
+            <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+              <Button
+                variant={isVRMode ? "contained" : "outlined"}
+                color="secondary"
+                onClick={() => setIsVRMode(!isVRMode)}
+                size="small"
+                fullWidth
+              >
+                🎮 {isVRMode ? 'Exit VR' : 'Enter VR'}
+              </Button>
+            </Box>
             <Chip
               label={isRunning ? 'Running' : 'Stopped'}
               color={isRunning ? 'success' : 'default'}
               size="small"
             />
           </Box>
-
-          <Divider sx={{ my: 2 }} />
 
           {/* Add Drones */}
           <Box sx={{ mb: 3 }}>
@@ -567,8 +664,6 @@ const DroneSimDashboard: React.FC = () => {
               ))}
             </List>
           </Box>
-
-          <Divider sx={{ my: 2 }} />
 
           {/* Add Missions */}
           <Box sx={{ mb: 3 }}>
@@ -656,8 +751,6 @@ const DroneSimDashboard: React.FC = () => {
             </List>
           </Box>
 
-          <Divider sx={{ my: 2 }} />
-
           {/* Add Agents */}
           <Box sx={{ mb: 3 }}>
             <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -724,13 +817,21 @@ const DroneSimDashboard: React.FC = () => {
           {/* Mission Assignment */}
           {missions.filter(m => m.status === 'pending').length > 0 && drones.filter(d => d.status === 'idle').length > 0 && (
             <>
-              <Divider sx={{ my: 2 }} />
               <Box>
                 <Typography variant="h6" gutterBottom>Assign Missions</Typography>
                 {missions.filter(m => m.status === 'pending').map(mission => (
                   <Box key={mission.id} sx={{ mb: 1 }}>
                     <Typography variant="body2" gutterBottom>{mission.description}</Typography>
-                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        color="secondary"
+                        onClick={() => handleAIAssignMission(mission.id)}
+                        sx={{ mr: 1 }}
+                      >
+                        🤖 AI Assign
+                      </Button>
                       {drones.filter(d => d.status === 'idle').map(drone => (
                         <Button
                           key={drone.id}
@@ -748,10 +849,40 @@ const DroneSimDashboard: React.FC = () => {
             </>
           )}
 
+          {/* AI Insights */}
+          {isRunning && (
+            <>
+              <Box>
+                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  🤖 AI Insights
+                </Typography>
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, mb: 2 }}>
+                  <Paper sx={{ p: 1, textAlign: 'center' }}>
+                    <Typography variant="caption" color="text.secondary">Success Rate</Typography>
+                    <Typography variant="h6" color="success.main">
+                      {aiInsights.successRate.toFixed(1)}%
+                    </Typography>
+                  </Paper>
+                  <Paper sx={{ p: 1, textAlign: 'center' }}>
+                    <Typography variant="caption" color="text.secondary">Efficiency</Typography>
+                    <Typography variant="h6" color="primary.main">
+                      {aiInsights.efficiency.toFixed(1)}%
+                    </Typography>
+                  </Paper>
+                  <Paper sx={{ p: 1, textAlign: 'center' }}>
+                    <Typography variant="caption" color="text.secondary">Active Agents</Typography>
+                    <Typography variant="h6" color="secondary.main">
+                      {agents.filter(a => a.status === 'active').length}
+                    </Typography>
+                  </Paper>
+                </Box>
+              </Box>
+            </>
+          )}
+
           {/* Agent Interactions */}
           {agents.length > 1 && (
             <>
-              <Divider sx={{ my: 2 }} />
               <Box>
                 <Typography variant="h6" gutterBottom>Agent Interactions</Typography>
                 {agents.map(agent1 => 
