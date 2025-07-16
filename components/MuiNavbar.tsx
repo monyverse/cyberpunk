@@ -25,7 +25,7 @@ const navLinks = [
   { label: 'Home', href: '/', icon: <HomeIcon sx={{ fontSize: 20 }} /> },
   { label: 'Avatars', href: '/avatars', icon: <AvatarsIcon sx={{ fontSize: 20 }} /> },
   { label: 'XR', href: '/xr', icon: <XRIcon sx={{ fontSize: 20 }} /> },
-  { label: 'GameFi', href: '/gamefi', icon: <GameFiIcon sx={{ fontSize: 20 }} /> },
+  { label: 'Marketplace', href: '/marketplace', icon: <GameFiIcon sx={{ fontSize: 20 }} /> },
   { label: 'Tools', href: '/tools', icon: <ToolsIcon sx={{ fontSize: 20 }} /> },
 ];
 
