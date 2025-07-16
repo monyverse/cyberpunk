@@ -32,7 +32,7 @@ interface DroneSim3DViewProps {
 }
 
 // AI-powered drone behavior component
-function DroneAI({ drone, isRunning }: { drone: Drone; isRunning?: boolean }) {
+function DroneAI({ drone, isRunning, onDroneClick, selectedDroneId }: { drone: Drone; isRunning?: boolean; onDroneClick: (drone: Drone) => void; selectedDroneId: string | null }) {
   const [ref, api] = useBox<Mesh>(() => ({ 
     mass: 1, 
     position: [drone.location.x, drone.location.y + 2, drone.location.z],
@@ -72,6 +72,7 @@ function DroneAI({ drone, isRunning }: { drone: Drone; isRunning?: boolean }) {
   });
 
   const getDroneColor = () => {
+    if (selectedDroneId === drone.id) return '#ff00ff'; // Highlight selected drone
     switch (drone.status) {
       case 'in-mission': return '#00ff00';
       case 'charging': return '#ffff00';
@@ -81,10 +82,7 @@ function DroneAI({ drone, isRunning }: { drone: Drone; isRunning?: boolean }) {
   };
 
   return (
-    <mesh ref={ref} castShadow receiveShadow onClick={() => {
-      // Handle drone click
-      console.log('Drone clicked:', drone.id);
-    }}>
+    <mesh ref={ref} castShadow receiveShadow onClick={() => onDroneClick(drone)}>
       <boxGeometry args={[3, 1, 3]} />
       <meshStandardMaterial color={getDroneColor()} />
       {/* Drone propellers */}
@@ -125,9 +123,15 @@ function DroneAI({ drone, isRunning }: { drone: Drone; isRunning?: boolean }) {
 
 // Enhanced agent component with AI behaviors
 function AgentAI({ agent, isRunning }: { agent: LocalAgent; isRunning?: boolean }) {
+  // Guard against missing location
+  const defaultPosition: [number, number, number] = [0, 2, 0];
+  const agentPosition: [number, number, number] = agent.location && typeof agent.location.x === 'number' && typeof agent.location.y === 'number' && typeof agent.location.z === 'number'
+    ? [agent.location.x, agent.location.y + 2, agent.location.z]
+    : defaultPosition;
+
   const [ref, api] = useSphere<Mesh>(() => ({ 
     mass: 1, 
-    position: [agent.location.x, agent.location.y + 2, agent.location.z], 
+    position: agentPosition, 
     type: 'Static',
     args: [2]
   }));
@@ -414,6 +418,8 @@ export default function DroneSim3DView({
             key={drone.id}
             drone={drone}
             isRunning={isRunning}
+            onDroneClick={onDroneClick}
+            selectedDroneId={selectedDroneId}
           />
         ))}
         
