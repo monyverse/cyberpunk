@@ -73,9 +73,8 @@ const MuiSidebar: React.FC<MuiSidebarProps> = ({ open, onClose, isMobile }) => {
           const isActive = pathname === item.path;
           return (
             <ListItem key={item.text} disablePadding>
-              <Link href={item.path} passHref legacyBehavior>
                 <ListItemButton
-                  component="a"
+                  onClick={() => handleNavigation(item.path)}
                   sx={{
                     mx: 1,
                     borderRadius: 2,
@@ -100,7 +99,6 @@ const MuiSidebar: React.FC<MuiSidebarProps> = ({ open, onClose, isMobile }) => {
                     }}
                   />
                 </ListItemButton>
-              </Link>
             </ListItem>
           );
         })}
