@@ -21,5 +21,4 @@ export const appKit = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
   networks,
-  ssr: true,
 }); 
