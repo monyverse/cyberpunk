@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AvatarCreator } from '@readyplayerme/react-avatar-creator';
+import { AvatarCreator, AvatarExportedEvent } from '@readyplayerme/react-avatar-creator';
 import { useAvatar } from '../hooks/useAvatar';
 import { useAccount } from 'wagmi';
 import {
@@ -43,7 +43,8 @@ export default function AvatarCreatorComponent({ onAvatarCreated, initialAvatarU
   const { address, isConnected } = useAccount();
   const { avatar, loading, error, storeAvatar, hasAvatar } = useAvatar();
 
-  const handleAvatarExported = ({ url }: { url: string }) => {
+  const handleAvatarExported = (event: AvatarExportedEvent) => {
+    const url = event.data.url;
     setAvatarUrl(url);
     setShowCreator(false);
     onAvatarCreated?.(url);
@@ -136,7 +137,6 @@ export default function AvatarCreatorComponent({ onAvatarCreated, initialAvatarU
                   <AvatarCreator
                     subdomain="cyberpunk-1y2xpj"
                     onAvatarExported={handleAvatarExported}
-                    frameInitializer={undefined}
                   />
                 </Box>
               ) : (

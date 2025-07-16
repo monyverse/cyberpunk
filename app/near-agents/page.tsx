@@ -358,7 +358,7 @@ const NEARAgentsPage: React.FC = () => {
                   {agents.map((agent) => (
                     <React.Fragment key={agent.id}>
                       <ListItem 
-                        button
+                        component="div"
                         onClick={() => {
                           setSelectedAgent(agent);
                           setIntentDialog(true);

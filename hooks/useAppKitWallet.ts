@@ -1,6 +1,7 @@
 import { useAppKit, useAppKitAccount, useAppKitNetwork, useAppKitBalance } from '@reown/appkit/react';
 import { useDisconnect } from 'wagmi';
 import { useState, useEffect } from 'react';
+import { networks } from '@/config/appkit';
 
 export interface AppKitWalletState {
   isConnected: boolean;
@@ -15,9 +16,13 @@ export interface AppKitWalletState {
 export function useAppKitWallet() {
   const { open, close } = useAppKit();
   const { address, isConnected, status } = useAppKitAccount();
-  const { chainId, chain } = useAppKitNetwork();
-  const { data: balance } = useAppKitBalance();
+  const { chainId } = useAppKitNetwork();
+  const balance = useAppKitBalance();
   const { disconnect } = useDisconnect();
+
+  // Ensure chainId is always a number or null
+  const numericChainId = typeof chainId === 'number' ? chainId : chainId ? Number(chainId) : null;
+  const currentNetwork = networks.find(n => n.id === numericChainId);
 
   const [state, setState] = useState<AppKitWalletState>({
     isConnected: false,
@@ -35,13 +40,17 @@ export function useAppKitWallet() {
       ...prev,
       isConnected: isConnected,
       address: address || null,
-      chainId: chainId || null,
-      chainName: chain?.name || null,
-      balance: balance ? balance.formatted : null,
+      chainId: numericChainId,
+      chainName: currentNetwork?.name || null,
+      balance: balance != null
+        ? (typeof balance === 'object' && 'formatted' in balance && typeof balance.formatted === 'string'
+            ? balance.formatted
+            : String(balance))
+        : null,
       isLoading: status === 'connecting',
       error: status === 'disconnected' ? 'Wallet disconnected' : null,
-    }));
-  }, [isConnected, address, chainId, chain, balance, status]);
+    }) as AppKitWalletState); // Explicitly cast to AppKitWalletState
+  }, [isConnected, address, numericChainId, currentNetwork, balance, status]);
 
   // Connect wallet
   const connectWallet = async () => {

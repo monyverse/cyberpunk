@@ -69,9 +69,9 @@ export class NEARIntegration {
     this.walletConnection = new WalletConnection(this.near, 'cyberpunk-metaverse');
   }
 
-  async connectWallet(): Promise<string | null> {
+  async connectWallet(contractId: string): Promise<string | null> {
     if (!this.walletConnection.isSignedIn()) {
-      await this.walletConnection.requestSignIn();
+      await this.walletConnection.requestSignIn({ contractId });
     }
     
     if (this.walletConnection.isSignedIn()) {
@@ -275,7 +275,7 @@ export class NEARAgentFactory {
     accountId: string,
     portfolioRules: any
   ): Promise<string> {
-    await this.nearIntegration.connectWallet();
+    await this.nearIntegration.connectWallet('agent.cyberpunk.testnet');
     await this.nearIntegration.initializeAgentContract('agent.cyberpunk.testnet');
     
     return await this.nearIntegration.createRebalancingIntent(
@@ -288,7 +288,7 @@ export class NEARAgentFactory {
     accountId: string,
     learningPreferences: any
   ): Promise<string> {
-    await this.nearIntegration.connectWallet();
+    await this.nearIntegration.connectWallet('agent.cyberpunk.testnet');
     await this.nearIntegration.initializeAgentContract('agent.cyberpunk.testnet');
     
     return await this.nearIntegration.createMemoryAgentIntent(
@@ -302,7 +302,7 @@ export class NEARAgentFactory {
     targetChain: string,
     monitoringParams: any
   ): Promise<string> {
-    await this.nearIntegration.connectWallet();
+    await this.nearIntegration.connectWallet('agent.cyberpunk.testnet');
     await this.nearIntegration.initializeAgentContract('agent.cyberpunk.testnet');
     
     return await this.nearIntegration.createTradingIntent(

@@ -1,93 +1,17 @@
-import { createAppKit } from '@reown/appkit/react';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import {
-  filecoin,
-  filecoinCalibration,
-  mainnet,
-  sepolia,
-  goerli,
-  polygon,
-  polygonMumbai,
-  arbitrum,
-  arbitrumGoerli,
-  optimism,
-  optimismGoerli,
-  base,
-  baseGoerli,
-  avalanche,
-  avalancheFuji,
-  bsc,
-  bscTestnet,
-  fantom,
-  fantomTestnet,
-  gnosis,
-  gnosisChiado,
-  celo,
-  celoAlfajores,
-  moonbeam,
-  moonbaseAlpha,
-  moonriver,
-  moonbeamDev,
-  aurora,
-  auroraTestnet
-} from 'wagmi/chains';
+import { filecoin, filecoinCalibration, mainnet, polygon } from '@reown/appkit/networks';
+import type { AppKitNetwork } from '@reown/appkit/networks';
 
-const networks = [
-  filecoinCalibration,
-  filecoin,
-  mainnet,
-  sepolia,
-  goerli,
-  polygon,
-  polygonMumbai,
-  arbitrum,
-  arbitrumGoerli,
-  optimism,
-  optimismGoerli,
-  base,
-  baseGoerli,
-  avalanche,
-  avalancheFuji,
-  bsc,
-  bscTestnet,
-  fantom,
-  fantomTestnet,
-  gnosis,
-  gnosisChiado,
-  celo,
-  celoAlfajores,
-  moonbeam,
-  moonbaseAlpha,
-  moonriver,
-  moonbeamDev,
-  aurora,
-  auroraTestnet
-];
+export const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '865c931386843631a84e0461df3b26fa';
+
+if (!projectId) {
+  throw new Error('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not defined. Please set it in .env.local');
+}
+
+export const networks: [AppKitNetwork, ...AppKitNetwork[]] = [filecoin, filecoinCalibration, mainnet, polygon];
 
 export const wagmiAdapter = new WagmiAdapter({
+  projectId,
   networks,
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '865c931386843631a84e0461df3b26fa',
-  metadata: {
-    name: 'CyberPunk Metaverse',
-    description: 'A multi-chain metaverse platform',
-    url: 'https://cyberpunk-metaverse.com',
-    icons: ['https://cyberpunk-metaverse.com/icon.png'],
-  },
-});
-
-export const appKit = createAppKit({
-  adapters: [wagmiAdapter],
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '865c931386843631a84e0461df3b26fa',
-  networks,
-  metadata: {
-    name: 'CyberPunk Metaverse',
-    description: 'A multi-chain metaverse platform',
-    url: 'https://cyberpunk-metaverse.com',
-    icons: ['https://cyberpunk-metaverse.com/icon.png'],
-  },
-  features: {
-    analytics: true,
-    smartAccounts: true,
-    embeddedWallets: true,
-  },
+  ssr: true,
 }); 
