@@ -5,6 +5,8 @@ CyberPunk: WildNet is an AR-driven PLAY-to-EARN real-world metaverse game that l
 
 ![UI Preview](public/ui.png)
 
+![Simulation Dashboard](public/simdash.png)
+
 ## 🌆 Overview
 
 CyberPunk WildNet is a next-generation metaverse that showcases:
