@@ -23,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }
         `}</style>
       </head>
-      <body suppressHydrationWarning={true}>
+      <body>
         <Providers>
           <AppShell>
             {children}
