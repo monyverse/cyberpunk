@@ -3,7 +3,7 @@
 
 CyberPunk: WildNet is an AR-driven PLAY-to-EARN real-world metaverse game that lets players remotely control drones to explore wildlife zones, discover virtual collectibles, interact with AI NPCs, contribute real conservation data, and earn crypto rewards.
 
-![UI Preview](app/public/ui.png)
+![UI Preview](public/ui.png)
 
 ## 🌆 Overview
 
