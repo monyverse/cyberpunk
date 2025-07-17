@@ -36,7 +36,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/cyberpunk-metaverse.git
+git clone https://github.com/monyverse/cyberpunk-metaverse.git
 cd cyberpunk-metaverse
 
 # Install dependencies
