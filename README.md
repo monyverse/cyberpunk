@@ -1,5 +1,6 @@
-# 🚀 CyberPunk Metaverse - Multi-Sponsor Integration Platform
+# 🚀 CyberPunk Metaverse 
 
+![UI Preview](app/public/ui.png)
 
 
 ## 🌟 Features
