@@ -16,6 +16,7 @@ import {
 import { AppKitWalletConnect } from './AppKitWalletConnect';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface MuiNavbarProps {
   onMenuClick: () => void;
@@ -25,12 +26,13 @@ const navLinks = [
   { label: 'Home', href: '/', icon: <HomeIcon sx={{ fontSize: 20 }} /> },
   { label: 'Avatars', href: '/avatars', icon: <AvatarsIcon sx={{ fontSize: 20 }} /> },
   { label: 'XR', href: '/xr', icon: <XRIcon sx={{ fontSize: 20 }} /> },
-  { label: 'GameFi', href: '/gamefi', icon: <GameFiIcon sx={{ fontSize: 20 }} /> },
+  { label: 'Marketplace', href: '/marketplace', icon: <GameFiIcon sx={{ fontSize: 20 }} /> },
   { label: 'Tools', href: '/tools', icon: <ToolsIcon sx={{ fontSize: 20 }} /> },
 ];
 
 export default function MuiNavbar({ onMenuClick }: MuiNavbarProps) {
   const theme = useTheme();
+  const router = useRouter();
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [demoNotification, setDemoNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
 
@@ -90,7 +92,7 @@ export default function MuiNavbar({ onMenuClick }: MuiNavbarProps) {
 
           {/* Animated Logo */}
           <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', mr: 2 }}>
-            <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
+            <Box onClick={() => router.push('/')} sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
               <Image
                 src="/cyberpunk-logo.svg"
                 alt="CyberPunk Metaverse Logo"
@@ -103,40 +105,41 @@ export default function MuiNavbar({ onMenuClick }: MuiNavbarProps) {
                   animation: 'pulseGlow 2.5s infinite alternate',
                 }}
               />
-            </Link>
+            </Box>
           </Box>
 
           {/* Navigation Links */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 3 }}>
             {navLinks.map(link => (
-              <Link key={link.href} href={link.href} style={{ textDecoration: 'none' }}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                    px: 2,
-                    py: 1,
-                    borderRadius: 2,
-                    color: '#fff',
-                    fontWeight: 600,
-                    fontSize: 16,
-                    letterSpacing: 1,
-                    background: 'rgba(0,0,0,0.12)',
-                    transition: 'all 0.2s',
-                    boxShadow: '0 0 0 0 #00ffea',
-                    '&:hover': {
-                      background: 'linear-gradient(90deg, #00ffea 0%, #ff00ea 100%)',
-                      color: '#0a0a1e',
-                      boxShadow: '0 0 12px 2px #00ffea',
-                      transform: 'translateY(-2px) scale(1.05)',
-                    },
-                  }}
-                >
-                  {link.icon}
-                  {link.label}
-                </Box>
-              </Link>
+              <Box
+                key={link.href}
+                onClick={() => router.push(link.href)}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  px: 2,
+                  py: 1,
+                  borderRadius: 2,
+                  color: '#fff',
+                  fontWeight: 600,
+                  fontSize: 16,
+                  letterSpacing: 1,
+                  background: 'rgba(0,0,0,0.12)',
+                  transition: 'all 0.2s',
+                  boxShadow: '0 0 0 0 #00ffea',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    background: 'linear-gradient(90deg, #00ffea 0%, #ff00ea 100%)',
+                    color: '#0a0a1e',
+                    boxShadow: '0 0 12px 2px #00ffea',
+                    transform: 'translateY(-2px) scale(1.05)',
+                  },
+                }}
+              >
+                {link.icon}
+                {link.label}
+              </Box>
             ))}
           </Box>
 

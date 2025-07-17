@@ -21,6 +21,7 @@ import {
   Flight as FlightIcon,
 } from '@mui/icons-material';
 import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 interface MuiSidebarProps {
   open: boolean;
@@ -72,32 +73,32 @@ const MuiSidebar: React.FC<MuiSidebarProps> = ({ open, onClose, isMobile }) => {
           const isActive = pathname === item.path;
           return (
             <ListItem key={item.text} disablePadding>
-              <ListItemButton
-                onClick={() => handleNavigation(item.path)}
-                sx={{
-                  mx: 1,
-                  borderRadius: 2,
-                  mb: 0.5,
-                  bgcolor: isActive ? 'primary.main' : 'transparent',
-                  color: isActive ? 'primary.contrastText' : 'text.primary',
-                  '&:hover': {
-                    bgcolor: isActive ? 'primary.dark' : 'action.hover',
-                  },
-                  '& .MuiListItemIcon-root': {
-                    color: isActive ? 'primary.contrastText' : 'text.secondary',
-                  }
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: 40 }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText 
-                  primary={item.text} 
-                  primaryTypographyProps={{
-                    fontWeight: isActive ? 600 : 400,
+                <ListItemButton
+                  onClick={() => handleNavigation(item.path)}
+                  sx={{
+                    mx: 1,
+                    borderRadius: 2,
+                    mb: 0.5,
+                    bgcolor: isActive ? 'primary.main' : 'transparent',
+                    color: isActive ? 'primary.contrastText' : 'text.primary',
+                    '&:hover': {
+                      bgcolor: isActive ? 'primary.dark' : 'action.hover',
+                    },
+                    '& .MuiListItemIcon-root': {
+                      color: isActive ? 'primary.contrastText' : 'text.secondary',
+                    }
                   }}
-                />
-              </ListItemButton>
+                >
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary={item.text} 
+                    primaryTypographyProps={{
+                      fontWeight: isActive ? 600 : 400,
+                    }}
+                  />
+                </ListItemButton>
             </ListItem>
           );
         })}
