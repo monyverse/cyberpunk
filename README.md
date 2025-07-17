@@ -57,11 +57,47 @@ NEAR CONTRACTS [VIEW](/Docs/near-contracts.md)
 - **🔗 [Access Asset Manager](https://cyberpunk-metaverse.vercel.app/assets)**
 
 ### Analytics Dashboard
+
 - **Live stats**: See total agents, active agents, total missions, and completed missions in real time
 - **MUI-based UI**: Clean, responsive layout using Material UI components
 - **Mission tracking**: Monitor completion rates and agent activity
 - **Real-time updates**: Automatic refresh as data changes
 - **🔗 [Access Analytics Dashboard](https://cyberpunk-metaverse.vercel.app/analytics)**
+
+#### 📊 Analytics API
+
+The Analytics Dashboard fetches live data from the following API endpoint:
+
+**Endpoint:**
+```
+GET /api/analytics
+```
+
+**Example Response:**
+```json
+{
+  "totalAgents": 12,
+  "activeAgents": 8,
+  "totalMissions": 25,
+  "completedMissions": 17,
+  "missionsByType": {
+    "mapping": 10,
+    "surveillance": 8,
+    "delivery": 7
+  },
+  "agentTypes": {
+    "onchain": 5,
+    "offchain": 4,
+    "hybrid": 3
+  },
+  "lastUpdated": "2024-07-10T18:00:00Z"
+}
+```
+
+**How to Use:**
+- Fetch this endpoint from your dashboard component using React Query, SWR, or fetch/axios.
+- Update the dashboard UI in real time as the data changes.
+- You can extend the API to include more analytics as needed.
 
 ### Drone Simulation
 - Interactive 3D environment for drone control and agent interactions
